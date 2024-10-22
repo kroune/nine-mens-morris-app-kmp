@@ -9,6 +9,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -21,8 +22,12 @@ fun App(component: RootComponent) {
             animation = stackAnimation(slide())
         ) { child ->
             when (val instance = child.instance) {
-                is RootComponent.Child.AppStartAnimation -> {
+                is RootComponent.Child.AppStartAnimationScreenChild -> {
                     AppStartAnimationScreen(instance.component)
+                }
+
+                is RootComponent.Child.WelcomeScreenChild -> {
+                    WelcomeScreen(instance.component)
                 }
             }
         }

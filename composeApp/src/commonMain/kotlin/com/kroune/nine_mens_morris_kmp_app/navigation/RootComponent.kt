@@ -5,8 +5,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pushNew
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
-import com.kroune.nine_mens_morris_kmp_app.component.ScreenAComponent
-import com.kroune.nine_mens_morris_kmp_app.component.ScreenBComponent
+import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
 import kotlinx.serialization.Serializable
 
 class RootComponent(
@@ -28,11 +27,30 @@ class RootComponent(
     ): Child {
         return when (config) {
             is Configuration.AppStartAnimation -> {
-                Child.AppStartAnimation(
+                Child.AppStartAnimationScreenChild(
                     AppStartAnimationComponent(
                         context,
                         {
-//                            navigation.pushNew(Configuration.ScreenB(text = it))
+                            navigation.pushNew(Configuration.WelcomeScreen)
+                        }
+                    )
+                )
+            }
+            is Configuration.WelcomeScreen -> {
+                Child.WelcomeScreenChild(
+                    WelcomeScreenComponent(
+                        context,
+                        {
+//                            navigation.pushNew(Configuration.GameWithFriendScreen)
+                        },
+                        {
+//                            navigation.pushNew(Configuration.GameWithBotScreen)
+                        },
+                        {
+//                            navigation.pushNew(Configuration.OnlineGameScreen)
+                        },
+                        {
+//                            navigation.pushNew(Configuration.AccountViewScreen)
                         }
                     )
                 )
@@ -41,12 +59,15 @@ class RootComponent(
     }
 
     sealed class Child {
-        data class AppStartAnimation(val component: AppStartAnimationComponent): Child()
+        data class AppStartAnimationScreenChild(val component: AppStartAnimationComponent): Child()
+        data class WelcomeScreenChild(val component: WelcomeScreenComponent): Child()
     }
 
     @Serializable
     sealed class Configuration {
         @Serializable
         data object AppStartAnimation : Configuration()
+        @Serializable
+        data object WelcomeScreen: Configuration()
     }
 }

@@ -54,10 +54,12 @@ kotlin {
     sourceSets {
         val desktopMain by getting
         iosMain.dependencies {
+            implementation(libs.ktor.client.cio)
         }
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.cio)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -71,10 +73,18 @@ kotlin {
             implementation(libs.decompose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.decompose.jetbrains)
+            implementation(libs.ktor.client.core)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.no.arg)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.cio)
+        }
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.js)
         }
     }
 }
