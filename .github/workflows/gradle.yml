@@ -13,16 +13,26 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: iosSimulatorArm64Test
+          # android
+          - target: assembleRelease
+            directory: composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk
+            os: ubuntu-latest
+          # ios
+          - target: iosSimulatorArm64Binaries
+            directory: composeApp/build/libs/composeApp-desktop.jar
             os: macos-latest
-          - target: jvmTest
+          # web
+          - target: wasmJsBrowserDistribution
+            directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
-          - target: linuxX64Test
+          # linux
+          - target: desktopJar
+            directory: composeApp/build/libs/composeApp-desktop.jar
             os: ubuntu-latest
-          - target: testDebugUnitTest
-            os: ubuntu-latest
-          - target: testReleaseUnitTest
-            os: ubuntu-latest
+          # windows
+          - target: desktopJar
+            directory: composeApp/build/libs/composeApp-desktop.jar
+            os: windows-latest
     runs-on: ${{ matrix.os }}
 
     steps:
