@@ -7,8 +7,11 @@ import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.SignUpScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -21,13 +24,23 @@ fun App(component: RootComponent) {
             stack = childStack,
             animation = stackAnimation(slide())
         ) { child ->
-            when (val instance = child.instance) {
-                is RootComponent.Child.AppStartAnimationScreenChild -> {
-                    AppStartAnimationScreen(instance.component)
-                }
+            AppTheme {
+                when (val instance = child.instance) {
+                    is RootComponent.Child.AppStartAnimationScreenChild -> {
+                        AppStartAnimationScreen(instance.component)
+                    }
 
-                is RootComponent.Child.WelcomeScreenChild -> {
-                    WelcomeScreen(instance.component)
+                    is RootComponent.Child.WelcomeScreenChild -> {
+                        WelcomeScreen(instance.component)
+                    }
+
+                    is RootComponent.Child.ViewAccountScreenChild -> {
+                        ViewAccountScreen(instance.component)
+                    }
+
+                    is RootComponent.Child.SignUpScreenChild -> {
+                        SignUpScreen(instance.component)
+                    }
                 }
             }
         }

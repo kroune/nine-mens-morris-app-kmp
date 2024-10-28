@@ -1,10 +1,14 @@
-package com.kroune.nine_mens_morris_kmp_app.data.repository.source.local
+package com.kroune.nine_mens_morris_kmp_app.data.repository.source.local.jwtToken
 
 import com.russhwolf.settings.Settings
 
 class JwtTokenDataSourceImpl: JwtTokenDataSourceI {
     override fun getJwtToken(): String? {
         return Settings().getStringOrNull("jwtToken")
+    }
+
+    override fun deleteJwtToken() {
+        Settings().remove("jwtToken")
     }
 
     override fun updateJwtToken(newJwtToken: String) {

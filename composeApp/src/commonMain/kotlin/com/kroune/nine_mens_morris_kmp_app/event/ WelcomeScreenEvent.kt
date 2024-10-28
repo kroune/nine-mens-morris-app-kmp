@@ -5,4 +5,5 @@ sealed interface WelcomeScreenEvent {
     data object ClickGameWithBotButton: WelcomeScreenEvent
     data object ClickOnlineGameButton: WelcomeScreenEvent
     data object AccountViewButton: WelcomeScreenEvent
+    data object CloseTutorial: WelcomeScreenEvent
 }

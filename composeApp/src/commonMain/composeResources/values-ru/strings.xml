@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><!--suppress LongLine -->
+<resources>
+    <string name="app_name">Мельница</string>
+    <string name="client_error">Мы столкнулись с ошибкой во время работы программы, это может быть вызванно устаревшей версией приложения. Вы можете оставить сообщение об этой проблеме на Github</string>
+    <string name="network_error">Не удалось сделать запрос в сеть. Возможно у вас отключен интернет или включен vpn</string>
+    <string name="server_error">Мы столкнулись с ошибкой в работе нашей инфраструктуры. Мы займемся ее исправлением как можно скорее. Вы можете предоставить допольнительную информацию на Github</string>
+    <string name="unknown_error">Мы столкнулись с неожиданной ошибкой. Пожалуйста, сообщите о ней на Github issues </string>
+    <string name="play_game_with_friends">Играть с другом</string>
+    <string name="play_game_with_bot">Играть с роботом</string>
+    <string name="play_online_game">Играть онлайн</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="invalid_password">Ваш пароль не корректен</string>
+    <string name="invalid_login">Ваш логин не корректен</string>
+    <string name="sign_in">Войдите в аккаунт</string>
+    <string name="no_account_question_mark">Нет аккаунта?</string>
+    <string name="repeat_pass">повторите ваш пароль</string>
+    <string name="passes_do_not_match">Ваши пароли не совпадают</string>
+    <string name="have_account_question_mark">Уже есть аккаунт?</string>
+    <string name="sign_up">Зарегистрируйтесь</string>
+    <string name="login_in_use">Этот логин уже используется</string>
+    <string name="switching_to_next_screen">Переходим на следующий экран...</string>
+    <!--    <string name="tutorial_fly_condition">если у вас нет фигур, чтобы разместить и у вас есть ровно 3 фишки, то вы можете перемещать вашу фиишку из людой клетки в любую другую (пустую)</string>-->
+    <!--    <string name="tutorial_fly_highlighting">Возможные перемещения подсвечиваются после выбора фишки</string>-->
+    <!--    <string name="tutorial_indicator_piece_count">В каждом из кругов в верху написано, сколько фигур соответствующего цвета еще не размещены</string>-->
+    <!--    <string name="tutorial_indicator_piece_move_turn">размер круга показывает, чей сейчас ход</string>-->
+    <!--    <string name="tutorial_lose_condition">если у вас меньше 3 фишек (включая те, которые вы можете разместить, то вы проиграли)</string>-->
+    <!--    <string name="tutorial_normal_moves_condition">если у вас нет неразмещенных фигур и у вас больше 3 фишек, то вы можете двигать фишки в соседние клетки</string>-->
+    <!--    <string name="tutorial_normal_moves_highlighting">возможные ходы подсвечиваются после выбора фишки</string>-->
+    <!--    <string name="tutorial_placement_condition">если у вас есть еще не размещенные фишки, то вы можете поставить их в любую постую клетку</string>-->
+    <!--    <string name="tutorial_placement_highlighting">возможные ходы подсвечиваются</string>-->
+    <!--    <string name="tutorial_removal_moves_explanation">если вы можете убрать фишку противника, то просто нажмите на неё</string>-->
+    <!--    <string name="tutorial_triples_condition">если после вашего хода появляется новая линия из трех фигур, то вы можете убрать фишку противника</string>-->
+    <!--    <string name="tutorial_triples_highlighting">такие линии подсвеченны серым цветом</string>-->
+    <!--    <string name="wrong_pass_or_login">Не правильный пароль или логин</string>-->
+    <!--    <string name="server_error">Ошибка сервера, попробуйте чуть позже  или сообщите об этом на гитхабе</string>-->
+    <!--    <string name="network_error">Запрос к серверу не удался, проверьте ваше соединение</string>-->
+    <!--    <string name="searching_for_game">Поиск игры</string>-->
+    <!--    <string name="auth_app_error">Неопознанная ошибка. Либо версия приложения устарела, либо что-то серьезное сломалось</string>-->
+    <!--    <string name="auth_no_account_found">Аккаунт с таким логином + паролем не был найден</string>-->
+    <!--    <string name="auth_server_error">Ошибка сервера, должно быть, произошло что-то очень плохое. Сообщите об этой ошибке на github</string>-->
+    <!--    <string name="game_expected_waiting_time">предположительное время ожидания:</string>-->
+</resources>

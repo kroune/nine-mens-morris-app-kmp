@@ -1,7 +1,16 @@
 package com.kroune.nine_mens_morris_kmp_app
 
-class JVMPlatform: Platform {
-    override val name: String = "Java ${System.getProperty("java.version")}"
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.IntSize
+
+@Composable
+@OptIn(ExperimentalComposeUiApi::class)
+actual fun getScreenSize(): IntSize {
+    return LocalWindowInfo.current.containerSize
 }
 
-actual fun getPlatform(): Platform = JVMPlatform()
+actual fun <T> Result<T>.recoverNetworkError(networkException: Exception): Result<T> {
+    return this
+}

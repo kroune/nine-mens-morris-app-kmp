@@ -1,4 +1,6 @@
 *.iml
+.fleet
+kotlin-js-store
 .kotlin
 .gradle
 **/build/

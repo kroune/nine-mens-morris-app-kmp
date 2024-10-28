@@ -1,0 +1,44 @@
+<!--suppress LongLine -->
+<resources>
+    <string name="app_name">NineMensMorris</string>
+    <string name="back_icon" translatable="false" />
+    <string name="client_error">We have encountered error in app runtime, it may be caused by an absolute app version. Feel free to report this issue on Github</string>
+    <string name="network_error">Unable to make a network request. May be you have internet disabled or using vpn</string>
+    <string name="server_error">We have encountered error in our infrastructure. We will fix it as soon as possible. Feel free to provide additional info on Github issues </string>
+    <string name="unknown_error">We have encountered unexpected error. Please report it on Github issues </string>
+    <string name="play_game_with_friends">Play with friend</string>
+    <string name="play_game_with_bot">Play with bot</string>
+    <string name="play_online_game">Play online</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="invalid_password">Your password is invalid</string>
+    <string name="invalid_login">Your login is invalid</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="no_account_question_mark">Don\'t have an account?</string>
+    <string name="repeat_pass">Repeat your password</string>
+    <string name="passes_do_not_match">Your passwords do not match</string>
+    <string name="have_account_question_mark">Have an account?</string>
+    <string name="login_in_use">This login is already taken</string>
+    <string name="switching_to_next_screen">Switching to next screen...</string>
+<!--    <string name="tutorial_fly_condition">If you don\'t have any figures to place and your pieces count = 3 you can fly (move to any empty place)</string>-->
+<!--    <string name="tutorial_fly_highlighting">Possible moves are highlighted when you have selected a piece to move</string>-->
+<!--    <string name="tutorial_indicator_piece_count">Each circle at the top shows how many pieces of the following color aren\'t placed yet</string>-->
+<!--    <string name="tutorial_indicator_piece_move_turn">Circle size shows whose turn it is</string>-->
+<!--    <string name="tutorial_lose_condition">If you have less than 3 pieces (including the ones you can place) you lose</string>-->
+<!--    <string name="tutorial_normal_moves_condition">If you don\'t have any figures to place and your pieces count > 3 you can move to the next cell (if it is empty)</string>-->
+<!--    <string name="tutorial_normal_moves_highlighting">Possible moves are highlighted when you have selected a piece to move</string>-->
+<!--    <string name="tutorial_placement_condition">If you have any pieces left you can place them in any empty place</string>-->
+<!--    <string name="tutorial_placement_highlighting">Possible moves are highlighted</string>-->
+<!--    <string name="tutorial_removal_moves_explanation">If you can remove enemies piece simply click on it</string>-->
+<!--    <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>-->
+<!--    <string name="tutorial_triples_highlighting">Rows are highlighted with grey</string>-->
+<!--    <string name="wrong_pass_or_login">Wrong password or login</string>-->
+<!--    <string name="server_error">Server error, pls try later or report this at GitHub</string>-->
+<!--    <string name="network_error">Network request has failed, check your internet connection</string>-->
+<!--    <string name="searching_for_game">Searching for game</string>-->
+<!--    <string name="auth_app_error">Unrecognised error. Either app version is obsolete or something serious broke</string>-->
+<!--    <string name="auth_no_account_found">No account with such login + password found</string>-->
+<!--    <string name="auth_server_error">Server error, something bad must have happened. Report this issue on github</string>-->
+<!--    <string name="game_expected_waiting_time">expected waiting time:</string>-->
+</resources>

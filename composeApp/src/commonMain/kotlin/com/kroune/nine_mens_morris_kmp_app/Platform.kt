@@ -1,7 +1,9 @@
 package com.kroune.nine_mens_morris_kmp_app
 
-interface Platform {
-    val name: String
-}
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.IntSize
 
-expect fun getPlatform(): Platform
+@Composable
+expect fun getScreenSize(): IntSize
+
+expect fun <T> Result<T>.recoverNetworkError(networkException: Exception): Result<T>

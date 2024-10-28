@@ -1,18 +1,25 @@
-package com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote
+package com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.accountInfo
 
 import com.kroune.nine_mens_morris_kmp_app.common.SERVER_ADDRESS
 import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountIdByJwtTokenApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountPictureByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.CreationDateByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.LoginByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.RatingByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
 
-class RemoteAccountInfoDataSource {
-    suspend fun getAccountRatingById(id: Long, jwtToken: String): Result<Long> {
+class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
+    override suspend fun getAccountRatingById(id: Long, jwtToken: String): Result<Long> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/get-rating-by-id"
         return runCatching {
-            val request = network.get("http${SERVER_ADDRESS}${USER_API}/get-rating-by-id") {
+            val request = network.get(route) {
                 method = HttpMethod.Get
                 url {
                     parameters["id"] = id.toString()
@@ -33,6 +40,7 @@ class RemoteAccountInfoDataSource {
                         "[id] parameter is not a long" -> {
                             throw RatingByIdApiResponses.ClientError
                         }
+
                         "[id] parameter is not valid" -> {
                             throw RatingByIdApiResponses.ClientError
                         }
@@ -56,12 +64,18 @@ class RemoteAccountInfoDataSource {
                 }
             }
             Json.decodeFromString<Long>(request.bodyAsText())
+        }.recoverNetworkError(RatingByIdApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
         }
     }
 
-    suspend fun getAccountCreationDateById(id: Long, jwtToken: String): Result<Triple<Int, Int, Int>> {
+    override suspend fun getAccountCreationDateById(
+        id: Long,
+        jwtToken: String
+    ): Result<Triple<Int, Int, Int>> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/get-creation-date-by-id"
         return runCatching {
-            val request = network.get("http${SERVER_ADDRESS}${USER_API}/get-creation-date-by-id") {
+            val request = network.get(route) {
                 method = HttpMethod.Get
                 url {
                     parameters["id"] = id.toString()
@@ -82,6 +96,7 @@ class RemoteAccountInfoDataSource {
                         "[id] parameter is not a long" -> {
                             throw CreationDateByIdApiResponses.ClientError
                         }
+
                         "[id] parameter is not valid" -> {
                             throw CreationDateByIdApiResponses.ClientError
                         }
@@ -105,12 +120,15 @@ class RemoteAccountInfoDataSource {
                 }
             }
             Json.decodeFromString<Triple<Int, Int, Int>>(request.bodyAsText())
+        }.recoverNetworkError(CreationDateByIdApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
         }
     }
 
-    suspend fun getAccountLoginById(id: Long, jwtToken: String): Result<String> {
+    override suspend fun getAccountLoginById(id: Long, jwtToken: String): Result<String> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/get-login-by-id"
         return runCatching {
-            val request = network.get("http${SERVER_ADDRESS}${USER_API}/get-login-by-id") {
+            val request = network.get(route) {
                 method = HttpMethod.Get
                 url {
                     parameters["id"] = id.toString()
@@ -131,6 +149,7 @@ class RemoteAccountInfoDataSource {
                         "[id] parameter is not a long" -> {
                             throw LoginByIdApiResponses.ClientError
                         }
+
                         "[id] parameter is not valid" -> {
                             throw LoginByIdApiResponses.ClientError
                         }
@@ -154,13 +173,16 @@ class RemoteAccountInfoDataSource {
                 }
             }
             Json.decodeFromString<String>(request.bodyAsText())
+        }.recoverNetworkError(LoginByIdApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
         }
     }
 
-    suspend fun getAccountPictureById(id: Long, jwtToken: String): Result<ByteArray> {
+    override suspend fun getAccountPictureById(id: Long, jwtToken: String): Result<ByteArray> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/get-picture-by-id"
         return runCatching {
             val request =
-                network.get("http${SERVER_ADDRESS}${USER_API}/get-picture-by-id") {
+                network.get(route) {
                     method = HttpMethod.Get
                     url {
                         parameters["id"] = id.toString()
@@ -171,18 +193,19 @@ class RemoteAccountInfoDataSource {
                 HttpStatusCode.BadRequest -> {
                     when (request.bodyAsText()) {
                         "no [jwtToken] parameter found" -> {
-                            throw PictureByIdApiResponses.ClientError
+                            throw AccountPictureByIdApiResponses.ClientError
                         }
 
                         "no [id] parameter found" -> {
-                            throw PictureByIdApiResponses.ClientError
+                            throw AccountPictureByIdApiResponses.ClientError
                         }
 
                         "[id] parameter is not a long" -> {
-                            throw PictureByIdApiResponses.ClientError
+                            throw AccountPictureByIdApiResponses.ClientError
                         }
+
                         "[id] parameter is not valid" -> {
-                            throw PictureByIdApiResponses.ClientError
+                            throw AccountPictureByIdApiResponses.ClientError
                         }
                     }
                 }
@@ -190,7 +213,7 @@ class RemoteAccountInfoDataSource {
                 HttpStatusCode.Forbidden -> {
                     when (request.bodyAsText()) {
                         "[jwtToken] parameter is not valid" -> {
-                            throw PictureByIdApiResponses.CredentialsError
+                            throw AccountPictureByIdApiResponses.CredentialsError
                         }
                     }
                 }
@@ -198,18 +221,21 @@ class RemoteAccountInfoDataSource {
                 HttpStatusCode.InternalServerError -> {
                     when (request.bodyAsText()) {
                         "Internal server error" -> {
-                            throw PictureByIdApiResponses.ServerError
+                            throw AccountPictureByIdApiResponses.ServerError
                         }
                     }
                 }
             }
             Json.decodeFromString<ByteArray>(request.bodyAsText())
+        }.recoverNetworkError(AccountPictureByIdApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
         }
     }
 
-    suspend fun getAccountIdByJwtToken(jwtToken: String): Result<Long> {
+    override suspend fun getAccountIdByJwtToken(jwtToken: String): Result<Long> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/get-id-by-jwt-token"
         return runCatching {
-            val request = network.get("http${SERVER_ADDRESS}${USER_API}/get-id-by-jwt-token") {
+            val request = network.get(route) {
                 method = HttpMethod.Get
                 url {
                     parameters["jwtToken"] = jwtToken
@@ -219,7 +245,7 @@ class RemoteAccountInfoDataSource {
                 HttpStatusCode.BadRequest -> {
                     when (request.bodyAsText()) {
                         "no [jwtToken] parameter found" -> {
-                            throw PictureByIdApiResponses.ClientError
+                            throw AccountIdByJwtTokenApiResponses.ClientError
                         }
                     }
                 }
@@ -227,7 +253,7 @@ class RemoteAccountInfoDataSource {
                 HttpStatusCode.Forbidden -> {
                     when (request.bodyAsText()) {
                         "[jwtToken] parameter is not valid" -> {
-                            throw PictureByIdApiResponses.CredentialsError
+                            throw AccountIdByJwtTokenApiResponses.CredentialsError
                         }
                     }
                 }
@@ -235,12 +261,14 @@ class RemoteAccountInfoDataSource {
                 HttpStatusCode.InternalServerError -> {
                     when (request.bodyAsText()) {
                         "Internal server error" -> {
-                            throw PictureByIdApiResponses.ServerError
+                            throw AccountIdByJwtTokenApiResponses.ServerError
                         }
                     }
                 }
             }
             Json.decodeFromString<Long>(request.bodyAsText())
+        }.recoverNetworkError(AccountIdByJwtTokenApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
         }
     }
 }
