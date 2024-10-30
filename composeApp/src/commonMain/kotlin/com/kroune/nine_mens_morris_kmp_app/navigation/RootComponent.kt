@@ -7,12 +7,14 @@ import com.arkivanov.decompose.router.stack.popWhile
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
+import com.kroune.nine_mens_morris_kmp_app.component.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.GameWithFriendScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.*
+import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.*
 import kotlinx.serialization.Serializable
 
 class RootComponent(
@@ -23,7 +25,7 @@ class RootComponent(
     val childStack = childStack(
         source = navigation,
         serializer = Configuration.serializer(),
-        initialConfiguration = Configuration.AppStartAnimation,
+        initialConfiguration = AppStartAnimation,
         handleBackButton = true,
         childFactory = ::createChild
     )
@@ -33,47 +35,47 @@ class RootComponent(
         context: ComponentContext
     ): Child {
         return when (config) {
-            is Configuration.AppStartAnimation -> {
+            is AppStartAnimation -> {
                 AppStartAnimationScreenChild(
                     AppStartAnimationComponent(
                         context,
                         {
-                            navigation.pushNew(Configuration.WelcomeScreen)
+                            navigation.pushNew(WelcomeScreen)
                         }
                     )
                 )
             }
 
-            is Configuration.WelcomeScreen -> {
+            is WelcomeScreen -> {
                 WelcomeScreenChild(
                     WelcomeScreenComponent(
                         context,
                         {
-                            navigation.pushNew(Configuration.GameWithFriendScreen)
+                            navigation.pushNew(GameWithFriendScreen)
                         },
                         {
-//                            navigation.pushNew(Configuration.GameWithBotScreen)
+                            navigation.pushNew(GameWithBotScreen)
                         },
                         {
 //                            navigation.pushNew(Configuration.OnlineGameScreen)
                         },
                         {
-                            navigation.pushNew(Configuration.SignUpScreen() { accountId ->
-                                Configuration.ViewAccountScreen(true, accountId)
+                            navigation.pushNew(SignUpScreen { accountId ->
+                                ViewAccountScreen(true, accountId)
                             })
                         },
                         { accountId ->
-                            navigation.pushNew(Configuration.ViewAccountScreen(true, accountId))
+                            navigation.pushNew(ViewAccountScreen(true, accountId))
                         }
                     )
                 )
             }
 
-            is Configuration.ViewAccountScreen -> {
+            is ViewAccountScreen -> {
                 ViewAccountScreenChild(
                     ViewAccountScreenComponent(
                         {
-                            navigation.popWhile { it != Configuration.WelcomeScreen }
+                            navigation.popWhile { it != WelcomeScreen }
                         },
                         config.isOwnAccount,
                         config.accountId,
@@ -82,11 +84,11 @@ class RootComponent(
                 )
             }
 
-            is Configuration.SignUpScreen -> {
+            is SignUpScreen -> {
                 SignUpScreenChild(
                     SignUpScreenComponent(
                         {
-                            navigation.pushToFront(Configuration.SignInScreen(it))
+                            navigation.pushToFront(SignInScreen(it))
                         },
                         { it: Configuration ->
                             navigation.pushNew(it)
@@ -97,11 +99,11 @@ class RootComponent(
                 )
             }
 
-            is Configuration.SignInScreen -> {
+            is SignInScreen -> {
                 SignInScreenChild(
                     SignInScreenComponent(
                         {
-                            navigation.pushToFront(Configuration.SignUpScreen(it))
+                            navigation.pushToFront(SignUpScreen(it))
                         },
                         { it: Configuration ->
                             navigation.pushNew(it)
@@ -112,9 +114,20 @@ class RootComponent(
                 )
             }
 
-            Configuration.GameWithFriendScreen -> {
+            GameWithFriendScreen -> {
                 GameWithFriendChild(
                     GameWithFriendScreenComponent(
+                        {
+                            TODO()
+                        },
+                        context
+                    )
+                )
+            }
+
+            GameWithBotScreen -> {
+                GameWithBotChild(
+                    GameWithBotScreenComponent(
                         {
                             TODO()
                         },
@@ -132,6 +145,7 @@ class RootComponent(
         data class SignUpScreenChild(val component: SignUpScreenComponent) : Child()
         data class SignInScreenChild(val component: SignInScreenComponent) : Child()
         data class GameWithFriendChild(val component: GameWithFriendScreenComponent) : Child()
+        data class GameWithBotChild(val component: GameWithBotScreenComponent) : Child()
     }
 
     @Serializable
@@ -154,5 +168,8 @@ class RootComponent(
 
         @Serializable
         data object GameWithFriendScreen : Configuration()
+
+        @Serializable
+        data object GameWithBotScreen : Configuration()
     }
 }
