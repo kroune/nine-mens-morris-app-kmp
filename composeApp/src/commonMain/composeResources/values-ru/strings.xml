@@ -20,6 +20,7 @@
     <string name="sign_up">Зарегистрируйтесь</string>
     <string name="login_in_use">Этот логин уже используется</string>
     <string name="switching_to_next_screen">Переходим на следующий экран...</string>
+    <string name="wrong_pass_or_login">Неправильный пароль или логин</string>
     <!--    <string name="tutorial_fly_condition">если у вас нет фигур, чтобы разместить и у вас есть ровно 3 фишки, то вы можете перемещать вашу фиишку из людой клетки в любую другую (пустую)</string>-->
     <!--    <string name="tutorial_fly_highlighting">Возможные перемещения подсвечиваются после выбора фишки</string>-->
     <!--    <string name="tutorial_indicator_piece_count">В каждом из кругов в верху написано, сколько фигур соответствующего цвета еще не размещены</string>-->
@@ -32,7 +33,6 @@
     <!--    <string name="tutorial_removal_moves_explanation">если вы можете убрать фишку противника, то просто нажмите на неё</string>-->
     <!--    <string name="tutorial_triples_condition">если после вашего хода появляется новая линия из трех фигур, то вы можете убрать фишку противника</string>-->
     <!--    <string name="tutorial_triples_highlighting">такие линии подсвеченны серым цветом</string>-->
-    <!--    <string name="wrong_pass_or_login">Не правильный пароль или логин</string>-->
     <!--    <string name="server_error">Ошибка сервера, попробуйте чуть позже  или сообщите об этом на гитхабе</string>-->
     <!--    <string name="network_error">Запрос к серверу не удался, проверьте ваше соединение</string>-->
     <!--    <string name="searching_for_game">Поиск игры</string>-->

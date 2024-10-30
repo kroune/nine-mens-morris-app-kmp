@@ -5,7 +5,10 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.popWhile
 import com.arkivanov.decompose.router.stack.pushNew
+import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
+import com.kroune.nine_mens_morris_kmp_app.component.GameWithFriendScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
@@ -46,7 +49,7 @@ class RootComponent(
                     WelcomeScreenComponent(
                         context,
                         {
-//                            navigation.pushNew(Configuration.GameWithFriendScreen)
+                            navigation.pushNew(Configuration.GameWithFriendScreen)
                         },
                         {
 //                            navigation.pushNew(Configuration.GameWithBotScreen)
@@ -83,12 +86,38 @@ class RootComponent(
                 SignUpScreenChild(
                     SignUpScreenComponent(
                         {
-                            TODO()
+                            navigation.pushToFront(Configuration.SignInScreen(it))
                         },
                         { it: Configuration ->
                             navigation.pushNew(it)
                         },
                         config.nextScreen,
+                        context
+                    )
+                )
+            }
+
+            is Configuration.SignInScreen -> {
+                SignInScreenChild(
+                    SignInScreenComponent(
+                        {
+                            navigation.pushToFront(Configuration.SignUpScreen(it))
+                        },
+                        { it: Configuration ->
+                            navigation.pushNew(it)
+                        },
+                        config.nextScreen,
+                        context
+                    )
+                )
+            }
+
+            Configuration.GameWithFriendScreen -> {
+                GameWithFriendChild(
+                    GameWithFriendScreenComponent(
+                        {
+                            TODO()
+                        },
                         context
                     )
                 )
@@ -101,6 +130,8 @@ class RootComponent(
         data class WelcomeScreenChild(val component: WelcomeScreenComponent) : Child()
         data class ViewAccountScreenChild(val component: ViewAccountScreenComponent) : Child()
         data class SignUpScreenChild(val component: SignUpScreenComponent) : Child()
+        data class SignInScreenChild(val component: SignInScreenComponent) : Child()
+        data class GameWithFriendChild(val component: GameWithFriendScreenComponent) : Child()
     }
 
     @Serializable
@@ -117,5 +148,11 @@ class RootComponent(
 
         @Serializable
         data class SignUpScreen(val nextScreen: (Long) -> Configuration) : Configuration()
+
+        @Serializable
+        data class SignInScreen(val nextScreen: (Long) -> Configuration) : Configuration()
+
+        @Serializable
+        data object GameWithFriendScreen : Configuration()
     }
 }

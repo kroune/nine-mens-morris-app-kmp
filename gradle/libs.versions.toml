@@ -22,6 +22,7 @@ extensionsComposeJetbrains = "2.1.0-compose-experimental-alpha-07"
 decompose = "3.1.0"
 kotlinxSerializationJson = "1.7.3"
 multiplatformSettings = "1.2.0"
+ninemensmorris = "1.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -47,6 +48,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
+ninemensmorris = { module = "io.github.kroune:nineMensMorris", version.ref = "ninemensmorris" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

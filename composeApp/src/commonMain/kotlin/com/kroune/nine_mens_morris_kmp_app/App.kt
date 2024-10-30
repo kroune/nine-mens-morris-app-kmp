@@ -10,6 +10,8 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.GameWithFriendScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.SignInScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
@@ -40,6 +42,14 @@ fun App(component: RootComponent) {
 
                     is RootComponent.Child.SignUpScreenChild -> {
                         SignUpScreen(instance.component)
+                    }
+
+                    is RootComponent.Child.SignInScreenChild -> {
+                        SignInScreen(instance.component)
+                    }
+
+                    is RootComponent.Child.GameWithFriendChild -> {
+                        GameWithFriendScreen(instance.component)
                     }
                 }
             }

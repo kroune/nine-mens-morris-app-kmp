@@ -21,6 +21,7 @@
     <string name="have_account_question_mark">Have an account?</string>
     <string name="login_in_use">This login is already taken</string>
     <string name="switching_to_next_screen">Switching to next screen...</string>
+    <string name="wrong_pass_or_login">Wrong password or login</string>
 <!--    <string name="tutorial_fly_condition">If you don\'t have any figures to place and your pieces count = 3 you can fly (move to any empty place)</string>-->
 <!--    <string name="tutorial_fly_highlighting">Possible moves are highlighted when you have selected a piece to move</string>-->
 <!--    <string name="tutorial_indicator_piece_count">Each circle at the top shows how many pieces of the following color aren\'t placed yet</string>-->
@@ -33,7 +34,6 @@
 <!--    <string name="tutorial_removal_moves_explanation">If you can remove enemies piece simply click on it</string>-->
 <!--    <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>-->
 <!--    <string name="tutorial_triples_highlighting">Rows are highlighted with grey</string>-->
-<!--    <string name="wrong_pass_or_login">Wrong password or login</string>-->
 <!--    <string name="server_error">Server error, pls try later or report this at GitHub</string>-->
 <!--    <string name="network_error">Network request has failed, check your internet connection</string>-->
 <!--    <string name="searching_for_game">Searching for game</string>-->

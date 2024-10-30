@@ -77,6 +77,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.no.arg)
+            implementation(libs.ninemensmorris)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
