@@ -1,6 +1,7 @@
 package com.kroune.nine_mens_morris_kmp_app.component
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.gameStartPosition
@@ -9,14 +10,13 @@ import com.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 
 class GameWithFriendScreenComponent(
-    private val onGameEnd: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private val gameAnalyzeUseCase = GameAnalyzeUseCase()
     private val gameUseCase = GameBoardUseCase(
         mutableStateOf(gameStartPosition),
         onGameEnd = {
-            onGameEnd()
+            gameEnded = true
         }
     )
 
@@ -25,6 +25,7 @@ class GameWithFriendScreenComponent(
     val moveHints by gameUseCase.moveHints
     val gameAnalyzePositions = gameAnalyzeUseCase.positionsValue
     val analyzeDepth by gameAnalyzeUseCase.depthValue
+    var gameEnded by mutableStateOf(false)
 
     fun onEvent(event: GameWithFriendEvent) {
         when (event) {

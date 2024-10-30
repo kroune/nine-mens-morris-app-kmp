@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountIdInteractor
-import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.CheckJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.WelcomeScreenEvent
@@ -40,7 +40,7 @@ class WelcomeScreenComponent(
 
     private fun checkJwtToken(): Job {
         val job = CoroutineScope(Dispatchers.Default).launch {
-            val checkResult = jwtTokenRepositoryInteractor.checkJwtToken()
+            val checkResult = jwtTokenInteractor.checkJwtToken()
             if (checkResult.isSuccess) {
                 isInAccount = checkResult.getOrThrow()
             } else {
@@ -110,7 +110,7 @@ class WelcomeScreenComponent(
             }
             WelcomeScreenEvent.AccountViewButton -> {
                 CoroutineScope(Dispatchers.Default).launch {
-                    if (jwtTokenRepositoryInteractor.getJwtToken() == null) {
+                    if (jwtTokenInteractor.getJwtToken() == null) {
                         withContext(Dispatchers.Main) {
                             onNavigationToAccountRegistrationThenViewAccountScreen()
                         }

@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.component.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.GameWithFriendScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.SearchingForGameScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
@@ -117,9 +118,6 @@ class RootComponent(
             GameWithFriendScreen -> {
                 GameWithFriendChild(
                     GameWithFriendScreenComponent(
-                        {
-                            TODO()
-                        },
                         context
                     )
                 )
@@ -130,6 +128,17 @@ class RootComponent(
                     GameWithBotScreenComponent(
                         {
                             TODO()
+                        },
+                        context
+                    )
+                )
+            }
+
+            SearchingForGameScreen -> {
+                SearchingForGameChild(
+                    SearchingForGameScreenComponent(
+                        { gameId ->
+//                            navigation.pushNew(OnlineGame)
                         },
                         context
                     )
@@ -146,6 +155,7 @@ class RootComponent(
         data class SignInScreenChild(val component: SignInScreenComponent) : Child()
         data class GameWithFriendChild(val component: GameWithFriendScreenComponent) : Child()
         data class GameWithBotChild(val component: GameWithBotScreenComponent) : Child()
+        data class SearchingForGameChild(val component: SearchingForGameScreenComponent) : Child()
     }
 
     @Serializable
@@ -171,5 +181,8 @@ class RootComponent(
 
         @Serializable
         data object GameWithBotScreen : Configuration()
+
+        @Serializable
+        data object SearchingForGameScreen : Configuration()
     }
 }

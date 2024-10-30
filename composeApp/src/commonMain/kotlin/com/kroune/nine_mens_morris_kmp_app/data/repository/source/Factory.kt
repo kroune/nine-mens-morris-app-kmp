@@ -8,11 +8,19 @@ import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.account
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.accountInfo.AccountInfoRepositoryI
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.auth.AuthRepositoryI
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.auth.AuthRepositoryImpl
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.onlineGame.OnlineGameRepositoryI
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.onlineGame.OnlineGameRepositoryImpl
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.searchingForGame.SearchingForGameRepositoryI
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.searchingForGame.SearchingForGameRepositoryImpl
 
-val authRepository: AuthRepositoryI = AuthRepositoryImpl()
+var authRepository: AuthRepositoryI = AuthRepositoryImpl()
 
-val accountInfoRepository: AccountInfoRepositoryI = AccountInfoRepositoryImpl()
+var accountInfoRepository: AccountInfoRepositoryI = AccountInfoRepositoryImpl()
 
-val jwtTokenDataSource: JwtTokenDataSourceI = JwtTokenDataSourceImpl()
+var jwtTokenDataSource: JwtTokenDataSourceI = JwtTokenDataSourceImpl()
 
-val accountIdDataSource: AccountIdDataSourceI = AccountIdDataSourceImpl()
+var accountIdDataSource: AccountIdDataSourceI = AccountIdDataSourceImpl()
+
+var onlineGameRepository: OnlineGameRepositoryI = OnlineGameRepositoryImpl()
+
+var searchingForGameRepository: SearchingForGameRepositoryI = SearchingForGameRepositoryImpl()

@@ -1,7 +1,7 @@
 package com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountId
 
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountInfoInteractor
-import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.accountIdDataSource
 
 class AccountIdInteractorImpl : AccountIdInteractorI {
@@ -12,7 +12,7 @@ class AccountIdInteractorImpl : AccountIdInteractorI {
         if (localAccountId != null) {
             return Result.success(localAccountId)
         }
-        if (jwtTokenRepositoryInteractor.getJwtToken() != null) {
+        if (jwtTokenInteractor.getJwtToken() != null) {
             val remoteAccountId = accountInfoInteractor.getOwnAccountId()
             remoteAccountId.onSuccess {
                 updateAccountId(it)

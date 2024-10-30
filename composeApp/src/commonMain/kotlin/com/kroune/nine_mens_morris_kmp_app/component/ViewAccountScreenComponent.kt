@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.CreationDateByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.PictureByIdApiResponses
@@ -38,7 +38,7 @@ class ViewAccountScreenComponent(
     fun onEvent(event: ViewAccountScreenEvent) {
         when (event) {
             ViewAccountScreenEvent.Logout -> {
-                jwtTokenRepositoryInteractor.logout()
+                jwtTokenInteractor.logout()
                 onNavigationToWelcomeScreen()
             }
         }

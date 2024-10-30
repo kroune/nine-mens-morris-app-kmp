@@ -1,6 +1,6 @@
 package com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.auth
 
-import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.authRepository
 
 class AuthInteractorImpl : AuthInteractorI {
@@ -11,7 +11,7 @@ class AuthInteractorImpl : AuthInteractorI {
         password: String
     ): Result<String> {
         val result = authRemote.login(login, password).onSuccess { jwtToken ->
-            jwtTokenRepositoryInteractor.updateJwtToken(jwtToken)
+            jwtTokenInteractor.updateJwtToken(jwtToken)
         }
         return result
     }
@@ -21,7 +21,7 @@ class AuthInteractorImpl : AuthInteractorI {
         password: String
     ): Result<String> {
         val result = authRemote.register(login, password).onSuccess { jwtToken ->
-            jwtTokenRepositoryInteractor.updateJwtToken(jwtToken)
+            jwtTokenInteractor.updateJwtToken(jwtToken)
         }
         return result
     }
