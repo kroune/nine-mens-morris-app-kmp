@@ -24,6 +24,7 @@
     <string name="wrong_pass_or_login">Неправильный пароль или логин</string>
     <string name="searching_for_game">Поиск игры...</string>
     <string name="game_expected_waiting_time">предположительное время ожидания:</string>
+    <string name="retry">попробовать заново</string>
     <!--    <string name="you_have_lost">Вы проиграли</string>-->
     <!--    <string name="you_have_won">Вы выграли</string>-->
     <!--    <string name="tutorial_fly_condition">если у вас нет фигур, чтобы разместить и у вас есть ровно 3 фишки, то вы можете перемещать вашу фиишку из людой клетки в любую другую (пустую)</string>-->

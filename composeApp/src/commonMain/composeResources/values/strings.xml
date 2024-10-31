@@ -26,6 +26,7 @@
     <string name="game_ended">Game ended</string>
     <string name="searching_for_game">Searching for game...</string>
     <string name="game_expected_waiting_time">expected waiting time:</string>
+    <string name="retry">retry</string>
 <!--    <string name="you_have_lost">You have lost</string>-->
 <!--    <string name="you_have_won">You have won</string>-->
 <!--    <string name="tutorial_fly_condition">If you don\'t have any figures to place and your pieces count = 3 you can fly (move to any empty place)</string>-->

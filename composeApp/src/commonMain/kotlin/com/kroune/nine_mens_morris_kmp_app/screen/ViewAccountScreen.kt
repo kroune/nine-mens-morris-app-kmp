@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -23,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
@@ -37,11 +39,14 @@ import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
+import ninemensmorrisappkmp.composeapp.generated.resources.error
 import ninemensmorrisappkmp.composeapp.generated.resources.network_error
+import ninemensmorrisappkmp.composeapp.generated.resources.retry
 import ninemensmorrisappkmp.composeapp.generated.resources.server_error
 import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -71,11 +76,11 @@ fun ViewAccountScreen(
                     .fillMaxHeight(0.175f)
                     .fillMaxWidth()
             ) {
-                DrawIcon(picture, scope, snackbarHostState)
-                DrawName(name, scope, snackbarHostState)
+                DrawIcon(picture, onEvent, scope, snackbarHostState)
+                DrawName(name, onEvent, scope, snackbarHostState)
             }
-            DrawRating(rating, scope, snackbarHostState)
-            DrawAccountCreationDate(creationDate, scope, snackbarHostState)
+            DrawRating(rating, onEvent, scope, snackbarHostState)
+            DrawAccountCreationDate(creationDate, onEvent, scope, snackbarHostState)
             if (isOwnAccount) {
                 Box(
                     modifier = Modifier
@@ -97,6 +102,7 @@ fun ViewAccountScreen(
 @Composable
 fun DrawRating(
     accountRating: Result<Long>?,
+    onEvent: (ViewAccountScreenEvent) -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState
 ) {
@@ -127,6 +133,26 @@ fun DrawRating(
         }
 
         accountRating.isFailure -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, top = 12.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                IconButton(onClick = {
+                    onEvent(ViewAccountScreenEvent.ReloadRating)
+                }) {
+                    Icon(
+                        painter = painterResource(Res.drawable.error),
+                        contentDescription = "Error",
+                        modifier = Modifier
+                            .padding(start = 12.dp, top = 12.dp)
+                            .fillMaxHeight(0.1f)
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                    )
+                }
+            }
             val exception = accountRating.exceptionOrNull()
             val text: String = when (exception) {
                 !is RatingByIdApiResponses -> {
@@ -153,8 +179,13 @@ fun DrawRating(
                     error("kotlin broke")
                 }
             }
+            val retryText = stringResource(Res.string.retry)
             scope.launch {
-                snackbarHostState.showSnackbar(text)
+                snackbarHostState.showSnackbar(text, retryText).let {
+                    if (it == SnackbarResult.ActionPerformed) {
+                        onEvent(ViewAccountScreenEvent.ReloadRating)
+                    }
+                }
             }
         }
     }
@@ -179,6 +210,7 @@ fun DrawOwnAccountOptions(
 @Composable
 fun DrawAccountCreationDate(
     accountCreationDate: Result<Triple<Int, Int, Int>>?,
+    onEvent: (ViewAccountScreenEvent) -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState
 ) {
@@ -209,6 +241,26 @@ fun DrawAccountCreationDate(
         }
 
         accountCreationDate.isFailure -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, top = 12.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                IconButton(onClick = {
+                    onEvent(ViewAccountScreenEvent.ReloadCreationDate)
+                }) {
+                    Icon(
+                        painter = painterResource(Res.drawable.error),
+                        contentDescription = "Error",
+                        modifier = Modifier
+                            .padding(start = 12.dp, top = 12.dp)
+                            .fillMaxHeight(0.1f)
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                    )
+                }
+            }
             val exception = accountCreationDate.exceptionOrNull()
             val text: String = when (exception) {
                 !is CreationDateByIdApiResponses -> {
@@ -235,8 +287,13 @@ fun DrawAccountCreationDate(
                     error("kotlin broke")
                 }
             }
+            val retryText = stringResource(Res.string.retry)
             scope.launch {
-                snackbarHostState.showSnackbar(text)
+                snackbarHostState.showSnackbar(text, retryText).let {
+                    if (it == SnackbarResult.ActionPerformed) {
+                        onEvent(ViewAccountScreenEvent.ReloadCreationDate)
+                    }
+                }
             }
         }
     }
@@ -246,6 +303,7 @@ fun DrawAccountCreationDate(
 @Composable
 fun DrawIcon(
     pictureByteArray: Result<ByteArray>?,
+    onEvent: (ViewAccountScreenEvent) -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState
 ) {
@@ -273,10 +331,29 @@ fun DrawIcon(
                     .aspectRatio(1f)
                     .clip(CircleShape)
             )
-
         }
 
         pictureByteArray.isFailure -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+                    .padding(start = 12.dp, top = 12.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                IconButton(onClick = {
+                    onEvent(ViewAccountScreenEvent.ReloadIcon)
+                }) {
+                    Icon(
+                        painter = painterResource(Res.drawable.error),
+                        contentDescription = "Error",
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                    )
+                }
+            }
             val exception = pictureByteArray.exceptionOrNull()
             val text: String = when (exception) {
                 !is AccountPictureByIdApiResponses -> {
@@ -303,8 +380,13 @@ fun DrawIcon(
                     error("kotlin broke")
                 }
             }
+            val retryText = stringResource(Res.string.retry)
             scope.launch {
-                snackbarHostState.showSnackbar(text)
+                snackbarHostState.showSnackbar(text, retryText).let {
+                    if (it == SnackbarResult.ActionPerformed) {
+                        onEvent(ViewAccountScreenEvent.ReloadIcon)
+                    }
+                }
             }
         }
     }
@@ -316,6 +398,7 @@ fun DrawIcon(
 @Composable
 fun DrawName(
     accountName: Result<String>?,
+    onEvent: (ViewAccountScreenEvent) -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState
 ) {
@@ -341,6 +424,27 @@ fun DrawName(
         }
 
         accountName.isFailure -> {
+            Box(
+                modifier = Modifier
+                    .padding(start = 12.dp, top = 12.dp)
+                    .fillMaxHeight(0.75f)
+                    .aspectRatio(1f)
+                    .padding(start = 12.dp, top = 12.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                IconButton(onClick = {
+                    onEvent(ViewAccountScreenEvent.ReloadName)
+                }) {
+                    Icon(
+                        painter = painterResource(Res.drawable.error),
+                        contentDescription = "Error",
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                    )
+                }
+            }
             val exception = accountName.exceptionOrNull()
             val text: String = when (exception) {
                 !is LoginByIdApiResponses -> {
@@ -367,8 +471,13 @@ fun DrawName(
                     error("kotlin broke")
                 }
             }
+            val retryText = stringResource(Res.string.retry)
             scope.launch {
-                snackbarHostState.showSnackbar(text)
+                snackbarHostState.showSnackbar(text, retryText).let {
+                    if (it == SnackbarResult.ActionPerformed) {
+                        onEvent(ViewAccountScreenEvent.ReloadName)
+                    }
+                }
             }
         }
     }

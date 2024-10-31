@@ -24,21 +24,35 @@ class ViewAccountScreenComponent(
     private var _accountPicture = mutableStateOf<Result<ByteArray>?>(null)
     var accountPicture by _accountPicture
 
-    init {
-        AccountInfoUseCase(
-            accountId,
-            name = _accountName,
-            rating = _accountRating,
-            creationDate = _accountCreationDate,
-            accountPicture = _accountPicture
-        )
-    }
+    val accountInfoUseCase = AccountInfoUseCase(
+        accountId,
+        name = _accountName,
+        rating = _accountRating,
+        creationDate = _accountCreationDate,
+        accountPicture = _accountPicture
+    )
 
     fun onEvent(event: ViewAccountScreenEvent) {
         when (event) {
             ViewAccountScreenEvent.Logout -> {
                 jwtTokenInteractor.logout()
                 onNavigationToWelcomeScreen()
+            }
+
+            ViewAccountScreenEvent.ReloadCreationDate -> {
+                accountInfoUseCase.reloadCreationDate()
+            }
+
+            ViewAccountScreenEvent.ReloadIcon -> {
+                accountInfoUseCase.reloadPicture()
+            }
+
+            ViewAccountScreenEvent.ReloadName -> {
+                accountInfoUseCase.reloadName()
+            }
+
+            ViewAccountScreenEvent.ReloadRating -> {
+                accountInfoUseCase.reloadRating()
             }
         }
     }
