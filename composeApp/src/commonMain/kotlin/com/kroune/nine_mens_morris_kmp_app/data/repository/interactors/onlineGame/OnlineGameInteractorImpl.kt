@@ -8,31 +8,35 @@ import com.kroune.nine_mens_morris_kmp_app.data.repository.source.onlineGameRepo
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.receiveDeserialized
 import io.ktor.client.plugins.websocket.sendSerialized
+import io.ktor.serialization.WebsocketDeserializeException
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import io.ktor.utils.io.InternalAPI
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import io.ktor.websocket.serialization.receiveDeserializedBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class OnlineGameInteractorImpl : OnlineGameInteractorI {
     val repository = onlineGameRepository
 
     override var receivedIsGreenStatus: Boolean? = null
     override var receivedMovesChannel: Channel<Movement> = Channel()
-    override var movesToSendChannel: Channel<Movement> = Channel()
     override var gameEnded = mutableStateOf<Boolean>(false)
     override var positionReceivedOnConnection: Position? = null
     override var enemyId: Long? = null
-    override var gettingBasicInfoJob = Job()
 
     private var session: DefaultClientWebSocketSession? = null
 
-    override suspend fun connect(gameId: Long) {
+    @OptIn(InternalAPI::class)
+    override suspend fun connect(gameId: Long, channelToSendMoves: Channel<Movement>) {
         val jwtToken = jwtTokenInteractor.getJwtToken()
             ?: error("connect to game function was invoked, but jwt token is null")
 
@@ -40,11 +44,9 @@ class OnlineGameInteractorImpl : OnlineGameInteractorI {
         session = null
         receivedIsGreenStatus = null
         receivedMovesChannel = Channel()
-        movesToSendChannel = Channel()
         gameEnded.value = false
         positionReceivedOnConnection = null
         enemyId = null
-        gettingBasicInfoJob = Job()
 
         session = repository.connectToGame(gameId, jwtToken)
         val incomingFlow = session!!.incoming
@@ -54,21 +56,21 @@ class OnlineGameInteractorImpl : OnlineGameInteractorI {
         positionReceivedOnConnection = session!!.receiveDeserialized<Position>()
         enemyId = (incomingFlow.receive() as Frame.Text).readText().toLong()
 
-        gettingBasicInfoJob.complete()
-
         CoroutineScope(Dispatchers.Default).launch {
-            movesToSendChannel.consumeEach { movement ->
+            channelToSendMoves.consumeEach { movement ->
                 session!!.sendSerialized(movement)
             }
         }
-        while (true) {
-            val move = session!!.receiveDeserialized<Movement>()
-            if (move.startIndex == null && move.endIndex == null) {
-                gameEnded.value = true
-                session!!.close(CloseReason(200, "game ended"))
-                return
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                val move = session!!.receiveDeserialized<Movement>()
+                if (move.startIndex == null && move.endIndex == null) {
+                    gameEnded.value = true
+                    session!!.close(CloseReason(200, "game ended"))
+                    return@launch
+                }
+                receivedMovesChannel.send(move)
             }
-            receivedMovesChannel.send(move)
         }
     }
 

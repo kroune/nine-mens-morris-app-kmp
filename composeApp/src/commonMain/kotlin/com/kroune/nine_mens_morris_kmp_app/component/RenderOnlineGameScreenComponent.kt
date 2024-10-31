@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
+import com.kroune.nineMensMorrisLib.move.Movement
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.onlineGameInteractor
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
@@ -13,18 +14,33 @@ import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class OnlineGameScreenComponent(
     val gameId: Long,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
-    var enemyAccountName by mutableStateOf<Result<String>?>(null)
-    var enemyPictureByteArray by mutableStateOf<Result<ByteArray>?>(null)
-    var enemyAccountRating by mutableStateOf<Result<Long>?>(null)
-    var ownAccountName by mutableStateOf<Result<String>?>(null)
-    var ownPictureByteArray by mutableStateOf<Result<ByteArray>?>(null)
-    var ownAccountRating by mutableStateOf<Result<Long>?>(null)
+    private var _enemyAccountName = mutableStateOf<Result<String>?>(null)
+    var enemyAccountName by _enemyAccountName
+
+    private var _enemyPictureByteArray = mutableStateOf<Result<ByteArray>?>(null)
+    val enemyPictureByteArray by _enemyPictureByteArray
+
+    private var _enemyAccountRating = mutableStateOf<Result<Long>?>(null)
+    var enemyAccountRating by _enemyAccountRating
+
+    private var _ownAccountName = mutableStateOf<Result<String>?>(null)
+    val ownAccountName by _ownAccountName
+
+    private var _ownPictureByteArray = mutableStateOf<Result<ByteArray>?>(null)
+    val ownPictureByteArray by _ownPictureByteArray
+
+    private var _ownAccountRating = mutableStateOf<Result<Long>?>(null)
+    val ownAccountRating by _ownAccountRating
     private val _position = mutableStateOf(
         Position(
             // @formatter:off
@@ -49,31 +65,35 @@ class OnlineGameScreenComponent(
     val gameUseCase = GameBoardUseCase(_position, onGameEnd = {})
     val selectedButton by gameUseCase.selectedButton
     val moveHints by gameUseCase.moveHints
-    val onClick = { index: Int ->
-        with(gameUseCase) {
-            gameUseCase.onClick(index)
-        }
-    }
-    val timeLeft by mutableStateOf(30)
+    var timeLeft by mutableStateOf(30)
+    val channelToSendMoves: Channel<Movement> = Channel()
 
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
             // TODO: handle errors
-            onlineGameInteractor.connect(gameId)
-            onlineGameInteractor.gettingBasicInfoJob.join()
+            onlineGameInteractor.connect(gameId, channelToSendMoves)
             _position.value = onlineGameInteractor.positionReceivedOnConnection!!
             gameUseCase.handleHighLighting()
             _gameEnded = onlineGameInteractor.gameEnded
             _isGreen.value = onlineGameInteractor.receivedIsGreenStatus!!
-            val ownInfo = AccountInfoUseCase(accountIdInteractor.getAccountId().getOrThrow())
-            val enemyInfo = AccountInfoUseCase(onlineGameInteractor.enemyId!!)
-            enemyAccountName = enemyInfo.name
-            enemyPictureByteArray = enemyInfo.accountPicture
-            enemyAccountRating = enemyInfo.rating
-            ownAccountName = ownInfo.name
-            ownPictureByteArray = ownInfo.accountPicture
-            ownAccountRating = ownInfo.rating
+            AccountInfoUseCase(
+                accountIdInteractor.getAccountId().getOrThrow(),
+                needCreationDate = false,
+                name = _ownAccountName,
+                rating = _ownAccountRating,
+                accountPicture = _ownPictureByteArray
+            )
+            AccountInfoUseCase(
+                onlineGameInteractor.enemyId!!,
+                needCreationDate = false,
+                name = _enemyAccountName,
+                rating = _enemyAccountRating,
+                accountPicture = _enemyPictureByteArray
+            )
+            onlineGameInteractor.receivedMovesChannel.receiveAsFlow().onEach {
+                gameUseCase.processMove(it)
+            }.collect()
         }
     }
 
@@ -82,6 +102,26 @@ class OnlineGameScreenComponent(
             OnlineGameScreenEvent.GiveUp -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     onlineGameInteractor.giveUp()
+                }
+            }
+
+            is OnlineGameScreenEvent.Click -> {
+                if (isGreen == gameUseCase.pos.value.pieceToMove) {
+                    val move = gameUseCase.handleClick(event.index)
+                    if (move != null) {
+                        gameUseCase.processMove(move)
+                        gameUseCase.moveHints.value = listOf()
+                        // post our move
+                        CoroutineScope(Dispatchers.Default).launch {
+                            channelToSendMoves.send(move)
+                            timeLeft = 30
+                        }
+                    } else {
+                        gameUseCase.handleHighLighting()
+                    }
+                } else {
+                    // we can't make any move if it isn't our move
+                    gameUseCase.moveHints.value = listOf()
                 }
             }
         }

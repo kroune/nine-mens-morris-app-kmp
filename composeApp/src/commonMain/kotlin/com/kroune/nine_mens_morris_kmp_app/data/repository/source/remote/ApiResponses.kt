@@ -4,7 +4,7 @@ sealed class RatingByIdApiResponses: Exception() {
     data object CredentialsError: RatingByIdApiResponses()
     data object ServerError: RatingByIdApiResponses()
     data object ClientError: RatingByIdApiResponses()
-    data object NetworkError: CheckJwtTokenApiResponses()
+    data object NetworkError: RatingByIdApiResponses()
 }
 
 sealed class CheckJwtTokenApiResponses: Exception() {
@@ -39,13 +39,6 @@ sealed class AccountPictureByIdApiResponses: Exception() {
     data object NetworkError: AccountPictureByIdApiResponses()
     data object ServerError: AccountPictureByIdApiResponses()
     data object ClientError: AccountPictureByIdApiResponses()
-}
-
-sealed class PictureByIdApiResponses: Exception() {
-    data object CredentialsError: PictureByIdApiResponses()
-    data object NetworkError: PictureByIdApiResponses()
-    data object ServerError: PictureByIdApiResponses()
-    data object ClientError: PictureByIdApiResponses()
 }
 
 sealed class LoginApiResponses: Exception() {

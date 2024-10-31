@@ -9,11 +9,9 @@ import kotlinx.coroutines.channels.Channel
 interface OnlineGameInteractorI {
     val receivedIsGreenStatus: Boolean?
     val receivedMovesChannel: Channel<Movement>
-    val movesToSendChannel: Channel<Movement>
     val gameEnded : MutableState<Boolean>
     val positionReceivedOnConnection: Position?
     val enemyId: Long?
-    var gettingBasicInfoJob: CompletableJob
-    suspend fun connect(gameId: Long)
+    suspend fun connect(gameId: Long, channelToSendMoves: Channel<Movement>)
     suspend fun giveUp()
 }

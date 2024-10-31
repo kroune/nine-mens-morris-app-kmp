@@ -113,7 +113,7 @@ fun OnlineGameScreen(
                     pos = component.position,
                     selectedButton = component.selectedButton,
                     moveHints = component.moveHints,
-                    onClick = component.onClick
+                    onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
                 )
             }
 //            RenderUndoRedo(handleUndo = handleUndo, handleRedo = handleRedo)

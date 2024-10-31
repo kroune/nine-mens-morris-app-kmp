@@ -6,6 +6,7 @@
     <string name="network_error">Unable to make a network request. May be you have internet disabled or using vpn</string>
     <string name="server_error">We have encountered error in our infrastructure. We will fix it as soon as possible. Feel free to provide additional info on Github issues </string>
     <string name="unknown_error">We have encountered unexpected error. Please report it on Github issues </string>
+    <string name="credentials_error">We have encountered an error with your credentials. Try to relaunch app</string>
     <string name="play_game_with_friends">Play with friend</string>
     <string name="play_game_with_bot">Play with bot</string>
     <string name="play_online_game">Play online</string>

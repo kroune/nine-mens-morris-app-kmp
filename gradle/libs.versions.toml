@@ -22,7 +22,7 @@ extensionsComposeJetbrains = "2.1.0-compose-experimental-alpha-07"
 decompose = "3.1.0"
 kotlinxSerializationJson = "1.7.3"
 multiplatformSettings = "1.2.0"
-ninemensmorris = "1.0.0"
+ninemensmorris = "1.0.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

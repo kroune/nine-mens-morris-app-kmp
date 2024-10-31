@@ -5,6 +5,7 @@
     <string name="network_error">Не удалось сделать запрос в сеть. Возможно у вас отключен интернет или включен vpn</string>
     <string name="server_error">Мы столкнулись с ошибкой в работе нашей инфраструктуры. Мы займемся ее исправлением как можно скорее. Вы можете предоставить допольнительную информацию на Github</string>
     <string name="unknown_error">Мы столкнулись с неожиданной ошибкой. Пожалуйста, сообщите о ней на Github issues </string>
+    <string name="credentials_error">Мы столкнулись с ошибкой связанной с вашими данными. Попробуйте перезапустить приложение</string>
     <string name="play_game_with_friends">Играть с другом</string>
     <string name="play_game_with_bot">Играть с роботом</string>
     <string name="play_online_game">Играть онлайн</string>
