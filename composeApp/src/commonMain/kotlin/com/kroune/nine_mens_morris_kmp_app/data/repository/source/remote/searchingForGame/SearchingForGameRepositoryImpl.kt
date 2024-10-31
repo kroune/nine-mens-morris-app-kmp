@@ -24,6 +24,7 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
             }) {
                 session = this
                 gettingSessionJob.complete()
+                closeReason.join()
             }
         }
         gettingSessionJob.join()

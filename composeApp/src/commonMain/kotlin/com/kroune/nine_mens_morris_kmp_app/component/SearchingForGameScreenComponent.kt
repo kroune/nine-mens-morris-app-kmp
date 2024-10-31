@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SearchingForGameScreenComponent(
     onGameFind: (Long) -> Unit,
@@ -25,7 +26,9 @@ class SearchingForGameScreenComponent(
             searchingForGameInteractor.channel.consumeEach {
                 expectedWaitingTime = it
             }
-            onGameFind(searchingForGameInteractor.gameId!!)
+            withContext(Dispatchers.Main) {
+                onGameFind(searchingForGameInteractor.gameId!!)
+            }
         }
     }
 

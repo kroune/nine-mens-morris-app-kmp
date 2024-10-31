@@ -24,6 +24,7 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                 }) {
                 session = this
                 gettingSessionJob.complete()
+                closeReason.join()
             }
         }
         gettingSessionJob.join()

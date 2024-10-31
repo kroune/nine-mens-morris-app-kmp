@@ -84,7 +84,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
                     }
                 }
 
-                HttpStatusCode.Forbidden -> {
+                HttpStatusCode.Unauthorized -> {
                     when (request.bodyAsText()) {
                         "login + password aren't present in the db" -> {
                             throw LoginApiResponses.CredentialsError

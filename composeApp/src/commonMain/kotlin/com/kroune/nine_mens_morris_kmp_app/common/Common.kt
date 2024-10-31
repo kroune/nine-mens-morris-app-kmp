@@ -25,6 +25,14 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.pingInterval
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 class BlackGrayColors : ButtonColors {
     @Composable
@@ -50,7 +58,27 @@ class TransparentColors : ButtonColors {
     }
 }
 
-val network = HttpClient()
+val network = HttpClient() {
+    install(HttpRequestRetry) {
+        // retry on timeout
+        retryIf(maxRetries = 5) { request, response ->
+            response.status.value == 408
+        }
+        retryOnExceptionIf(maxRetries = 5) { request, exception ->
+            exception is HttpRequestTimeoutException
+        }
+        exponentialDelay()
+    }
+    install(HttpTimeout) {
+        this.requestTimeoutMillis = 10 * 1000
+        this.socketTimeoutMillis = 30 * 60 * 1000
+        this.connectTimeoutMillis = 10 * 1000
+    }
+    install(WebSockets) {
+        contentConverter = KotlinxWebsocketSerializationConverter(Json)
+        pingInterval = 3.seconds
+    }
+}
 
 /**
  * The server's address.

@@ -54,7 +54,7 @@ class SignInScreenComponent(
                     }
                 }
             }
-            loginResult = (jwtToken as Result<*>?)
+            loginResult = jwtToken
             loginInProcess = false
         }
     }

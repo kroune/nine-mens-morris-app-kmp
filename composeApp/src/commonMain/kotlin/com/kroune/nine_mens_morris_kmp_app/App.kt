@@ -12,6 +12,7 @@ import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.GameWithBotScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.GameWithFriendScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.OnlineGameScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.SearchingForGameScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.SignInScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.SignUpScreen
@@ -60,6 +61,10 @@ fun App(component: RootComponent) {
 
                     is RootComponent.Child.SearchingForGameChild -> {
                         SearchingForGameScreen(instance.component)
+                    }
+
+                    is RootComponent.Child.OnlineGameChild -> {
+                        OnlineGameScreen(instance.component)
                     }
                 }
             }

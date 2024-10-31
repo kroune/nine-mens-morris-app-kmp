@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntSize
+import java.io.IOException
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
@@ -12,5 +13,8 @@ actual fun getScreenSize(): IntSize {
 }
 
 actual fun <T> Result<T>.recoverNetworkError(networkException: Exception): Result<T> {
+    if (networkException is IOException) {
+        return Result.failure(networkException)
+    }
     return this
 }

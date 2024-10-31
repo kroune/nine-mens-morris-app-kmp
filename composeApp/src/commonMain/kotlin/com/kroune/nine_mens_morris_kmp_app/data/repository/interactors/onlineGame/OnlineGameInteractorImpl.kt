@@ -14,6 +14,7 @@ import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
@@ -21,32 +22,45 @@ import kotlinx.coroutines.launch
 class OnlineGameInteractorImpl : OnlineGameInteractorI {
     val repository = onlineGameRepository
 
-    val receivedIsGreenStatus = mutableStateOf<Boolean?>(null)
-    val receivedMovesChannel: Channel<Movement> = Channel()
-    val movesToSendChannel: Channel<Movement> = Channel()
-    val gameEnded = mutableStateOf<Boolean>(false)
-    val positionReceivedOnConnection = mutableStateOf<Position?>(null)
-    val enemyId = mutableStateOf<Long?>(null)
+    override var receivedIsGreenStatus: Boolean? = null
+    override var receivedMovesChannel: Channel<Movement> = Channel()
+    override var movesToSendChannel: Channel<Movement> = Channel()
+    override var gameEnded = mutableStateOf<Boolean>(false)
+    override var positionReceivedOnConnection: Position? = null
+    override var enemyId: Long? = null
+    override var gettingBasicInfoJob = Job()
 
     private var session: DefaultClientWebSocketSession? = null
 
     override suspend fun connect(gameId: Long) {
         val jwtToken = jwtTokenInteractor.getJwtToken()
             ?: error("connect to game function was invoked, but jwt token is null")
+
+        session?.close()
+        session = null
+        receivedIsGreenStatus = null
+        receivedMovesChannel = Channel()
+        movesToSendChannel = Channel()
+        gameEnded.value = false
+        positionReceivedOnConnection = null
+        enemyId = null
+        gettingBasicInfoJob = Job()
+
         session = repository.connectToGame(gameId, jwtToken)
         val incomingFlow = session!!.incoming
+
+        receivedIsGreenStatus =
+            (incomingFlow.receive() as Frame.Text).readText().toBooleanStrict()
+        positionReceivedOnConnection = session!!.receiveDeserialized<Position>()
+        enemyId = (incomingFlow.receive() as Frame.Text).readText().toLong()
+
+        gettingBasicInfoJob.complete()
 
         CoroutineScope(Dispatchers.Default).launch {
             movesToSendChannel.consumeEach { movement ->
                 session!!.sendSerialized(movement)
             }
         }
-
-        receivedIsGreenStatus.value =
-            (incomingFlow.receive() as Frame.Text).readText().toBooleanStrict()
-        positionReceivedOnConnection.value = session!!.receiveDeserialized<Position>()
-        enemyId.value = (incomingFlow.receive() as Frame.Text).readText().toLong()
-
         while (true) {
             val move = session!!.receiveDeserialized<Movement>()
             if (move.startIndex == null && move.endIndex == null) {

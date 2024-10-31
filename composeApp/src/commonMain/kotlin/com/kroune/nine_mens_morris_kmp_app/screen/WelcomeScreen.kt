@@ -48,6 +48,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.logged_in
 import ninemensmorrisappkmp.composeapp.generated.resources.no_account
@@ -173,10 +174,10 @@ private fun RenderMainScreen(
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         checkingJwtTokenJob.join()
-                        if (isInAccount == true) {
-                            onEvent(WelcomeScreenEvent.ClickOnlineGameButton)
-                        } else {
+                        if (isInAccount == false) {
                             checkingJwtTokenJob.join()
+                        }
+                        withContext(Dispatchers.Main) {
                             onEvent(WelcomeScreenEvent.ClickOnlineGameButton)
                         }
                     }

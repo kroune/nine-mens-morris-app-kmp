@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.component.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.GameWithFriendScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.OnlineGameScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SearchingForGameScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.SignUpScreenComponent
@@ -16,6 +17,7 @@ import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.*
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.*
+import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.SearchingForGameScreen
 import kotlinx.serialization.Serializable
 
 class RootComponent(
@@ -58,11 +60,16 @@ class RootComponent(
                             navigation.pushNew(GameWithBotScreen)
                         },
                         {
-//                            navigation.pushNew(Configuration.OnlineGameScreen)
+                            navigation.pushNew(SearchingForGameScreen)
                         },
                         {
                             navigation.pushNew(SignUpScreen { accountId ->
                                 ViewAccountScreen(true, accountId)
+                            })
+                        },
+                        {
+                            navigation.pushNew(SignUpScreen { accountId ->
+                                SearchingForGameScreen
                             })
                         },
                         { accountId ->
@@ -126,9 +133,6 @@ class RootComponent(
             GameWithBotScreen -> {
                 GameWithBotChild(
                     GameWithBotScreenComponent(
-                        {
-                            TODO()
-                        },
                         context
                     )
                 )
@@ -138,8 +142,17 @@ class RootComponent(
                 SearchingForGameChild(
                     SearchingForGameScreenComponent(
                         { gameId ->
-//                            navigation.pushNew(OnlineGame)
+                            navigation.pushNew(OnlineGameScreen(gameId))
                         },
+                        context
+                    )
+                )
+            }
+
+            is OnlineGameScreen -> {
+                OnlineGameChild(
+                    OnlineGameScreenComponent(
+                        config.gameId,
                         context
                     )
                 )
@@ -156,6 +169,7 @@ class RootComponent(
         data class GameWithFriendChild(val component: GameWithFriendScreenComponent) : Child()
         data class GameWithBotChild(val component: GameWithBotScreenComponent) : Child()
         data class SearchingForGameChild(val component: SearchingForGameScreenComponent) : Child()
+        data class OnlineGameChild(val component: OnlineGameScreenComponent): Child()
     }
 
     @Serializable
@@ -184,5 +198,8 @@ class RootComponent(
 
         @Serializable
         data object SearchingForGameScreen : Configuration()
+
+        @Serializable
+        data class OnlineGameScreen(val gameId: Long): Configuration()
     }
 }

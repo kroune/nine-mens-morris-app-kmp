@@ -33,6 +33,7 @@ class WelcomeScreenComponent(
     private val onNavigationToGameWithBotScreen: () -> Unit,
     private val onNavigationToOnlineGameScreen: () -> Unit,
     private val onNavigationToAccountRegistrationThenViewAccountScreen: () -> Unit,
+    private val onNavigationToAccountRegistrationThenOnlineGameScreen: () -> Unit,
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit
 ) : ComponentContext by componentContext {
 
@@ -108,6 +109,7 @@ class WelcomeScreenComponent(
             WelcomeScreenEvent.ClickGameWithFriendButton -> {
                 onNavigationToGameWithFriendScreen()
             }
+
             WelcomeScreenEvent.AccountViewButton -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     if (jwtTokenInteractor.getJwtToken() == null) {
@@ -156,9 +158,21 @@ class WelcomeScreenComponent(
             WelcomeScreenEvent.ClickGameWithBotButton -> {
                 onNavigationToGameWithBotScreen()
             }
+
             WelcomeScreenEvent.ClickOnlineGameButton -> {
-                onNavigationToOnlineGameScreen()
+                CoroutineScope(Dispatchers.Default).launch {
+                    if (jwtTokenInteractor.getJwtToken() == null) {
+                        withContext(Dispatchers.Main) {
+                            onNavigationToAccountRegistrationThenOnlineGameScreen()
+                        }
+                        return@launch
+                    }
+                    withContext(Dispatchers.Main) {
+                        onNavigationToOnlineGameScreen()
+                    }
+                }
             }
+
             WelcomeScreenEvent.CloseTutorial -> {
                 hasSeenTutorial = true
                 Settings().putBoolean("hasSeenTutorial", true)

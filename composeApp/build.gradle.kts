@@ -74,6 +74,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.decompose.jetbrains)
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.no.arg)

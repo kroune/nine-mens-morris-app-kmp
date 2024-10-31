@@ -14,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GameWithBotScreenComponent(
-    private val onGameEnd: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
 
@@ -46,7 +45,6 @@ class GameWithBotScreenComponent(
             }
         },
         onGameEnd = {
-            onGameEnd()
         }
     )
 
