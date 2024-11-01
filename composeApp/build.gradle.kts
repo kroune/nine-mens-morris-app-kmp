@@ -38,10 +38,7 @@ kotlin {
         }
     }
     
-    jvm("desktop") {
-        java.sourceCompatibility = JavaVersion.VERSION_21
-        java.targetCompatibility = JavaVersion.VERSION_21
-    }
+    jvm("desktop")
     
     listOf(
         iosX64(),
