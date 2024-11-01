@@ -24,6 +24,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -45,6 +49,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.common.ParallelogramShape
 import com.kroune.nine_mens_morris_kmp_app.common.triangleShape
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.getScreenSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
@@ -54,11 +59,17 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.client_error
+import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.logged_in
+import ninemensmorrisappkmp.composeapp.generated.resources.network_error
 import ninemensmorrisappkmp.composeapp.generated.resources.no_account
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_bot
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_friends
 import ninemensmorrisappkmp.composeapp.generated.resources.play_online_game
+import ninemensmorrisappkmp.composeapp.generated.resources.retry
+import ninemensmorrisappkmp.composeapp.generated.resources.server_error
+import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.min
@@ -67,60 +78,104 @@ import kotlin.math.min
 fun WelcomeScreen(
     component: WelcomeScreenComponent
 ) {
-    val isInAccount = component.isInAccount
-    val checkingJwtTokenJob = component.checkingJwtTokenJob.collectAsStateWithLifecycle().value
-    val onEvent: (WelcomeScreenEvent) -> Unit = { component.onEvent(it) }
-    val hasSeen = component.hasSeenTutorial
-    val viewAccountDataLoadingOverlay = remember { mutableStateOf(false) }
-    val playOnlineGameOverlay = remember { mutableStateOf(false) }
-    val coroutine = rememberCoroutineScope()
-    // we check this to prevent race condition, since if user is searching for game
-    // viewing account gets less priority
-    if (viewAccountDataLoadingOverlay.value && !playOnlineGameOverlay.value) {
-        HandleAccountViewOverlay(
-            checkingJwtTokenJob,
-            onEvent
-        )
-    }
-    if (playOnlineGameOverlay.value) {
-        HandleOverlay()
-    }
-    val scrollState = rememberScrollState(if (!hasSeen) Int.MAX_VALUE else 0)
-    val topScreen = remember { mutableStateOf(true) }
-    if (scrollState.value == 0) {
-        onEvent(WelcomeScreenEvent.CloseTutorial)
-    }
-    class CustomFlingBehaviour : FlingBehavior {
-        override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
-            val progress = scrollState.value.toFloat() / scrollState.maxValue
-            val scrollUp =
-                (topScreen.value && progress < 0.15f) || (!topScreen.value && progress <= 0.85f)
-            topScreen.value = scrollUp
-            coroutine.launch {
-                scrollState.animateScrollTo(
-                    if (scrollUp) 0 else scrollState.maxValue,
-                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                )
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        backgroundColor = Color.Transparent
+    ) { contentPadding ->
+        val isInAccount = component.isInAccount
+        val checkingJwtTokenJob = component.checkingJwtTokenJob.collectAsStateWithLifecycle().value
+        val onEvent: (WelcomeScreenEvent) -> Unit = { component.onEvent(it) }
+        val hasSeen = component.hasSeenTutorial
+        val viewAccountDataLoadingOverlay = remember { mutableStateOf(false) }
+        val playOnlineGameOverlay = remember { mutableStateOf(false) }
+        val coroutine = rememberCoroutineScope()
+        // we check this to prevent race condition, since if user is searching for game
+        // viewing account gets less priority
+        if (viewAccountDataLoadingOverlay.value && !playOnlineGameOverlay.value) {
+            HandleAccountViewOverlay(
+                checkingJwtTokenJob,
+                onEvent
+            )
+        }
+        if (playOnlineGameOverlay.value) {
+            HandleOverlay()
+        }
+        val scrollState = rememberScrollState(if (!hasSeen) Int.MAX_VALUE else 0)
+        val topScreen = remember { mutableStateOf(true) }
+        if (scrollState.value == 0) {
+            onEvent(WelcomeScreenEvent.CloseTutorial)
+        }
+        class CustomFlingBehaviour : FlingBehavior {
+            override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+                val progress = scrollState.value.toFloat() / scrollState.maxValue
+                val scrollUp =
+                    (topScreen.value && progress < 0.15f) || (!topScreen.value && progress <= 0.85f)
+                topScreen.value = scrollUp
+                coroutine.launch {
+                    scrollState.animateScrollTo(
+                        if (scrollUp) 0 else scrollState.maxValue,
+                        animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                    )
+                }
+                return 0f
             }
-            return 0f
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(
+                    state = scrollState, flingBehavior = CustomFlingBehaviour()
+                )
+        ) {
+            RenderMainScreen(
+                isInAccount,
+                checkingJwtTokenJob,
+                viewAccountDataLoadingOverlay,
+                onEvent
+            )
+            TutorialScreen()
         }
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(
-                state = scrollState, flingBehavior = CustomFlingBehaviour()
-            )
-    ) {
-        RenderMainScreen(
-            isInAccount,
-            checkingJwtTokenJob,
-            viewAccountDataLoadingOverlay,
-            onEvent
-        )
-        TutorialScreen()
+
+    val exception = component.accountIdFailure ?: return
+    val text: String = when (exception) {
+        !is AccountIdByJwtTokenApiResponses -> {
+            stringResource(Res.string.unknown_error)
+        }
+
+        is AccountIdByJwtTokenApiResponses.NetworkError -> {
+            stringResource(Res.string.network_error)
+        }
+
+        AccountIdByJwtTokenApiResponses.ClientError -> {
+            stringResource(Res.string.client_error)
+        }
+
+        AccountIdByJwtTokenApiResponses.CredentialsError -> {
+            stringResource(Res.string.credentials_error)
+        }
+
+        AccountIdByJwtTokenApiResponses.ServerError -> {
+            stringResource(Res.string.server_error)
+        }
+
+        else -> {
+            error("kotlin broke")
+        }
     }
-    component.popupToDraw()
+    val retryText = stringResource(Res.string.retry)
+    val scope = rememberCoroutineScope()
+    scope.launch {
+        snackbarHostState.showSnackbar(text, retryText).let {
+            if (it == SnackbarResult.ActionPerformed) {
+                component.onEvent(WelcomeScreenEvent.RetryGettingAccountId)
+            }
+        }
+    }
 }
 
 /**
@@ -129,7 +184,7 @@ fun WelcomeScreen(
  */
 @Composable
 fun RenderMainScreen(
-    isInAccount: Boolean?,
+    isInAccount: Result<Boolean>?,
     checkingJwtTokenJob: Job,
     viewAccountDataLoadingOverlay: MutableState<Boolean>,
     onEvent: (WelcomeScreenEvent) -> Unit
@@ -191,7 +246,7 @@ fun RenderMainScreen(
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         checkingJwtTokenJob.join()
-                        if (isInAccount == false) {
+                        if (isInAccount == null) {
                             checkingJwtTokenJob.join()
                         }
                         withContext(Dispatchers.Main) {
@@ -227,7 +282,7 @@ fun RenderMainScreen(
 @Composable
 private fun BoxScope.ViewAccountElement(
     viewAccountDataLoadingOverlay: MutableState<Boolean>,
-    isInAccount: Boolean?
+    isInAccount: Result<Boolean>?
 ) {
     val coroutine = rememberCoroutineScope()
     val screenSize = getScreenSize()
@@ -297,7 +352,8 @@ private fun BoxScope.ViewAccountElement(
             },
             modifier = Modifier.size((startTriangleLength / 2f).dp)
         ) {
-            when (isInAccount) {
+            // TODO: better error handling
+            when (isInAccount?.getOrDefault(false)) {
                 true -> {
                     Icon(painterResource(Res.drawable.logged_in), "logged in")
                 }

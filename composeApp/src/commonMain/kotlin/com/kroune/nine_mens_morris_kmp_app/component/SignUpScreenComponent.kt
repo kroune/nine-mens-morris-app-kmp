@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.authRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.RegisterApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.SignUpScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration
@@ -54,8 +55,24 @@ class SignUpScreenComponent(
             jwtToken.onSuccess {
                 val accountId = accountIdInteractor.getAccountId()
                 accountId.onFailure {
-                    // TODO: refactor this
-                    registrationResult = Result.failure<Any>(RegisterApiResponses.ClientError)
+                    when (it) {
+                        !is AccountIdByJwtTokenApiResponses -> {
+                            registrationResult = Result.failure<Any>(RegisterApiResponses.ClientError)
+                        }
+                        is AccountIdByJwtTokenApiResponses.NetworkError -> {
+                            registrationResult = Result.failure<Any>(RegisterApiResponses.NetworkError)
+                        }
+                        is AccountIdByJwtTokenApiResponses.ServerError -> {
+                            registrationResult = Result.failure<Any>(RegisterApiResponses.ServerError)
+                        }
+                        is AccountIdByJwtTokenApiResponses.ClientError -> {
+                            registrationResult = Result.failure<Any>(RegisterApiResponses.ClientError)
+                        }
+                        // first stage was successful (credentials are valid), but the second failed
+                        is AccountIdByJwtTokenApiResponses.CredentialsError -> {
+                            registrationResult = Result.failure<Any>(RegisterApiResponses.ClientError)
+                        }
+                    }
                 }
                 accountId.onSuccess {
                     withContext(Dispatchers.Main) {
@@ -63,7 +80,7 @@ class SignUpScreenComponent(
                     }
                 }
             }
-            registrationResult = (jwtToken as Result<*>?)
+            registrationResult = jwtToken
             registrationInProcess = false
         }
     }

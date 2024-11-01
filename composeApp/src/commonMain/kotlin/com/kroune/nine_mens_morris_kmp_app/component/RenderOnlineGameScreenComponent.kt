@@ -15,10 +15,13 @@ import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.time.Duration.Companion.seconds
 
 class OnlineGameScreenComponent(
     val gameId: Long,
@@ -62,11 +65,11 @@ class OnlineGameScreenComponent(
     val gameEnded by _gameEnded
     private val _isGreen = mutableStateOf(false)
     val isGreen by _isGreen
-    val gameUseCase = GameBoardUseCase(_position, onGameEnd = {})
+    private val gameUseCase = GameBoardUseCase(_position, onGameEnd = {})
     val selectedButton by gameUseCase.selectedButton
     val moveHints by gameUseCase.moveHints
     var timeLeft by mutableStateOf(30)
-    val channelToSendMoves: Channel<Movement> = Channel()
+    private val channelToSendMoves: Channel<Movement> = Channel()
 
 
     init {
@@ -94,6 +97,12 @@ class OnlineGameScreenComponent(
             onlineGameInteractor.receivedMovesChannel.receiveAsFlow().onEach {
                 gameUseCase.processMove(it)
             }.collect()
+        }
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                timeLeft = max(timeLeft - 1, 0)
+                delay(1.seconds)
+            }
         }
     }
 

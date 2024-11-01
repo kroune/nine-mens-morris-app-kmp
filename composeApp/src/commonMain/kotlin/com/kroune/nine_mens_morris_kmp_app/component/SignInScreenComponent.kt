@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.authRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.SignInScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration
@@ -20,10 +21,10 @@ class SignInScreenComponent(
     val nextScreen: (Long) -> Configuration,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
-    var username by mutableStateOf<String>("")
-    var usernameValid by mutableStateOf<Boolean>(false)
-    var password by mutableStateOf<String>("")
-    var passwordValid by mutableStateOf<Boolean>(false)
+    var username by mutableStateOf("")
+    var usernameValid by mutableStateOf(false)
+    var password by mutableStateOf("")
+    var passwordValid by mutableStateOf(false)
 
     var loginResult: Result<*>? by mutableStateOf(null)
     var loginInProcess by mutableStateOf(false)
@@ -45,8 +46,27 @@ class SignInScreenComponent(
             jwtToken.onSuccess {
                 val accountId = accountIdInteractor.getAccountId()
                 accountId.onFailure {
-                    // TODO: refactor this
-                    loginResult = Result.failure<Any>(LoginByIdApiResponses.ClientError)
+                    when (it) {
+                        !is AccountIdByJwtTokenApiResponses -> {
+                            loginResult = Result.failure<Any>(LoginByIdApiResponses.ClientError)
+                        }
+
+                        is AccountIdByJwtTokenApiResponses.NetworkError -> {
+                            loginResult = Result.failure<Any>(LoginByIdApiResponses.NetworkError)
+                        }
+
+                        is AccountIdByJwtTokenApiResponses.ServerError -> {
+                            loginResult = Result.failure<Any>(LoginByIdApiResponses.ServerError)
+                        }
+
+                        is AccountIdByJwtTokenApiResponses.ClientError -> {
+                            loginResult = Result.failure<Any>(LoginByIdApiResponses.ClientError)
+                        }
+                        // first stage was successful (credentials are valid), but the second failed
+                        is AccountIdByJwtTokenApiResponses.CredentialsError -> {
+                            loginResult = Result.failure<Any>(LoginByIdApiResponses.ClientError)
+                        }
+                    }
                 }
                 accountId.onSuccess {
                     withContext(Dispatchers.Main) {
