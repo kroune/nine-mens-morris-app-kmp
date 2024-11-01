@@ -97,7 +97,7 @@ class WelcomeScreenComponent(
             _checkingJwtTokenJob.value
         )
 
-    var popupToDraw by mutableStateOf(
+    var popupToDraw: @Composable () -> Unit by mutableStateOf(
         @Composable {
         }
     )
@@ -183,8 +183,9 @@ class WelcomeScreenComponent(
     init {
         backHandler.register(object : BackCallback() {
             override fun onBack() {
-                if (popupToDraw != @Composable {}) {
-                    popupToDraw = @Composable {}
+                val emptyPopUp: @Composable () -> Unit = @Composable {}
+                if (popupToDraw != emptyPopUp) {
+                    popupToDraw = emptyPopUp
                 } else {
                     this.onBack()
                 }

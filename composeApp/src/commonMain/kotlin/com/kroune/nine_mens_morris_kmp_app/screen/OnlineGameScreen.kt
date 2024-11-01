@@ -3,9 +3,6 @@ package com.kroune.nine_mens_morris_kmp_app.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,19 +21,14 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
@@ -51,7 +42,6 @@ import ninemensmorrisappkmp.composeapp.generated.resources.baseline_account_circ
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.roundToInt
 
 /**
  * renders online game screen
@@ -60,22 +50,12 @@ import kotlin.math.roundToInt
 fun OnlineGameScreen(
     component: OnlineGameScreenComponent
 ) {
-    var offsetY by remember { mutableStateOf(0f) }
-    var isDraggingEnabled by remember { mutableStateOf(false) }
-
-    fun toggleDragging() {
-        isDraggingEnabled = !isDraggingEnabled
-    }
-
-    val density = LocalDensity.current.density
     AppTheme {
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             PlayersUI(
                 pos = component.position,
-                dragDesk = isDraggingEnabled,
-                onToggleDragging = { toggleDragging() },
                 timeLeft = component.timeLeft,
                 isGreen = component.isGreen,
                 ownAccountName = component.ownAccountName,
@@ -98,24 +78,12 @@ fun OnlineGameScreen(
                     displayGiveUpConfirmation.value = true
                 }
             }
-
-            Box(modifier = Modifier
-                .offset { IntOffset(0, offsetY.roundToInt()) }
-                .draggable(
-                    state = rememberDraggableState { delta ->
-                        if (isDraggingEnabled) {
-                            offsetY = (offsetY + delta).coerceIn(-50 * density, 200 * density)
-                        }
-                    }, orientation = Orientation.Vertical
-                )
-            ) {
-                RenderGameBoard(
-                    pos = component.position,
-                    selectedButton = component.selectedButton,
-                    moveHints = component.moveHints,
-                    onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
-                )
-            }
+            RenderGameBoard(
+                pos = component.position,
+                selectedButton = component.selectedButton,
+                moveHints = component.moveHints,
+                onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
+            )
 //            RenderUndoRedo(handleUndo = handleUndo, handleRedo = handleRedo)
         }
     }
@@ -178,7 +146,7 @@ fun PlayerCard(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-            .padding(8.dp)
+            .padding(10.dp)
     ) {
         when {
             pictureByteArray == null -> {
@@ -214,9 +182,11 @@ fun PlayerCard(
                 playerName == null -> {
                     Text(text = "loading info...", fontSize = 16.sp)
                 }
+
                 playerName.isSuccess -> {
                     Text(text = playerName.getOrThrow(), fontSize = 16.sp)
                 }
+
                 playerName.isFailure -> {
                     Text("error loading profile name ${playerName.exceptionOrNull()!!.message}")
                 }
@@ -254,9 +224,11 @@ fun PlayerCard(
                 rating == null -> {
                     Text(text = "loading info...", fontSize = 16.sp)
                 }
+
                 rating.isSuccess -> {
                     Text(text = rating.getOrThrow().toString(), fontSize = 16.sp)
                 }
+
                 rating.isFailure -> {
                     Text("error loading profile rating ${rating.exceptionOrNull()!!.message}")
                 }
@@ -268,8 +240,6 @@ fun PlayerCard(
 @Composable
 fun PlayersUI(
     pos: Position,
-    dragDesk: Boolean,
-    onToggleDragging: () -> Unit,
     timeLeft: Int,
     isGreen: Boolean?,
     ownAccountName: Result<String>?,
@@ -307,16 +277,7 @@ fun PlayersUI(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Row {
-            TurnTimerUI(timeLeft)
-            Button(
-                onClick = { onToggleDragging() },
-                modifier = Modifier.padding(12.dp)
-            ) {
-                Text(if (dragDesk) "Deactivate Move" else "Activate Move")
-            }
-        }
-
+        TurnTimerUI(timeLeft)
     }
 }
 

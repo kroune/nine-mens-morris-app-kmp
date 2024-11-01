@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
@@ -44,6 +47,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.triangleShape
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.event.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.getScreenSize
+import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -74,7 +78,6 @@ fun WelcomeScreen(
     // viewing account gets less priority
     if (viewAccountDataLoadingOverlay.value && !playOnlineGameOverlay.value) {
         HandleAccountViewOverlay(
-            isInAccount,
             checkingJwtTokenJob,
             onEvent
         )
@@ -115,7 +118,7 @@ fun WelcomeScreen(
             viewAccountDataLoadingOverlay,
             onEvent
         )
-//        TutorialScreen(resources).InvokeRender()
+        TutorialScreen()
     }
     component.popupToDraw()
 }
@@ -125,13 +128,13 @@ fun WelcomeScreen(
  * where you can choose game mode or go to account settings
  */
 @Composable
-private fun RenderMainScreen(
+fun RenderMainScreen(
     isInAccount: Boolean?,
     checkingJwtTokenJob: Job,
     viewAccountDataLoadingOverlay: MutableState<Boolean>,
     onEvent: (WelcomeScreenEvent) -> Unit
 ) {
-    var screenSize = getScreenSize()
+    val screenSize = getScreenSize()
     val width = screenSize.width
     val height = screenSize.height
     Box(
@@ -147,7 +150,10 @@ private fun RenderMainScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .height((height * 0.1).dp)
+                    .aspectRatio(4f)
+                    .align(Alignment.CenterHorizontally),
                 onClick = {
                     onEvent(WelcomeScreenEvent.ClickGameWithFriendButton)
                 },
@@ -156,10 +162,15 @@ private fun RenderMainScreen(
             ) {
                 Text(
                     text = stringResource(Res.string.play_game_with_friends),
-                    color = Color.White
+                    color = Color.White,
+                    fontSize = 20.sp
                 )
             }
             Button(
+                modifier = Modifier
+                    .height((height * 0.1).dp)
+                    .aspectRatio(4f)
+                    .align(Alignment.CenterHorizontally),
                 onClick = {
                     onEvent(WelcomeScreenEvent.ClickGameWithBotButton)
                 },
@@ -167,10 +178,16 @@ private fun RenderMainScreen(
                 colors = BlackGrayColors()
             ) {
                 Text(
-                    text = stringResource(Res.string.play_game_with_bot), color = Color.White
+                    text = stringResource(Res.string.play_game_with_bot),
+                    color = Color.White,
+                    fontSize = 20.sp
                 )
             }
             Button(
+                modifier = Modifier
+                    .height((height * 0.1).dp)
+                    .aspectRatio(4f)
+                    .align(Alignment.CenterHorizontally),
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         checkingJwtTokenJob.join()
@@ -181,13 +198,14 @@ private fun RenderMainScreen(
                             onEvent(WelcomeScreenEvent.ClickOnlineGameButton)
                         }
                     }
-//                    playOnlineGameOverlay.value = true
                 },
                 shape = RoundedCornerShape(5.dp),
                 colors = BlackGrayColors()
             ) {
                 Text(
-                    text = stringResource(Res.string.play_online_game), color = Color.White
+                    text = stringResource(Res.string.play_online_game),
+                    color = Color.White,
+                    fontSize = 20.sp
                 )
             }
         }
@@ -212,12 +230,13 @@ private fun BoxScope.ViewAccountElement(
     isInAccount: Boolean?
 ) {
     val coroutine = rememberCoroutineScope()
-    var screenSize = getScreenSize()
+    val screenSize = getScreenSize()
     val width = screenSize.width
     val height = screenSize.height
     val offset = remember { mutableStateOf(0f) }
     val startTriangleLength = min(width, height) / 4f
     val offsetToFillRightBottomCorner = height - startTriangleLength
+    // TODO: rewrite this
     val isTriangle = remember {
         derivedStateOf {
             offset.value < offsetToFillRightBottomCorner
@@ -300,18 +319,12 @@ private fun BoxScope.ViewAccountElement(
  */
 @Composable
 private fun HandleAccountViewOverlay(
-    isInAccount: Boolean?,
     checkingJwtTokenJob: Job,
     onEvent: (WelcomeScreenEvent) -> Unit,
 ) {
     CoroutineScope(Dispatchers.Default).launch {
         checkingJwtTokenJob.join()
-        if (isInAccount == true) {
-            onEvent(WelcomeScreenEvent.AccountViewButton)
-        } else {
-            checkingJwtTokenJob.join()
-            onEvent(WelcomeScreenEvent.AccountViewButton)
-        }
+        onEvent(WelcomeScreenEvent.AccountViewButton)
     }
     HandleOverlay()
 }

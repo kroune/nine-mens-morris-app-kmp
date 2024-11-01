@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.kroune.nine_mens_morris_kmp_app.common.TransparentColors
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
@@ -110,8 +111,10 @@ private fun StartButton(
         ) {
             Text(
                 text = "Press to start",
-                modifier = Modifier.alpha(animatedProgress),
-                color = Color.White
+                modifier = Modifier
+                    .alpha(animatedProgress),
+                color = Color.White,
+                fontSize = 22.sp
             )
         }
     }

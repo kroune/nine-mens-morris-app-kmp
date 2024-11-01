@@ -27,20 +27,20 @@
     <string name="searching_for_game">Searching for game...</string>
     <string name="game_expected_waiting_time">expected waiting time:</string>
     <string name="retry">retry</string>
+    <string name="tutorial_indicator_piece_count">Each circle at the top shows how many pieces of the following color aren't placed yet</string>
+    <string name="tutorial_indicator_piece_move_turn">Circle size indicates whose turn it is (for example if green has a bigger one it means it's turn of the player with green pieces)</string>
+    <string name="tutorial_lose_condition">You lose if you have less than 3 pieces (including the ones you can place)</string>
+    <string name="tutorial_placement_condition">If you have any pieces left you can place them in any empty cell</string>
+    <string name="tutorial_placement_highlighting">Possible moves are highlighted</string>
+    <string name="tutorial_normal_moves_condition">If you don't have any pieces to place and your total pieces count > 3 you can move any of them to the next cell</string>
+    <string name="tutorial_normal_moves_highlighting">Possible moves are highlighted when you have selected a piece to move</string>
+    <string name="tutorial_fly_condition">If you don\'t have any figures to place and your pieces count = 3 you can "fly" (move you piece to any empty place)</string>
+    <string name="tutorial_fly_highlighting">Possible moves are highlighted when you have selected a piece to move</string>
+    <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>
+    <string name="tutorial_triples_highlighting">Such rows are highlighted with grey</string>
+    <string name="tutorial_removal_moves_explanation">For removing enemy's piece simply click on it</string>
 <!--    <string name="you_have_lost">You have lost</string>-->
 <!--    <string name="you_have_won">You have won</string>-->
-<!--    <string name="tutorial_fly_condition">If you don\'t have any figures to place and your pieces count = 3 you can fly (move to any empty place)</string>-->
-<!--    <string name="tutorial_fly_highlighting">Possible moves are highlighted when you have selected a piece to move</string>-->
-<!--    <string name="tutorial_indicator_piece_count">Each circle at the top shows how many pieces of the following color aren\'t placed yet</string>-->
-<!--    <string name="tutorial_indicator_piece_move_turn">Circle size shows whose turn it is</string>-->
-<!--    <string name="tutorial_lose_condition">If you have less than 3 pieces (including the ones you can place) you lose</string>-->
-<!--    <string name="tutorial_normal_moves_condition">If you don\'t have any figures to place and your pieces count > 3 you can move to the next cell (if it is empty)</string>-->
-<!--    <string name="tutorial_normal_moves_highlighting">Possible moves are highlighted when you have selected a piece to move</string>-->
-<!--    <string name="tutorial_placement_condition">If you have any pieces left you can place them in any empty place</string>-->
-<!--    <string name="tutorial_placement_highlighting">Possible moves are highlighted</string>-->
-<!--    <string name="tutorial_removal_moves_explanation">If you can remove enemies piece simply click on it</string>-->
-<!--    <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>-->
-<!--    <string name="tutorial_triples_highlighting">Rows are highlighted with grey</string>-->
 <!--    <string name="server_error">Server error, pls try later or report this at GitHub</string>-->
 <!--    <string name="network_error">Network request has failed, check your internet connection</string>-->
 <!--    <string name="auth_app_error">Unrecognised error. Either app version is obsolete or something serious broke</string>-->

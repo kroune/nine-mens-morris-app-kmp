@@ -18,10 +18,8 @@ import com.kroune.nine_mens_morris_kmp_app.screen.SignInScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
 fun App(component: RootComponent) {
     MaterialTheme {
         val childStack by component.childStack.subscribeAsState()
