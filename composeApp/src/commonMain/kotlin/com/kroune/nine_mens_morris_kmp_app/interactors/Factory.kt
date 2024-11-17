@@ -1,0 +1,26 @@
+package com.kroune.nine_mens_morris_kmp_app.interactors
+
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountId.AccountIdInteractorI
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountId.AccountIdInteractorImpl
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountInfo.AccountInfoInteractorI
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountInfo.AccountInfoInteractorImpl
+import com.kroune.nine_mens_morris_kmp_app.interactors.auth.AuthInteractorI
+import com.kroune.nine_mens_morris_kmp_app.interactors.auth.AuthInteractorImpl
+import com.kroune.nine_mens_morris_kmp_app.interactors.jwtToken.JwtTokenInteractorI
+import com.kroune.nine_mens_morris_kmp_app.interactors.jwtToken.JwtTokenInteractorImpl
+import com.kroune.nine_mens_morris_kmp_app.interactors.onlineGame.OnlineGameInteractorI
+import com.kroune.nine_mens_morris_kmp_app.interactors.onlineGame.OnlineGameInteractorImpl
+import com.kroune.nine_mens_morris_kmp_app.interactors.searchingForGame.SearchingForGameInteractorI
+import com.kroune.nine_mens_morris_kmp_app.interactors.searchingForGame.SearchingForGameInteractorImpl
+
+var jwtTokenInteractor: JwtTokenInteractorI = JwtTokenInteractorImpl()
+
+var accountInfoInteractor: AccountInfoInteractorI = AccountInfoInteractorImpl()
+
+var authRepositoryInteractor: AuthInteractorI = AuthInteractorImpl()
+
+var accountIdInteractor: AccountIdInteractorI = AccountIdInteractorImpl()
+
+var onlineGameInteractor: OnlineGameInteractorI = OnlineGameInteractorImpl()
+
+var searchingForGameInteractor: SearchingForGameInteractorI = SearchingForGameInteractorImpl()

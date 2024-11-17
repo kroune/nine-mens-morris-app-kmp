@@ -44,14 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arkivanov.essenty.backhandler.BackCallback
-import com.arkivanov.essenty.backhandler.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.common.ParallelogramShape
 import com.kroune.nine_mens_morris_kmp_app.common.triangleShape
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountIdByJwtTokenApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.getScreenSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen

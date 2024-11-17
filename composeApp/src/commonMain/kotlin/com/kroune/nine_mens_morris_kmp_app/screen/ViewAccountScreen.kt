@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.AccountPictureByIdApiResponses
-import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.CreationDateByIdApiResponses
-import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.LoginByIdApiResponses
-import com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.RatingByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountPictureByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.CreationDateByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.RatingByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

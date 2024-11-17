@@ -2,7 +2,7 @@ package com.kroune.nine_mens_morris_kmp_app.useCases
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.accountInfoInteractor
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -10,12 +10,12 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.GameWithBotScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.GameWithFriendScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.OnlineGameScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.SearchingForGameScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.SignInScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.SignUpScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithFriendScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.game.OnlineGameScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.game.SearchingForGameScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
 

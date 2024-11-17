@@ -17,8 +17,8 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.GREEN
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
-import com.kroune.nine_mens_morris_kmp_app.screen.RenderGameBoard
-import com.kroune.nine_mens_morris_kmp_app.screen.RenderPieceCount
+import com.kroune.nine_mens_morris_kmp_app.screen.game.RenderGameBoard
+import com.kroune.nine_mens_morris_kmp_app.screen.game.RenderPieceCount
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.tutorial_fly_condition
 import ninemensmorrisappkmp.composeapp.generated.resources.tutorial_fly_highlighting
