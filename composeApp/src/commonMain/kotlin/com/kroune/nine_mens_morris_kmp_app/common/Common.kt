@@ -28,9 +28,16 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
+import io.ktor.client.plugins.websocket.receiveDeserialized
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import io.ktor.websocket.Frame
+import io.ktor.websocket.readText
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
 
@@ -174,4 +181,32 @@ inline fun AppTheme(function: BoxScope.() -> Unit) {
     ) {
         function()
     }
+}
+
+inline suspend fun ReceiveChannel<Frame>.receiveText(): String {
+    val test = this.receiveCatching()
+    val input = test.getOrThrow() as Frame.Text
+    return input.readText()
+}
+
+suspend inline fun <reified T> ReceiveChannel<Frame>.receiveDeserialized(): T {
+    val input = this.receive() as Frame.Text
+    return Json.decodeFromString<T>(input.readText())
+}
+
+suspend inline fun <reified T> SendChannel<Frame>.sendSerialized(value: T) {
+    val text = Json.encodeToString<T>(value)
+    this.send(Frame.Text(text))
+}
+
+inline suspend fun DefaultClientWebSocketSession.receiveText(): String {
+    return this.incoming.receiveText()
+}
+
+suspend inline fun <reified T> DefaultClientWebSocketSession.receiveDeserialized(): T {
+    return this.incoming.receiveDeserialized<T>()
+}
+
+suspend inline fun <reified T> DefaultClientWebSocketSession.sendSerialized(value: T) {
+    this.outgoing.sendSerialized(value)
 }

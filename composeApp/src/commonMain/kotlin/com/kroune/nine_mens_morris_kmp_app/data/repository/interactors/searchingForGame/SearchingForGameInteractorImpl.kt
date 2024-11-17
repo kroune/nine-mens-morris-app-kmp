@@ -1,42 +1,48 @@
 package com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.searchingForGame
 
+import com.kroune.nine_mens_morris_kmp_app.common.receiveText
 import com.kroune.nine_mens_morris_kmp_app.data.repository.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.data.repository.source.searchingForGameRepository
-import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.websocket.Frame
-import io.ktor.websocket.close
-import io.ktor.websocket.readText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class SearchingForGameInteractorImpl : SearchingForGameInteractorI {
-    override var channel = Channel<Long>()
     override var gameId: Long? = null
-    private var session: DefaultClientWebSocketSession? = null
+    private var closeFunction: (suspend () -> Unit)? = null
 
     override suspend fun disconnect() {
-        session?.close()
+        closeFunction!!()
     }
 
-    override suspend fun searchForGame() {
+    override suspend fun searchForGame(channelToSendExpectedTime: Channel<Long>) {
         // reset values
-        channel = Channel<Long>()
         gameId = null
-        val jwtToken =
-            jwtTokenInteractor.getJwtToken() ?: error("jwt token is null when searching for game")
-        session = searchingForGameRepository.connectToSearchingForGame(jwtToken)
-        val incomingFlow = session!!.incoming
-        incomingFlow.consumeEach {
-            val text = (it as Frame.Text).readText()
-            val serverData = Json.decodeFromString<Pair<Boolean, Long>>(text)
-            if (!serverData.first) {
-                gameId = serverData.second
-                channel.close()
-                session!!.close()
-                return@consumeEach
+        CoroutineScope(Dispatchers.Default).launch {
+            val jwtToken =
+                jwtTokenInteractor.getJwtToken()
+                    ?: error("jwt token is null when searching for game")
+            val (receiveChannel, close) = searchingForGameRepository.connect(jwtToken)
+            closeFunction = close
+            try {
+                while (true) {
+                    val text = receiveChannel.receiveText()
+                    val serverData = Json.decodeFromString<Pair<Boolean, Long>>(text)
+                    if (serverData.first) {
+                        channelToSendExpectedTime.send(serverData.second)
+                    } else {
+                        gameId = serverData.second
+                        disconnect()
+                        channelToSendExpectedTime.close()
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                println("SOME ERROR")
             }
-            channel.send(serverData.second)
-        }
+        }.join()
     }
 }

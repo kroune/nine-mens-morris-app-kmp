@@ -1,7 +1,16 @@
 package com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.onlineGame
 
-import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import com.kroune.nineMensMorrisLib.Position
+import com.kroune.nineMensMorrisLib.move.Movement
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.Channel
 
+typealias GameInfo = Triple<CompletableDeferred<Boolean>, CompletableDeferred<Position>, CompletableDeferred<Long>>
 sealed interface OnlineGameRepositoryI {
-    suspend fun connectToGame(gameId: Long, jwtToken: String): DefaultClientWebSocketSession
+    suspend fun connect(
+        gameId: Long,
+        jwtToken: String,
+        channelToSendMoves: Channel<Movement>,
+        channelToReceiveMoves: Channel<Movement>
+    ): Pair<GameInfo, suspend () -> Unit>
 }

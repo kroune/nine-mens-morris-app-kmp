@@ -1,9 +1,10 @@
 package com.kroune.nine_mens_morris_kmp_app.data.repository.source.remote.searchingForGame
 
-import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.websocket.Frame
+import kotlinx.coroutines.channels.ReceiveChannel
 
 interface SearchingForGameRepositoryI {
-    suspend fun connectToSearchingForGame(
+    suspend fun connect(
         jwtToken: String
-    ): DefaultClientWebSocketSession
+    ): Pair<ReceiveChannel<Frame>, suspend () -> Unit>
 }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,11 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -77,6 +80,29 @@ fun OnlineGameScreen(
                 BackCallback() {
                     displayGiveUpConfirmation.value = true
                 }
+            } else {
+                var showGameEndDialog by remember { mutableStateOf(true) }
+                AlertDialog(
+                    onDismissRequest = { showGameEndDialog = false },
+                    title = {
+                        Text("Game has ended")
+                    },
+                    buttons = {
+                        Row {
+                            Button(onClick = { showGameEndDialog = false }
+                            ) {
+                                Text("Keep me here")
+                            }
+                            Button(onClick = { component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen) }
+                            ) {
+                                Text("Go back to main screen")
+                            }
+                        }
+                    }
+                )
+                BackCallback() {
+                    component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
+                }
             }
             RenderGameBoard(
                 pos = component.position,
@@ -95,25 +121,26 @@ private val displayGiveUpConfirmation = mutableStateOf(false)
 private fun GiveUpConfirm(
     onGiveUp: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(), contentAlignment = Alignment.Center
-    ) {
-        Column {
+    AlertDialog(onDismissRequest = {
+        displayGiveUpConfirmation.value = false
+    },
+        title = {
             Text("Are you sure you want to give up?")
-            Button(onClick = {
-                onGiveUp()
-            }) {
-                Text("Yes")
+        },
+        buttons = {
+            Row {
+                Button(onClick = {
+                    onGiveUp()
+                }) {
+                    Text("Yes")
+                }
+                Button(onClick = {
+                    displayGiveUpConfirmation.value = false
+                }) {
+                    Text("No")
+                }
             }
-            Button(onClick = {
-                displayGiveUpConfirmation.value = false
-            }) {
-                Text("No")
-            }
-        }
-    }
+        })
 }
 
 @Composable

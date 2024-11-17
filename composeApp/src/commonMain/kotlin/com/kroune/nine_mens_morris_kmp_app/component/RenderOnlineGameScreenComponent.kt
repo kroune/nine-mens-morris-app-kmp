@@ -14,6 +14,7 @@ import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -25,6 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class OnlineGameScreenComponent(
     val gameId: Long,
+    val onNavigationToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private var _enemyAccountName = mutableStateOf<Result<String>?>(null)
@@ -70,16 +72,20 @@ class OnlineGameScreenComponent(
     val moveHints by gameUseCase.moveHints
     var timeLeft by mutableStateOf(30)
     private val channelToSendMoves: Channel<Movement> = Channel()
+    private val channelToReceiveMoves: Channel<Movement> = Channel()
+    lateinit var onGiveUp: suspend () -> Unit
 
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
             // TODO: handle errors
-            onlineGameInteractor.connect(gameId, channelToSendMoves)
-            _position.value = onlineGameInteractor.positionReceivedOnConnection!!
-            gameUseCase.handleHighLighting()
-            _gameEnded = onlineGameInteractor.gameEnded
-            _isGreen.value = onlineGameInteractor.receivedIsGreenStatus!!
+            val enemyId: Long
+            onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves).let {
+                _position.value = it.first.second.await()
+                _isGreen.value = it.first.first.await()
+                enemyId = it.first.third.await()
+                onGiveUp = it.second
+            }
             AccountInfoUseCase(
                 accountIdInteractor.getAccountId().getOrThrow(),
                 needCreationDate = false,
@@ -88,15 +94,16 @@ class OnlineGameScreenComponent(
                 accountPicture = _ownPictureByteArray
             )
             AccountInfoUseCase(
-                onlineGameInteractor.enemyId!!,
+                enemyId,
                 needCreationDate = false,
                 name = _enemyAccountName,
                 rating = _enemyAccountRating,
                 accountPicture = _enemyPictureByteArray
             )
-            onlineGameInteractor.receivedMovesChannel.receiveAsFlow().onEach {
-                gameUseCase.processMove(it)
-            }.collect()
+            while (true) {
+                val move = channelToReceiveMoves.receive()
+                gameUseCase.processMove(move)
+            }
         }
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
@@ -110,11 +117,14 @@ class OnlineGameScreenComponent(
         when (event) {
             OnlineGameScreenEvent.GiveUp -> {
                 CoroutineScope(Dispatchers.Default).launch {
-                    onlineGameInteractor.giveUp()
+                    onGiveUp()
                 }
             }
 
             is OnlineGameScreenEvent.Click -> {
+                if (_gameEnded.value) {
+                    return
+                }
                 if (isGreen == gameUseCase.pos.value.pieceToMove) {
                     val move = gameUseCase.handleClick(event.index)
                     if (move != null) {
@@ -132,6 +142,10 @@ class OnlineGameScreenComponent(
                     // we can't make any move if it isn't our move
                     gameUseCase.moveHints.value = listOf()
                 }
+            }
+
+            OnlineGameScreenEvent.NavigateToMainScreen -> {
+                onNavigationToWelcomeScreen()
             }
         }
     }

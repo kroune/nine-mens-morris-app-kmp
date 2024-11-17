@@ -26,7 +26,8 @@ class WelcomeScreenComponent(
     private val onNavigationToOnlineGameScreen: () -> Unit,
     private val onNavigationToAccountRegistrationThenViewAccountScreen: () -> Unit,
     private val onNavigationToAccountRegistrationThenOnlineGameScreen: () -> Unit,
-    private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit
+    private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
+    private val onNavigationToAppStartAnimationScreen: () -> Unit
 ) : ComponentContext by componentContext {
 
     var isInAccount by mutableStateOf<Result<Boolean>?>(null)
@@ -111,6 +112,10 @@ class WelcomeScreenComponent(
                     isInAccount = jwtTokenInteractor.checkJwtToken()
                 }
                 _checkingJwtTokenJob.value.start()
+            }
+
+            WelcomeScreenEvent.BackToAppStartAnimation -> {
+                onNavigationToAppStartAnimationScreen()
             }
         }
     }

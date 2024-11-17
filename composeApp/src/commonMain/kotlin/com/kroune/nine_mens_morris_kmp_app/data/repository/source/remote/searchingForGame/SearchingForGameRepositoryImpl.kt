@@ -5,30 +5,33 @@ import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 
 class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
-    override suspend fun connectToSearchingForGame(
+    override suspend fun connect(
         jwtToken: String
-    ): DefaultClientWebSocketSession {
+    ): Pair<ReceiveChannel<Frame>, suspend () -> Unit> {
         var session: DefaultClientWebSocketSession? = null
         val gettingSessionJob = Job()
         CoroutineScope(Dispatchers.Default).launch {
-            network.webSocket("ws$SERVER_ADDRESS$USER_API/search-for-game", request = {
-                url {
-                    parameters["jwtToken"] = jwtToken
-                }
-            }) {
+            network.webSocket("ws$SERVER_ADDRESS$USER_API/search-for-game",
+                request = {
+                    url {
+                        parameters["jwtToken"] = jwtToken
+                    }
+                }) {
                 session = this
                 gettingSessionJob.complete()
                 closeReason.join()
-                println(closeReason.getCompleted())
             }
         }
         gettingSessionJob.join()
-        return session!!
+        return Pair(session!!.incoming, { session!!.close() })
     }
 }
