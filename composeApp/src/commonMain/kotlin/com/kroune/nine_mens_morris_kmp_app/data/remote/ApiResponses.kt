@@ -54,3 +54,9 @@ sealed class RegisterApiResponses: Exception() {
     data object ServerError: RegisterApiResponses()
     data object ClientError: RegisterApiResponses()
 }
+
+sealed class SearchingForGameResponses: Exception() {
+    data object NetworkError: SearchingForGameResponses()
+    data object ServerError: SearchingForGameResponses()
+    data object ClientError: SearchingForGameResponses()
+}

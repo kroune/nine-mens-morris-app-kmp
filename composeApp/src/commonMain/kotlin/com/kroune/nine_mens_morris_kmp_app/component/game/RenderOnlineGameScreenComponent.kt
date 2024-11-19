@@ -12,6 +12,7 @@ import com.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -74,13 +75,15 @@ class OnlineGameScreenComponent(
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
+            val gameEnded: CompletableDeferred<Boolean>
             // TODO: handle errors
             val enemyId: Long
             onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves).let {
-                _position.value = it.first.second.await()
-                _isGreen.value = it.first.first.await()
-                enemyId = it.first.third.await()
+                _position.value = it.first.startPosition.await()
+                _isGreen.value = it.first.isGreen.await()
+                enemyId = it.first.enemyId.await()
                 onGiveUp = it.second
+                gameEnded = it.first.gameEnded
             }
             AccountInfoUseCase(
                 accountIdInteractor.getAccountId().getOrThrow(),
@@ -96,13 +99,14 @@ class OnlineGameScreenComponent(
                 rating = _enemyAccountRating,
                 accountPicture = _enemyPictureByteArray
             )
-            while (true) {
+            while (!gameEnded.isCompleted) {
                 val move = channelToReceiveMoves.receive()
                 gameUseCase.processMove(move)
             }
+            _gameEnded.value = true
         }
         CoroutineScope(Dispatchers.Default).launch {
-            while (true) {
+            while (!gameEnded) {
                 timeLeft = max(timeLeft - 1, 0)
                 delay(1.seconds)
             }

@@ -5,7 +5,6 @@ import com.kroune.nineMensMorrisLib.move.Movement
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 
-typealias GameInfo = Triple<CompletableDeferred<Boolean>, CompletableDeferred<Position>, CompletableDeferred<Long>>
 sealed interface OnlineGameRepositoryI {
     suspend fun connect(
         gameId: Long,
@@ -14,3 +13,10 @@ sealed interface OnlineGameRepositoryI {
         channelToReceiveMoves: Channel<Movement>
     ): Pair<GameInfo, suspend () -> Unit>
 }
+
+class GameInfo(
+    val isGreen: CompletableDeferred<Boolean>,
+    val startPosition: CompletableDeferred<Position>,
+    val enemyId: CompletableDeferred<Long>,
+    val gameEnded: CompletableDeferred<Boolean>
+)

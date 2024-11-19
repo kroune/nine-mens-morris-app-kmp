@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
+import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
@@ -82,24 +83,43 @@ fun OnlineGameScreen(
                 }
             } else {
                 var showGameEndDialog by remember { mutableStateOf(true) }
-                AlertDialog(
-                    onDismissRequest = { showGameEndDialog = false },
-                    title = {
-                        Text("Game has ended")
-                    },
-                    buttons = {
-                        Row {
-                            Button(onClick = { showGameEndDialog = false }
+                if (showGameEndDialog) {
+                    AlertDialog(
+                        modifier = Modifier
+                            .background(Color.Gray.copy(alpha = 0.5f)),
+                        onDismissRequest = { showGameEndDialog = false },
+                        title = {
+                            Box(
+                                contentAlignment = Alignment.Center
                             ) {
-                                Text("Keep me here")
+                                Text("Game has ended")
                             }
-                            Button(onClick = { component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen) }
-                            ) {
-                                Text("Go back to main screen")
+                        },
+                        buttons = {
+                            Row {
+                                Button(
+                                    modifier = Modifier.weight(1f),
+                                    colors = BlackGrayColors(),
+                                    onClick = { showGameEndDialog = false }
+                                ) {
+                                    Text("Keep me here")
+                                }
+                                Spacer(
+                                    modifier = Modifier
+                                        .width(5.dp)
+                                        .weight(1f)
+                                )
+                                Button(
+                                    modifier = Modifier.weight(1f),
+                                    colors = BlackGrayColors(),
+                                    onClick = { component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen) }
+                                ) {
+                                    Text("Go back to main screen")
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
                 BackCallback() {
                     component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
                 }

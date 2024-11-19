@@ -75,7 +75,7 @@ class RootComponent(
                             navigation.pushNew(GameWithBotScreen)
                         },
                         {
-                            navigation.pushNew(SearchingForGameScreen)
+                            navigation.pushToFront(SearchingForGameScreen)
                         },
                         {
                             navigation.pushNew(SignUpScreen { accountId ->
@@ -161,6 +161,9 @@ class RootComponent(
                     SearchingForGameScreenComponent(
                         { gameId ->
                             navigation.pushNew(OnlineGameScreen(gameId))
+                        },
+                        {
+                            navigation.pushToFront(WelcomeScreen)
                         },
                         context
                     )
