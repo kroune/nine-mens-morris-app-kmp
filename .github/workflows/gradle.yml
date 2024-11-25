@@ -58,8 +58,17 @@ jobs:
       uses: gradle/gradle-build-action@ce999babab2de1c4b649dc15f0ee67e6246c994f
       with:
         arguments: ${{ matrix.target }}
+    # Set Current Date As Env Variable
+    - name: Set current date as env variable
+      run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+    # Set Repository Name As Env Variable
+    - name: Set repository name as env variable
+      run: |
+        echo "repository_name=$(echo '${{ github.repository }}' \
+            | awk -F '/' '{print $2}')" >> $GITHUB_ENV
     - name: Upload artifacts - ${{ env.repository_name }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.date_today }} - ${{ env.repository_name }} ${{ matrix.tag }} - APK(s) release
+        name:  ${{ env.repository_name }}-${{ matrix.tag }}-${{ env.date_today }}-artifact
         path: ${{ matrix.directory }}
