@@ -56,5 +56,5 @@ jobs:
     - name: Upload artifacts - ${{ env.repository_name }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.date_today }} - ${{ env.repository_name }} - APK(s) release
+        name: ${{ env.date_today }} - ${{ env.repository_name }} ${{ matrix.os }} - APK(s) release
         path: ${{ matrix.directory }}
