@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,12 +78,13 @@ fun OnlineGameScreen(
                     }
                 )
             }
+            var showGameEndDialog by remember { mutableStateOf(true) }
             if (!component.gameEnded) {
-                BackCallback() {
+                showGameEndDialog = true
+                BackCallback {
                     displayGiveUpConfirmation.value = true
                 }
             } else {
-                var showGameEndDialog by remember { mutableStateOf(true) }
                 if (showGameEndDialog) {
                     AlertDialog(
                         modifier = Modifier
@@ -96,9 +98,13 @@ fun OnlineGameScreen(
                             }
                         },
                         buttons = {
-                            Row {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Button(
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier
+                                        .height(IntrinsicSize.Max),
                                     colors = BlackGrayColors(),
                                     onClick = { showGameEndDialog = false }
                                 ) {
@@ -106,13 +112,16 @@ fun OnlineGameScreen(
                                 }
                                 Spacer(
                                     modifier = Modifier
-                                        .width(5.dp)
-                                        .weight(1f)
+                                        .width(2.dp)
+                                        .height(IntrinsicSize.Max)
                                 )
                                 Button(
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier
+                                        .height(IntrinsicSize.Max),
                                     colors = BlackGrayColors(),
-                                    onClick = { component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen) }
+                                    onClick = {
+                                        component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
+                                    }
                                 ) {
                                     Text("Go back to main screen")
                                 }

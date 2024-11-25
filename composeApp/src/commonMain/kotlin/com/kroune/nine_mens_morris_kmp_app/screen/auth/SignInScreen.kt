@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.kroune.nine_mens_morris_kmp_app.component.auth.SignInScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.SignInScreenEvent
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -149,21 +149,21 @@ fun SignInScreen(
     if (loginResult != null) {
         val exception = loginResult.exceptionOrNull()
         val text = when (exception) {
-            is LoginByIdApiResponses -> {
+            is LoginApiResponses -> {
                 when (exception) {
-                    LoginByIdApiResponses.ClientError -> {
+                    LoginApiResponses.ClientError -> {
                         stringResource(Res.string.client_error)
                     }
 
-                    LoginByIdApiResponses.CredentialsError -> {
+                    LoginApiResponses.CredentialsError -> {
                         stringResource(Res.string.wrong_pass_or_login)
                     }
 
-                    LoginByIdApiResponses.NetworkError -> {
+                    LoginApiResponses.NetworkError -> {
                         stringResource(Res.string.network_error)
                     }
 
-                    LoginByIdApiResponses.ServerError -> {
+                    LoginApiResponses.ServerError -> {
                         stringResource(Res.string.server_error)
                     }
                 }

@@ -35,7 +35,7 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
         val positionReceivedOnConnection = CompletableDeferred<Position>()
         val enemyId = CompletableDeferred<Long>()
         val session: CompletableDeferred<DefaultClientWebSocketSession?> = CompletableDeferred(null)
-        val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred(false)
+        val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred()
         CoroutineScope(Dispatchers.Default).launch {
             network.webSocket("ws$SERVER_ADDRESS$USER_API/game",
                 request = {
@@ -59,6 +59,8 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                     val move = this.receiveDeserialized<Movement>()
                     if (move == Movement(null, null)) {
                         gameEnded.complete(true)
+                        close()
+                        break
                     }
                     channelToReceiveMoves.send(move)
                 }
