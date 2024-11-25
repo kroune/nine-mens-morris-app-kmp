@@ -30,4 +30,9 @@ class AccountInfoInteractorImpl : AccountInfoInteractorI {
         val jwtToken = jwtTokenInteractor.getJwtToken()!!
         return remote.getAccountIdByJwtToken(jwtToken)
     }
+
+    override suspend fun getLeaderboard(): Result<List<Long>> {
+        val jwtToken = jwtTokenInteractor.getJwtToken()!!
+        return remote.getLeaderboard(jwtToken)
+    }
 }

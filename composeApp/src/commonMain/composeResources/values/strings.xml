@@ -10,6 +10,7 @@
     <string name="play_game_with_friends">Play with friend</string>
     <string name="play_game_with_bot">Play with bot</string>
     <string name="play_online_game">Play online</string>
+    <string name="leaderboard">Leaderboard</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
     <string name="invalid_password">Your password is invalid</string>
@@ -39,6 +40,7 @@
     <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>
     <string name="tutorial_triples_highlighting">Such rows are highlighted with grey</string>
     <string name="tutorial_removal_moves_explanation">For removing enemy's piece simply click on it</string>
+    <string name="rating">Rating</string>
 <!--    <string name="you_have_lost">You have lost</string>-->
 <!--    <string name="you_have_won">You have won</string>-->
 <!--    <string name="server_error">Server error, pls try later or report this at GitHub</string>-->

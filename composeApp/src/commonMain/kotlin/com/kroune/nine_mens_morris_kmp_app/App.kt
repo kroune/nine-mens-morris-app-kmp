@@ -10,6 +10,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.LeaderboardScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithFriendScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.OnlineGameScreen
@@ -63,6 +64,10 @@ fun App(component: RootComponent) {
 
                     is RootComponent.Child.OnlineGameChild -> {
                         OnlineGameScreen(instance.component)
+                    }
+
+                    is RootComponent.Child.LeaderboardChild -> {
+                        LeaderboardScreen(instance.component)
                     }
                 }
             }

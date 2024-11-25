@@ -27,6 +27,13 @@ sealed class LoginByIdApiResponses: Exception() {
     data object ClientError: LoginByIdApiResponses()
 }
 
+sealed class LeaderboardApiResponses: Exception() {
+    data object CredentialsError: LeaderboardApiResponses()
+    data object NetworkError: LeaderboardApiResponses()
+    data object ServerError: LeaderboardApiResponses()
+    data object ClientError: LeaderboardApiResponses()
+}
+
 sealed class AccountIdByJwtTokenApiResponses: Exception() {
     data object CredentialsError: AccountIdByJwtTokenApiResponses()
     data object NetworkError: AccountIdByJwtTokenApiResponses()

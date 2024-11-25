@@ -6,4 +6,5 @@ interface AccountInfoRepositoryI {
     suspend fun getAccountLoginById(id: Long, jwtToken: String): Result<String>
     suspend fun getAccountPictureById(id: Long, jwtToken: String): Result<ByteArray>
     suspend fun getAccountIdByJwtToken(jwtToken: String): Result<Long>
+    suspend fun getLeaderboard(jwtToken: String): Result<List<Long>>
 }

@@ -3,7 +3,7 @@ package com.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame
 import com.kroune.nine_mens_morris_kmp_app.common.SERVER_ADDRESS
 import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
-import com.kroune.nine_mens_morris_kmp_app.common.receiveText
+import com.kroune.nine_mens_morris_kmp_app.common.receiveTextCatching
 import com.kroune.nine_mens_morris_kmp_app.data.remote.SearchingForGameResponses
 import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
@@ -35,17 +35,28 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                 ) {
                     session.complete(this)
                     while (true) {
-                        val text = receiveText()
+                        val textResult = receiveTextCatching()
+                        if (textResult.isFailure) {
+                            // some error
+                            // TODO: this is debug, remove later
+                            println(
+                                "error happened, when searching for game closeReason = ${closeReason.getCompleted()?.message} exception - ${
+                                    textResult.exceptionOrNull()!!.printStackTrace()
+                                }"
+                            )
+                            break
+                        }
+                        val text = textResult.getOrThrow()
+                        println("received $text")
                         val serverData = Json.decodeFromString<Pair<Boolean, Long>>(text)
                         if (serverData.first) {
                             channelToSendExpectedTime.send(serverData.second)
                         } else {
                             gameIdValue = serverData.second
-                            close()
                             channelToSendExpectedTime.close()
+                            close()
                             break
                         }
-                        channelToSendExpectedTime.send(serverData.second)
                     }
                 }
                 gameIdValue!!

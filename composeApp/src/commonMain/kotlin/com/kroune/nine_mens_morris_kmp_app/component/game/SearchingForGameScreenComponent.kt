@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.cancellation.CancellationException
 
 class SearchingForGameScreenComponent(
     onGameFind: (Long) -> Unit,
@@ -23,10 +24,14 @@ class SearchingForGameScreenComponent(
         CoroutineScope(Dispatchers.Default).launch {
             val (gameId, onClose) = searchingForGameInteractor.searchForGame(expectedWaitingTime)
             disconnect.complete {
+                println("searching for game is closing")
                 onClose()
             }
             gameId.await()!!.let { gameIdResult ->
                 gameIdResult.onFailure {
+                    if (it is CancellationException)
+                        // that's ok
+                        return@let
                     // TODO: log error
                     it.printStackTrace()
                     withContext(Dispatchers.Main) {
@@ -34,6 +39,7 @@ class SearchingForGameScreenComponent(
                     }
                 }
                 gameIdResult.onSuccess {
+                    println("found game, id = $it")
                     withContext(Dispatchers.Main) {
                         onGameFind(it)
                     }

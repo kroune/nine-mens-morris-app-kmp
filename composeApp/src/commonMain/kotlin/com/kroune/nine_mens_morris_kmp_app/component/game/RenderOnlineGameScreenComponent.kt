@@ -7,20 +7,24 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
+import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
-import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OnlineGameScreenComponent(
     val gameId: Long,
     val onNavigationToWelcomeScreen: () -> Unit,
@@ -70,7 +74,10 @@ class OnlineGameScreenComponent(
     var timeLeft by mutableStateOf(30)
     private val channelToSendMoves: Channel<Movement> = Channel()
     private val channelToReceiveMoves: Channel<Movement> = Channel()
-    lateinit var onGiveUp: suspend () -> Unit
+    val onGiveUp: suspend () -> Unit = {
+        channelToSendMoves.send(Movement(null, null))
+    }
+    lateinit var onGiveClose: suspend () -> Unit
 
 
     init {
@@ -82,7 +89,7 @@ class OnlineGameScreenComponent(
                 _position.value = it.first.startPosition.await()
                 _isGreen.value = it.first.isGreen.await()
                 enemyId = it.first.enemyId.await()
-                onGiveUp = it.second
+                onGiveClose = it.second
                 gameEnded = it.first.gameEnded
             }
             AccountInfoUseCase(
@@ -100,7 +107,21 @@ class OnlineGameScreenComponent(
                 accountPicture = _enemyPictureByteArray
             )
             while (!gameEnded.isCompleted) {
-                val move = channelToReceiveMoves.receive()
+                val moveResult = channelToReceiveMoves.tryReceive()
+                if (moveResult.isFailure) {
+                    // game ended
+                    if (gameEnded.isCompleted && gameEnded.getCompleted()) {
+                        break
+                    } else {
+                        // some error happened
+                        // TODO: notify user
+                        withContext(Dispatchers.Main) {
+                            onNavigationToWelcomeScreen()
+                        }
+                        return@launch
+                    }
+                }
+                val move = moveResult.getOrThrow()
                 gameUseCase.processMove(move)
             }
             _gameEnded.value = true
@@ -132,7 +153,10 @@ class OnlineGameScreenComponent(
                         gameUseCase.moveHints.value = listOf()
                         // post our move
                         CoroutineScope(Dispatchers.Default).launch {
-                            channelToSendMoves.send(move)
+                            channelToSendMoves.trySend(move).onFailure {
+                                // game has ended || some exception occurred
+                                return@launch
+                            }
                             timeLeft = 30
                         }
                     } else {

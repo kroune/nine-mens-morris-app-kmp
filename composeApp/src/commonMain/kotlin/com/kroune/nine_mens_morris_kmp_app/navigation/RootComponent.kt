@@ -3,18 +3,19 @@ package com.kroune.nine_mens_morris_kmp_app.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.popWhile
-import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
+import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
+import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.auth.SignInScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.auth.SignInScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.AppStartAnimationScreenChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithBotChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithFriendChild
@@ -58,7 +59,7 @@ class RootComponent(
                     AppStartAnimationComponent(
                         context,
                         {
-                            navigation.pushNew(WelcomeScreen)
+                            navigation.pushToFront(WelcomeScreen)
                         }
                     )
                 )
@@ -69,26 +70,34 @@ class RootComponent(
                     WelcomeScreenComponent(
                         context,
                         {
-                            navigation.pushNew(GameWithFriendScreen)
+                            navigation.pushToFront(GameWithFriendScreen)
                         },
                         {
-                            navigation.pushNew(GameWithBotScreen)
+                            navigation.pushToFront(GameWithBotScreen)
                         },
                         {
                             navigation.pushToFront(SearchingForGameScreen)
                         },
                         {
-                            navigation.pushNew(SignUpScreen { accountId ->
+                            navigation.pushToFront(Configuration.LeaderboardScreen)
+                        },
+                        {
+                            navigation.pushToFront(SignUpScreen { accountId ->
                                 ViewAccountScreen(true, accountId)
                             })
                         },
                         {
-                            navigation.pushNew(SignUpScreen { accountId ->
+                            navigation.pushToFront(SignUpScreen { _ ->
                                 SearchingForGameScreen
                             })
                         },
+                        {
+                            navigation.pushToFront(SignUpScreen { _ ->
+                                Configuration.LeaderboardScreen
+                            })
+                        },
                         { accountId ->
-                            navigation.pushNew(ViewAccountScreen(true, accountId))
+                            navigation.pushToFront(ViewAccountScreen(true, accountId))
                         },
                         {
                             navigation.pushToFront(AppStartAnimation)
@@ -117,7 +126,7 @@ class RootComponent(
                             navigation.pushToFront(SignInScreen(it))
                         },
                         { it: Configuration ->
-                            navigation.pushNew(it)
+                            navigation.pushToFront(it)
                         },
                         config.nextScreen,
                         context
@@ -132,7 +141,7 @@ class RootComponent(
                             navigation.pushToFront(SignUpScreen(it))
                         },
                         { it: Configuration ->
-                            navigation.pushNew(it)
+                            navigation.pushToFront(it)
                         },
                         config.nextScreen,
                         context
@@ -160,7 +169,8 @@ class RootComponent(
                 SearchingForGameChild(
                     SearchingForGameScreenComponent(
                         { gameId ->
-                            navigation.pushNew(OnlineGameScreen(gameId))
+                            navigation.pop()
+                            navigation.pushToFront(OnlineGameScreen(gameId))
                         },
                         {
                             navigation.pushToFront(WelcomeScreen)
@@ -171,20 +181,20 @@ class RootComponent(
             }
 
             is OnlineGameScreen -> {
-                AppStartAnimationScreenChild(
-                    AppStartAnimationComponent(
-                        context,
-                        {
-                            navigation.pushNew(WelcomeScreen)
-                        }
-                    )
-                )
                 OnlineGameChild(
                     OnlineGameScreenComponent(
                         config.gameId,
                         {
-                            navigation.pushNew(WelcomeScreen)
+                            navigation.pushToFront(WelcomeScreen)
                         },
+                        context
+                    )
+                )
+            }
+
+            Configuration.LeaderboardScreen -> {
+                Child.LeaderboardChild(
+                    LeaderboardComponent(
                         context
                     )
                 )
@@ -202,6 +212,7 @@ class RootComponent(
         data class GameWithBotChild(val component: GameWithBotScreenComponent) : Child()
         data class SearchingForGameChild(val component: SearchingForGameScreenComponent) : Child()
         data class OnlineGameChild(val component: OnlineGameScreenComponent) : Child()
+        data class LeaderboardChild(val component: LeaderboardComponent) : Child()
     }
 
     @Serializable
@@ -233,5 +244,8 @@ class RootComponent(
 
         @Serializable
         data class OnlineGameScreen(val gameId: Long) : Configuration()
+
+        @Serializable
+        data object LeaderboardScreen : Configuration()
     }
 }

@@ -6,6 +6,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.network
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountPictureByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.CreationDateByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.LeaderboardApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RatingByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
@@ -268,6 +269,46 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             Json.decodeFromString<Long>(request.bodyAsText())
         }.recoverNetworkError(AccountIdByJwtTokenApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
+        }
+    }
+
+    override suspend fun getLeaderboard(jwtToken: String): Result<List<Long>> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/leaderboard"
+        return runCatching {
+            val request = network.get(route) {
+                method = HttpMethod.Get
+                url {
+                    parameters["jwtToken"] = jwtToken
+                }
+            }
+            when (request.status) {
+                HttpStatusCode.BadRequest -> {
+                    when (request.bodyAsText()) {
+                        "no [jwtToken] parameter found" -> {
+                            throw LeaderboardApiResponses.ClientError
+                        }
+                    }
+                }
+
+                HttpStatusCode.Forbidden -> {
+                    when (request.bodyAsText()) {
+                        "[jwtToken] parameter is not valid" -> {
+                            throw LeaderboardApiResponses.CredentialsError
+                        }
+                    }
+                }
+
+                HttpStatusCode.InternalServerError -> {
+                    when (request.bodyAsText()) {
+                        "Internal server error" -> {
+                            throw LeaderboardApiResponses.ServerError
+                        }
+                    }
+                }
+            }
+            Json.decodeFromString<List<Long>>(request.bodyAsText())
+        }.recoverNetworkError(LeaderboardApiResponses.NetworkError).onFailure {
             println("exception in $route - ${it.printStackTrace()}")
         }
     }

@@ -61,6 +61,7 @@ import kotlinx.coroutines.withContext
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
+import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
 import ninemensmorrisappkmp.composeapp.generated.resources.logged_in
 import ninemensmorrisappkmp.composeapp.generated.resources.network_error
 import ninemensmorrisappkmp.composeapp.generated.resources.no_account
@@ -259,6 +260,31 @@ fun RenderMainScreen(
             ) {
                 Text(
                     text = stringResource(Res.string.play_online_game),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+            Button(
+                modifier = Modifier
+                    .height((height * 0.1).dp)
+                    .aspectRatio(4f)
+                    .align(Alignment.CenterHorizontally),
+                onClick = {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        checkingJwtTokenJob.join()
+                        if (isInAccount == null) {
+                            checkingJwtTokenJob.join()
+                        }
+                        withContext(Dispatchers.Main) {
+                            onEvent(WelcomeScreenEvent.ClickLeaderboardButton)
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(5.dp),
+                colors = BlackGrayColors()
+            ) {
+                Text(
+                    text = stringResource(Res.string.leaderboard),
                     color = Color.White,
                     fontSize = 20.sp
                 )

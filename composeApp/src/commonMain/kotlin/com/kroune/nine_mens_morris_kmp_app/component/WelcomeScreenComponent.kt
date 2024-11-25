@@ -24,8 +24,10 @@ class WelcomeScreenComponent(
     private val onNavigationToGameWithFriendScreen: () -> Unit,
     private val onNavigationToGameWithBotScreen: () -> Unit,
     private val onNavigationToOnlineGameScreen: () -> Unit,
+    private val onNavigationToLeaderboardScreen: () -> Unit,
     private val onNavigationToAccountRegistrationThenViewAccountScreen: () -> Unit,
     private val onNavigationToAccountRegistrationThenOnlineGameScreen: () -> Unit,
+    private val onNavigationToAccountRegistrationThenLeaderboardScreen: () -> Unit,
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
     private val onNavigationToAppStartAnimationScreen: () -> Unit
 ) : ComponentContext by componentContext {
@@ -89,7 +91,7 @@ class WelcomeScreenComponent(
 
             WelcomeScreenEvent.ClickOnlineGameButton -> {
                 CoroutineScope(Dispatchers.Default).launch {
-                    if (jwtTokenInteractor.getJwtToken() == null) {
+                    if (isInAccount!!.getOrNull() != true) {
                         withContext(Dispatchers.Main) {
                             onNavigationToAccountRegistrationThenOnlineGameScreen()
                         }
@@ -116,6 +118,20 @@ class WelcomeScreenComponent(
 
             WelcomeScreenEvent.BackToAppStartAnimation -> {
                 onNavigationToAppStartAnimationScreen()
+            }
+
+            WelcomeScreenEvent.ClickLeaderboardButton -> {
+                CoroutineScope(Dispatchers.Default).launch {
+                    if (isInAccount!!.getOrNull() != true) {
+                        withContext(Dispatchers.Main) {
+                            onNavigationToAccountRegistrationThenLeaderboardScreen()
+                        }
+                        return@launch
+                    }
+                    withContext(Dispatchers.Main) {
+                        onNavigationToLeaderboardScreen()
+                    }
+                }
             }
         }
     }

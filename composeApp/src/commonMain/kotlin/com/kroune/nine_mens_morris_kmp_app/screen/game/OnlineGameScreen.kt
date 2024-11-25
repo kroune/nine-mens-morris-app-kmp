@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
+import com.kroune.nine_mens_morris_kmp_app.common.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenComponent
@@ -81,7 +82,7 @@ fun OnlineGameScreen(
             var showGameEndDialog by remember { mutableStateOf(true) }
             if (!component.gameEnded) {
                 showGameEndDialog = true
-                BackCallback {
+                BackHandler(component.backHandler) {
                     displayGiveUpConfirmation.value = true
                 }
             } else {
@@ -126,7 +127,8 @@ fun OnlineGameScreen(
                                     Text("Go back to main screen")
                                 }
                             }
-                        }
+                        },
+                        backgroundColor = Color.DarkGray
                     )
                 }
                 BackCallback() {
@@ -160,6 +162,7 @@ private fun GiveUpConfirm(
             Row {
                 Button(onClick = {
                     onGiveUp()
+                    displayGiveUpConfirmation.value = false
                 }) {
                     Text("Yes")
                 }
