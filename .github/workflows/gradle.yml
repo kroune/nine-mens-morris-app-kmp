@@ -15,22 +15,27 @@ jobs:
         include:
           # android
           - target: assembleRelease
+            tag: android
             directory: composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk
             os: ubuntu-latest
           # ios
           - target: iosSimulatorArm64Binaries
+            tag: ios
             directory: composeApp/build/libs/composeApp-desktop.jar
             os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
+            tag: web
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # linux
           - target: desktopJar
+            tag: linux
             directory: composeApp/build/libs/composeApp-desktop.jar
             os: ubuntu-latest
           # windows
           - target: desktopJar
+            tag: windows
             directory: composeApp/build/libs/composeApp-desktop.jar
             os: windows-latest
     runs-on: ${{ matrix.os }}
@@ -56,5 +61,5 @@ jobs:
     - name: Upload artifacts - ${{ env.repository_name }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.date_today }} - ${{ env.repository_name }} ${{ matrix.os }} - APK(s) release
+        name: ${{ env.date_today }} - ${{ env.repository_name }} ${{ matrix.tag }} - APK(s) release
         path: ${{ matrix.directory }}
