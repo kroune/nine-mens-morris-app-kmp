@@ -7,7 +7,6 @@ import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
 import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserialized
 import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
-import com.kroune.nine_mens_morris_kmp_app.common.receiveText
 import com.kroune.nine_mens_morris_kmp_app.common.sendSerializedCatching
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
@@ -48,11 +47,11 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                 // session was created
                 session.complete(this)
                 // if we have green pieces
-                receivedIsGreenStatus.complete(this@webSocket.receiveText().toBooleanStrict())
+                receivedIsGreenStatus.complete(this@webSocket.receiveDeserialized<Boolean>())
+                // enemy id
+                enemyId.complete(this@webSocket.receiveDeserialized<Long>())
                 // game start position
                 positionReceivedOnConnection.complete(this@webSocket.receiveDeserialized<Position>())
-                // enemy id
-                enemyId.complete(this@webSocket.receiveText().toLong())
                 CoroutineScope(Dispatchers.Default).launch {
                     while (!gameEnded.isCompleted) {
                         val movementResult = channelToSendMoves.receiveCatching()
@@ -84,7 +83,11 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                     val moveResult = this.receiveDeserializedCatching<Movement>()
                     // some error happened, cleaning up everything
                     if (moveResult.exceptionOrNull() != null) {
-                        println("move result exception ${moveResult.exceptionOrNull()!!.printStackTrace()}")
+                        println(
+                            "move result exception ${
+                                moveResult.exceptionOrNull()!!.printStackTrace()
+                            }"
+                        )
                         channelToSendMoves.close()
                         channelToReceiveMoves.close()
                         close()

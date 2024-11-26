@@ -89,14 +89,17 @@ fun OnlineGameScreen(
                 if (showGameEndDialog) {
                     AlertDialog(
                         modifier = Modifier
-                            .background(Color.Gray.copy(alpha = 0.5f)),
+                            .background(Color.Gray.copy(alpha = 0.5f))
+                            .border(1.dp, Color.White),
                         onDismissRequest = { showGameEndDialog = false },
                         title = {
                             Box(
+                                modifier = Modifier.fillMaxWidth(),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text("Game has ended")
                             }
+                            Spacer(modifier = Modifier.height(5.dp))
                         },
                         buttons = {
                             Row(
@@ -113,7 +116,7 @@ fun OnlineGameScreen(
                                 }
                                 Spacer(
                                     modifier = Modifier
-                                        .width(2.dp)
+                                        .width(10.dp)
                                         .height(IntrinsicSize.Max)
                                 )
                                 Button(
@@ -141,7 +144,6 @@ fun OnlineGameScreen(
                 moveHints = component.moveHints,
                 onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
             )
-//            RenderUndoRedo(handleUndo = handleUndo, handleRedo = handleRedo)
         }
     }
 }

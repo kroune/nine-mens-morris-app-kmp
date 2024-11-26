@@ -103,12 +103,11 @@ fun LeaderboardItem(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(10.dp)
         ) {
             DrawIcon(
                 modifier = Modifier
-                    .sizeIn(maxWidth = 50.dp, maxHeight = 50.dp)
-                    .clip(RoundedCornerShape(1.dp)),
+                    .sizeIn(maxWidth = 80.dp, maxHeight = 80.dp),
                 player.pictureByteArray.value,
                 {
                     onEvent(LeaderboardEvent.ReloadIcon(index))
