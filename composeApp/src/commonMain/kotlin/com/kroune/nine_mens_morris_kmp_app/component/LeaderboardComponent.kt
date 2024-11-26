@@ -24,7 +24,7 @@ class LeaderboardComponent(
                 return@launch
             } else {
                 leaderboardData.forEach { id ->
-                    val userInfoUseCase = AccountInfoUseCase(id)
+                    val userInfoUseCase = AccountInfoUseCase(id, needCreationDate = false)
                     useCases.add(userInfoUseCase)
                     val player = Player(
                         accountName = userInfoUseCase.name,

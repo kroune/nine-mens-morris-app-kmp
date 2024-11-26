@@ -247,9 +247,6 @@ fun RenderMainScreen(
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         checkingJwtTokenJob.join()
-                        if (isInAccount == null) {
-                            checkingJwtTokenJob.join()
-                        }
                         withContext(Dispatchers.Main) {
                             onEvent(WelcomeScreenEvent.ClickOnlineGameButton)
                         }

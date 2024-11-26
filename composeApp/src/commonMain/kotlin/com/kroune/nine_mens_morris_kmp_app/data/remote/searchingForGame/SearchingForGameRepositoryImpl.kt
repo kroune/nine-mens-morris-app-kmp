@@ -38,12 +38,6 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                         val textResult = receiveTextCatching()
                         if (textResult.isFailure) {
                             // some error
-                            // TODO: this is debug, remove later
-                            println(
-                                "error happened, when searching for game closeReason = ${closeReason.getCompleted()?.message} exception - ${
-                                    textResult.exceptionOrNull()!!.printStackTrace()
-                                }"
-                            )
                             break
                         }
                         val text = textResult.getOrThrow()
@@ -60,10 +54,14 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                     }
                 }
                 gameIdValue!!
-            }.recoverNetworkError(SearchingForGameResponses.NetworkError)
+            }.recoverNetworkError(SearchingForGameResponses.NetworkError).onFailure {
+                println("error when searching for game ${it.stackTraceToString()}")
+            }
             // TODO: handle other errors
             gameId.complete(result)
         }
-        return Pair(gameId, { session.await()!!.close() })
+        return Pair(gameId, {
+            session.await()!!.close()
+        })
     }
 }

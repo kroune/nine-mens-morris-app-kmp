@@ -68,9 +68,9 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                             println("received exception when sending move ${sendResult.stackTraceToString()}")
                             throw sendResult
                         }
-                        // this basically means we have up
+                        // this basically means we gave up
                         if (movement == Movement(null, null)) {
-                            println("game ended2")
+                            println("we gave up")
                             gameEnded.complete(true)
                             channelToSendMoves.close()
                             channelToReceiveMoves.close()
@@ -84,6 +84,7 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                     val moveResult = this.receiveDeserializedCatching<Movement>()
                     // some error happened, cleaning up everything
                     if (moveResult.exceptionOrNull() != null) {
+                        println("move result exception ${moveResult.exceptionOrNull()!!.printStackTrace()}")
                         channelToSendMoves.close()
                         channelToReceiveMoves.close()
                         close()

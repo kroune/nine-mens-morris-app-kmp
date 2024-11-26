@@ -6,17 +6,20 @@ import com.kroune.nine_mens_morris_kmp_app.interactors.searchingForGameInteracto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.seconds
 
 class SearchingForGameScreenComponent(
     onGameFind: (Long) -> Unit,
-    onGoingToWelcomeScreen: () -> Unit,
+    val onGoingToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
-    var expectedWaitingTime = Channel<Long>()
+    var expectedWaitingTime = Channel<Long>(10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val disconnect: CompletableDeferred<suspend () -> Unit> = CompletableDeferred()
 
@@ -24,13 +27,12 @@ class SearchingForGameScreenComponent(
         CoroutineScope(Dispatchers.Default).launch {
             val (gameId, onClose) = searchingForGameInteractor.searchForGame(expectedWaitingTime)
             disconnect.complete {
-                println("searching for game is closing")
                 onClose()
             }
             gameId.await()!!.let { gameIdResult ->
                 gameIdResult.onFailure {
                     if (it is CancellationException)
-                        // that's ok
+                    // that's ok
                         return@let
                     // TODO: log error
                     it.printStackTrace()
@@ -52,8 +54,11 @@ class SearchingForGameScreenComponent(
         when (event) {
             SearchingForGameScreenEvent.Abort -> {
                 CoroutineScope(Dispatchers.Default).launch {
-                    disconnect.await()()
+                    withTimeoutOrNull(10.seconds) {
+                        disconnect.await()()
+                    }
                 }
+                onGoingToWelcomeScreen()
             }
         }
     }

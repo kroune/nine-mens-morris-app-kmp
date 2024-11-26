@@ -107,7 +107,7 @@ class OnlineGameScreenComponent(
                 accountPicture = _enemyPictureByteArray
             )
             while (!gameEnded.isCompleted) {
-                val moveResult = channelToReceiveMoves.tryReceive()
+                val moveResult = channelToReceiveMoves.receiveCatching()
                 if (moveResult.isFailure) {
                     // game ended
                     if (gameEnded.isCompleted && gameEnded.getCompleted()) {

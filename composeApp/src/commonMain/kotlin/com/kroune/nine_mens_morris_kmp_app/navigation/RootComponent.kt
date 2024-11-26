@@ -4,7 +4,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.popWhile
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
@@ -110,7 +109,7 @@ class RootComponent(
                 ViewAccountScreenChild(
                     ViewAccountScreenComponent(
                         {
-                            navigation.popWhile { it != WelcomeScreen }
+                            navigation.pushToFront(WelcomeScreen)
                         },
                         config.isOwnAccount,
                         config.accountId,
@@ -123,9 +122,11 @@ class RootComponent(
                 SignUpScreenChild(
                     SignUpScreenComponent(
                         {
+                            navigation.pop()
                             navigation.pushToFront(SignInScreen(it))
                         },
                         { it: Configuration ->
+                            navigation.pop()
                             navigation.pushToFront(it)
                         },
                         config.nextScreen,
@@ -138,9 +139,11 @@ class RootComponent(
                 SignInScreenChild(
                     SignInScreenComponent(
                         {
+                            navigation.pop()
                             navigation.pushToFront(SignUpScreen(it))
                         },
                         { it: Configuration ->
+                            navigation.pop()
                             navigation.pushToFront(it)
                         },
                         config.nextScreen,
@@ -173,6 +176,8 @@ class RootComponent(
                             navigation.pushToFront(OnlineGameScreen(gameId))
                         },
                         {
+                            // we don't save state
+                            navigation.pop()
                             navigation.pushToFront(WelcomeScreen)
                         },
                         context

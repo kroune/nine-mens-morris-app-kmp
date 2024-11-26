@@ -52,7 +52,7 @@ class WelcomeScreenComponent(
             _checkingJwtTokenJob.value.start()
         }.stateIn(
             CoroutineScope(Dispatchers.Default),
-            SharingStarted.WhileSubscribed(),
+            SharingStarted.WhileSubscribed(500),
             _checkingJwtTokenJob.value
         )
 
@@ -91,6 +91,7 @@ class WelcomeScreenComponent(
 
             WelcomeScreenEvent.ClickOnlineGameButton -> {
                 CoroutineScope(Dispatchers.Default).launch {
+                    checkingJwtTokenJob.value.join()
                     if (isInAccount!!.getOrNull() != true) {
                         withContext(Dispatchers.Main) {
                             onNavigationToAccountRegistrationThenOnlineGameScreen()
