@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.GameState
 import com.kroune.nineMensMorrisLib.gameStartPosition
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.event.GameWithBotEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -14,8 +15,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GameWithBotScreenComponent(
+    val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
 
     private var botJob: Job? = null
 
@@ -76,6 +78,14 @@ class GameWithBotScreenComponent(
                     gameUseCase.onUndo()
                 }
             }
+
+            GameWithBotEvent.Back -> {
+                onNavigationBack()
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(GameWithBotEvent.Back)
     }
 }

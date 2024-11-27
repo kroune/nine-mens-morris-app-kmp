@@ -9,11 +9,11 @@ import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 
 class ViewAccountScreenComponent(
-    val onNavigationToWelcomeScreen: () -> Unit,
+    val onNavigationBack: () -> Unit,
     val isOwnAccount: Boolean,
     accountId: Long,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
 
     private val _accountName = mutableStateOf<Result<String>?>(null)
     var accountName by _accountName
@@ -36,7 +36,7 @@ class ViewAccountScreenComponent(
         when (event) {
             ViewAccountScreenEvent.Logout -> {
                 jwtTokenInteractor.logout()
-                onNavigationToWelcomeScreen()
+                onNavigationBack()
             }
 
             ViewAccountScreenEvent.ReloadCreationDate -> {
@@ -54,6 +54,14 @@ class ViewAccountScreenComponent(
             ViewAccountScreenEvent.ReloadRating -> {
                 accountInfoUseCase.reloadRating()
             }
+
+            ViewAccountScreenEvent.Back -> {
+                onNavigationBack()
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(ViewAccountScreenEvent.Back)
     }
 }

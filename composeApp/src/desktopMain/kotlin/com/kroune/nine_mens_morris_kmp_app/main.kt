@@ -10,7 +10,7 @@ import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "nineMensMorrisAppKMP",
+        title = "Nine men's morris game",
     ) {
         val lifecycle = LifecycleRegistry()
         val component = remember {

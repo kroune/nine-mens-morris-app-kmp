@@ -30,7 +30,7 @@ class WelcomeScreenComponent(
     private val onNavigationToAccountRegistrationThenLeaderboardScreen: () -> Unit,
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
     private val onNavigationToAppStartAnimationScreen: () -> Unit
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
 
     var isInAccount by mutableStateOf<Result<Boolean>?>(null)
     var accountIdFailure by mutableStateOf<Throwable?>(null)
@@ -117,7 +117,7 @@ class WelcomeScreenComponent(
                 _checkingJwtTokenJob.value.start()
             }
 
-            WelcomeScreenEvent.BackToAppStartAnimation -> {
+            WelcomeScreenEvent.Back -> {
                 onNavigationToAppStartAnimationScreen()
             }
 
@@ -135,5 +135,9 @@ class WelcomeScreenComponent(
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(WelcomeScreenEvent.Back)
     }
 }

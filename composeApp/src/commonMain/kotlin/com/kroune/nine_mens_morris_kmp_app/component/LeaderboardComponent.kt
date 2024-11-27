@@ -11,8 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LeaderboardComponent(
+    val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     val players = mutableStateListOf<Player>()
     private val useCases = mutableListOf<AccountInfoUseCase>()
 
@@ -50,7 +51,15 @@ class LeaderboardComponent(
             is LeaderboardEvent.ReloadRating -> {
                 useCases[event.index].reloadRating()
             }
+
+            LeaderboardEvent.Back -> {
+                onNavigationBack()
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(LeaderboardEvent.Back)
     }
 }
 

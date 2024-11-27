@@ -5,13 +5,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.gameStartPosition
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.event.GameWithFriendEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 
 class GameWithFriendScreenComponent(
+    val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val gameAnalyzeUseCase = GameAnalyzeUseCase()
     private val gameUseCase = GameBoardUseCase(
         mutableStateOf(gameStartPosition),
@@ -58,6 +60,14 @@ class GameWithFriendScreenComponent(
                     gameUseCase.onUndo()
                 }
             }
+
+            GameWithFriendEvent.Back -> {
+                onNavigationBack()
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(GameWithFriendEvent.Back)
     }
 }

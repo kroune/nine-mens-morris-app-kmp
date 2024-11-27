@@ -4,11 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
-import com.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.SignInScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
+import com.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,11 +17,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SignInScreenComponent(
+    val onNavigationBack: () -> Unit,
     val onNavigationToSignUpScreen: ((Long) -> Configuration) -> Unit,
     val switchingScreensLambda: (Configuration) -> Unit,
     val nextScreen: (Long) -> Configuration,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     var username by mutableStateOf("")
     var usernameValid by mutableStateOf(false)
     var password by mutableStateOf("")
@@ -88,6 +90,14 @@ class SignInScreenComponent(
             SignInScreenEvent.SwitchToSignInScreen -> {
                 onNavigationToSignUpScreen(nextScreen)
             }
+
+            SignInScreenEvent.Back -> {
+                onNavigationBack()
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(SignInScreenEvent.Back)
     }
 }

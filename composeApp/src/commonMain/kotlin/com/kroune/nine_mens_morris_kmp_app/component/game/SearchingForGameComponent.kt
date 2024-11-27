@@ -1,6 +1,7 @@
 package com.kroune.nine_mens_morris_kmp_app.component.game
 
 import com.arkivanov.decompose.ComponentContext
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.event.SearchingForGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.searchingForGameInteractor
 import kotlinx.coroutines.CompletableDeferred
@@ -14,11 +15,11 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
 
-class SearchingForGameScreenComponent(
+class SearchingForGameComponent(
     onGameFind: (Long) -> Unit,
     val onGoingToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     var expectedWaitingTime = Channel<Long>(10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val disconnect: CompletableDeferred<suspend () -> Unit> = CompletableDeferred()
@@ -52,7 +53,7 @@ class SearchingForGameScreenComponent(
 
     fun onEvent(event: SearchingForGameScreenEvent) {
         when (event) {
-            SearchingForGameScreenEvent.Abort -> {
+            SearchingForGameScreenEvent.Back -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     withTimeoutOrNull(10.seconds) {
                         disconnect.await()()
@@ -61,5 +62,9 @@ class SearchingForGameScreenComponent(
                 onGoingToWelcomeScreen()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(SearchingForGameScreenEvent.Back)
     }
 }

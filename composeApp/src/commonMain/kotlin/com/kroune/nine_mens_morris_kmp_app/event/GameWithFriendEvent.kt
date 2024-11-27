@@ -7,4 +7,5 @@ sealed interface GameWithFriendEvent {
     data class OnPieceClick(val index: Int): GameWithFriendEvent
     data object Undo: GameWithFriendEvent
     data object Redo: GameWithFriendEvent
+    data object Back: GameWithFriendEvent
 }

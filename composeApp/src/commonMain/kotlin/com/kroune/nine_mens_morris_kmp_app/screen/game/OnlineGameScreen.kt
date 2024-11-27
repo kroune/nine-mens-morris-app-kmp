@@ -41,7 +41,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import com.kroune.nine_mens_morris_kmp_app.common.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
-import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.baseline_account_circle_48
@@ -54,7 +54,7 @@ import org.jetbrains.compose.resources.painterResource
  */
 @Composable
 fun OnlineGameScreen(
-    component: OnlineGameScreenComponent
+    component: OnlineGameComponent
 ) {
     AppTheme {
         Column(

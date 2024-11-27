@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
@@ -13,8 +14,8 @@ import com.kroune.nine_mens_morris_kmp_app.component.auth.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
+import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.AppStartAnimationScreenChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithBotChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithFriendChild
@@ -44,7 +45,7 @@ class RootComponent(
         source = navigation,
         serializer = Configuration.serializer(),
         initialConfiguration = AppStartAnimation,
-        handleBackButton = true,
+        handleBackButton = false,
         childFactory = ::createChild
     )
 
@@ -109,7 +110,7 @@ class RootComponent(
                 ViewAccountScreenChild(
                     ViewAccountScreenComponent(
                         {
-                            navigation.pushToFront(WelcomeScreen)
+                            navigation.pop()
                         },
                         config.isOwnAccount,
                         config.accountId,
@@ -121,6 +122,9 @@ class RootComponent(
             is SignUpScreen -> {
                 SignUpScreenChild(
                     SignUpScreenComponent(
+                        {
+                            navigation.pop()
+                        },
                         {
                             navigation.pop()
                             navigation.pushToFront(SignInScreen(it))
@@ -140,6 +144,9 @@ class RootComponent(
                     SignInScreenComponent(
                         {
                             navigation.pop()
+                        },
+                        {
+                            navigation.pop()
                             navigation.pushToFront(SignUpScreen(it))
                         },
                         { it: Configuration ->
@@ -155,6 +162,9 @@ class RootComponent(
             GameWithFriendScreen -> {
                 GameWithFriendChild(
                     GameWithFriendScreenComponent(
+                        {
+                            navigation.pop()
+                        },
                         context
                     )
                 )
@@ -163,6 +173,9 @@ class RootComponent(
             GameWithBotScreen -> {
                 GameWithBotChild(
                     GameWithBotScreenComponent(
+                        {
+                            navigation.pop()
+                        },
                         context
                     )
                 )
@@ -170,7 +183,7 @@ class RootComponent(
 
             SearchingForGameScreen -> {
                 SearchingForGameChild(
-                    SearchingForGameScreenComponent(
+                    SearchingForGameComponent(
                         { gameId ->
                             navigation.pop()
                             navigation.pushToFront(OnlineGameScreen(gameId))
@@ -187,7 +200,7 @@ class RootComponent(
 
             is OnlineGameScreen -> {
                 OnlineGameChild(
-                    OnlineGameScreenComponent(
+                    OnlineGameComponent(
                         config.gameId,
                         {
                             navigation.pushToFront(WelcomeScreen)
@@ -200,6 +213,9 @@ class RootComponent(
             Configuration.LeaderboardScreen -> {
                 Child.LeaderboardChild(
                     LeaderboardComponent(
+                        {
+                            navigation.pop()
+                        },
                         context
                     )
                 )
@@ -207,17 +223,33 @@ class RootComponent(
         }
     }
 
-    sealed class Child {
-        data class AppStartAnimationScreenChild(val component: AppStartAnimationComponent) : Child()
-        data class WelcomeScreenChild(val component: WelcomeScreenComponent) : Child()
-        data class ViewAccountScreenChild(val component: ViewAccountScreenComponent) : Child()
-        data class SignUpScreenChild(val component: SignUpScreenComponent) : Child()
-        data class SignInScreenChild(val component: SignInScreenComponent) : Child()
-        data class GameWithFriendChild(val component: GameWithFriendScreenComponent) : Child()
-        data class GameWithBotChild(val component: GameWithBotScreenComponent) : Child()
-        data class SearchingForGameChild(val component: SearchingForGameScreenComponent) : Child()
-        data class OnlineGameChild(val component: OnlineGameScreenComponent) : Child()
-        data class LeaderboardChild(val component: LeaderboardComponent) : Child()
+    sealed class Child(open val component: ComponentContextWithBackHandle) {
+        data class AppStartAnimationScreenChild(override val component: AppStartAnimationComponent) :
+            Child(component)
+
+        data class WelcomeScreenChild(override val component: WelcomeScreenComponent) :
+            Child(component)
+
+        data class ViewAccountScreenChild(override val component: ViewAccountScreenComponent) :
+            Child(component)
+
+        data class SignUpScreenChild(override val component: SignUpScreenComponent) :
+            Child(component)
+
+        data class SignInScreenChild(override val component: SignInScreenComponent) :
+            Child(component)
+
+        data class GameWithFriendChild(override val component: GameWithFriendScreenComponent) :
+            Child(component)
+
+        data class GameWithBotChild(override val component: GameWithBotScreenComponent) :
+            Child(component)
+
+        data class SearchingForGameChild(override val component: SearchingForGameComponent) :
+            Child(component)
+
+        data class OnlineGameChild(override val component: OnlineGameComponent) : Child(component)
+        data class LeaderboardChild(override val component: LeaderboardComponent) : Child(component)
     }
 
     @Serializable

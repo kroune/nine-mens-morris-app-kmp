@@ -1,11 +1,15 @@
 package com.kroune.nine_mens_morris_kmp_app.common
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -132,7 +136,8 @@ val network = HttpClient() {
 
 /**
  * The server's address.
- * put your network ip here
+ * 10.0.2.2:8080 for testing on androids
+ * 0.0.0.0:8080 for testing on other targets
  */
 const val SERVER_ADDRESS = "://nine-men-s-morris.me"
 
@@ -157,7 +162,9 @@ fun LoadingCircle() {
         label = ""
     )
     CircularProgressIndicator(
-        progress = animatedProgress
+        progress = animatedProgress,
+        modifier = Modifier
+            .aspectRatio(1f)
     )
 }
 
@@ -308,81 +315,90 @@ fun DrawRating(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState
 ) {
-    when {
-        accountRating == null -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                LoadingCircle()
-            }
-        }
-
-        accountRating.isSuccess -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                text(accountRating.getOrThrow())
-            }
-        }
-
-        accountRating.isFailure -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                IconButton(onClick = {
-                    reloadRating()
-                }) {
-                    Icon(
-                        painter = painterResource(Res.drawable.error),
-                        contentDescription = "Error",
-                        modifier = Modifier
-                            .padding(start = 12.dp, top = 12.dp)
-                            .fillMaxHeight(0.1f)
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
-                    )
+    AnimatedContent(
+        accountRating,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(3000)
+            ) togetherWith fadeOut(animationSpec = tween(3000))
+        },
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            it == null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    LoadingCircle()
                 }
             }
-            val exception = accountRating.exceptionOrNull()
-            val exceptionText: String = when (exception) {
-                !is RatingByIdApiResponses -> {
-                    stringResource(Res.string.unknown_error)
-                }
 
-                is RatingByIdApiResponses.NetworkError -> {
-                    stringResource(Res.string.network_error)
-                }
-
-                RatingByIdApiResponses.ClientError -> {
-                    stringResource(Res.string.client_error)
-                }
-
-                RatingByIdApiResponses.CredentialsError -> {
-                    stringResource(Res.string.credentials_error)
-                }
-
-                RatingByIdApiResponses.ServerError -> {
-                    stringResource(Res.string.server_error)
-                }
-
-                else -> {
-                    error("kotlin broke")
+            it.isSuccess -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 12.dp, top = 12.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    text(it.getOrThrow())
                 }
             }
-            val retryText = stringResource(Res.string.retry)
-            scope.launch {
-                snackbarHostState.showSnackbar(exceptionText, retryText).let {
-                    if (it == SnackbarResult.ActionPerformed) {
+
+            it.isFailure -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 12.dp, top = 12.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    IconButton(onClick = {
                         reloadRating()
+                    }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.error),
+                            contentDescription = "Error",
+                            modifier = Modifier
+                                .padding(start = 12.dp, top = 12.dp)
+                                .fillMaxHeight(0.1f)
+                                .clip(CircleShape)
+                        )
+                    }
+                }
+                val exception = it.exceptionOrNull()
+                val exceptionText: String = when (exception) {
+                    !is RatingByIdApiResponses -> {
+                        stringResource(Res.string.unknown_error)
+                    }
+
+                    is RatingByIdApiResponses.NetworkError -> {
+                        stringResource(Res.string.network_error)
+                    }
+
+                    RatingByIdApiResponses.ClientError -> {
+                        stringResource(Res.string.client_error)
+                    }
+
+                    RatingByIdApiResponses.CredentialsError -> {
+                        stringResource(Res.string.credentials_error)
+                    }
+
+                    RatingByIdApiResponses.ServerError -> {
+                        stringResource(Res.string.server_error)
+                    }
+
+                    else -> {
+                        error("kotlin broke")
+                    }
+                }
+                val retryText = stringResource(Res.string.retry)
+                scope.launch {
+                    snackbarHostState.showSnackbar(exceptionText, retryText).let { snackbarResult ->
+                        if (snackbarResult == SnackbarResult.ActionPerformed) {
+                            reloadRating()
+                        }
                     }
                 }
             }
@@ -493,84 +509,93 @@ fun DrawIcon(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState
 ) {
-    when {
-        pictureByteArray == null -> {
-            Box(
-                modifier = modifier
-                    .padding(start = 12.dp, top = 12.dp)
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .clip(CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                LoadingCircle()
-            }
+    AnimatedContent(
+        pictureByteArray,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(500)
+            ) togetherWith fadeOut(animationSpec = tween(450))
         }
-
-        pictureByteArray.isSuccess -> {
-            Image(
-                bitmap = pictureByteArray.getOrThrow().decodeToImageBitmap(),
-                contentDescription = "Profile icon",
-                modifier = modifier
-                    .padding(start = 12.dp, top = 12.dp)
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .clip(CircleShape)
-            )
-        }
-
-        pictureByteArray.isFailure -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .padding(start = 12.dp, top = 12.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                IconButton(onClick = {
-                    onReload()
-                }) {
-                    Icon(
-                        painter = painterResource(Res.drawable.error),
-                        contentDescription = "Error",
-                        modifier = modifier
-                            .fillMaxHeight()
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
-                    )
+    ) {
+        when {
+            it == null -> {
+                Box(
+                    modifier = modifier
+                        .padding(start = 12.dp, top = 12.dp)
+                        .fillMaxHeight()
+                        .aspectRatio(1f)
+                        .clip(CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingCircle()
                 }
             }
-            val exception = pictureByteArray.exceptionOrNull()
-            val text: String = when (exception) {
-                !is AccountPictureByIdApiResponses -> {
-                    stringResource(Res.string.unknown_error)
-                }
 
-                is AccountPictureByIdApiResponses.NetworkError -> {
-                    stringResource(Res.string.network_error)
-                }
-
-                AccountPictureByIdApiResponses.ClientError -> {
-                    stringResource(Res.string.client_error)
-                }
-
-                AccountPictureByIdApiResponses.CredentialsError -> {
-                    stringResource(Res.string.credentials_error)
-                }
-
-                AccountPictureByIdApiResponses.ServerError -> {
-                    stringResource(Res.string.server_error)
-                }
-
-                else -> {
-                    error("kotlin broke")
-                }
+            it.isSuccess -> {
+                Image(
+                    bitmap = it.getOrThrow().decodeToImageBitmap(),
+                    contentDescription = "Profile icon",
+                    modifier = modifier
+                        .padding(start = 12.dp, top = 12.dp)
+                        .fillMaxHeight()
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                )
             }
-            val retryText = stringResource(Res.string.retry)
-            scope.launch {
-                snackbarHostState.showSnackbar(text, retryText).let {
-                    if (it == SnackbarResult.ActionPerformed) {
+
+            it.isFailure -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .aspectRatio(1f)
+                        .padding(start = 12.dp, top = 12.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    IconButton(onClick = {
                         onReload()
+                    }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.error),
+                            contentDescription = "Error",
+                            modifier = modifier
+                                .fillMaxHeight()
+                                .aspectRatio(1f)
+                                .clip(CircleShape)
+                        )
+                    }
+                }
+                val exception = it.exceptionOrNull()
+                val text: String = when (exception) {
+                    !is AccountPictureByIdApiResponses -> {
+                        stringResource(Res.string.unknown_error)
+                    }
+
+                    is AccountPictureByIdApiResponses.NetworkError -> {
+                        stringResource(Res.string.network_error)
+                    }
+
+                    AccountPictureByIdApiResponses.ClientError -> {
+                        stringResource(Res.string.client_error)
+                    }
+
+                    AccountPictureByIdApiResponses.CredentialsError -> {
+                        stringResource(Res.string.credentials_error)
+                    }
+
+                    AccountPictureByIdApiResponses.ServerError -> {
+                        stringResource(Res.string.server_error)
+                    }
+
+                    else -> {
+                        error("kotlin broke")
+                    }
+                }
+                val retryText = stringResource(Res.string.retry)
+                scope.launch {
+                    snackbarHostState.showSnackbar(text, retryText).let {
+                        if (it == SnackbarResult.ActionPerformed) {
+                            onReload()
+                        }
                     }
                 }
             }

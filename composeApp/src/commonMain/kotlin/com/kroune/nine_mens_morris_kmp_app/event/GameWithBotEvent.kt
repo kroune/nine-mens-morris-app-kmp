@@ -4,4 +4,5 @@ sealed interface GameWithBotEvent {
     data class OnPieceClick(val index: Int): GameWithBotEvent
     data object Undo: GameWithBotEvent
     data object Redo: GameWithBotEvent
+    data object Back: GameWithBotEvent
 }

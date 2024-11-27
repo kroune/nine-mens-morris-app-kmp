@@ -97,13 +97,14 @@ fun LeaderboardItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp)
+            .height(100.dp)
             .clip(RoundedCornerShape(10.dp))
-            .border(3.dp, Color.DarkGray),
+            .border(3.dp, Color.DarkGray, RoundedCornerShape(10.dp)),
         backgroundColor = Color.LightGray
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(10.dp)
+            verticalAlignment = Alignment.CenterVertically
         ) {
             DrawIcon(
                 modifier = Modifier
@@ -116,15 +117,17 @@ fun LeaderboardItem(
                 snackbarHostState
             )
             Column(verticalArrangement = Arrangement.Center) {
-                DrawName(
-                    { it },
-                    player.accountName.value,
-                    { onEvent(LeaderboardEvent.ReloadName(index)) },
-                    scope,
-                    snackbarHostState
-                )
+                Box(modifier = Modifier.height(40.dp)) {
+                    DrawName(
+                        { it },
+                        player.accountName.value,
+                        { onEvent(LeaderboardEvent.ReloadName(index)) },
+                        scope,
+                        snackbarHostState
+                    )
+                }
                 Spacer(modifier = Modifier.height(5.dp))
-                Box(modifier = Modifier.sizeIn(maxHeight = 100.dp, maxWidth = 300.dp)) {
+                Box(modifier = Modifier.height(40.dp)) {
                     DrawRating(
                         {
                             Text(

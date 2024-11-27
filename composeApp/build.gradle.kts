@@ -60,6 +60,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.cio)
+            implementation(compose.uiTooling)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -84,6 +85,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
+            implementation(compose.uiTooling)
         }
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.js)

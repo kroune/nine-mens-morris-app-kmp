@@ -7,6 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
@@ -25,11 +26,11 @@ import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OnlineGameScreenComponent(
+class OnlineGameComponent(
     val gameId: Long,
     val onNavigationToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private var _enemyAccountName = mutableStateOf<Result<String>?>(null)
     var enemyAccountName by _enemyAccountName
 
@@ -172,5 +173,9 @@ class OnlineGameScreenComponent(
                 onNavigationToWelcomeScreen()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        onEvent(OnlineGameScreenEvent.GiveUp)
     }
 }

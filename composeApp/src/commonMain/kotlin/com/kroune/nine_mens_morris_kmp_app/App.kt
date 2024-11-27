@@ -1,24 +1,36 @@
 package com.kroune.nine_mens_morris_kmp_app
 
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
+import com.kroune.nine_mens_morris_kmp_app.common.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.LeaderboardScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithFriendScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.OnlineGameScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.SearchingForGameScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignUpScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
+
 
 @Composable
 fun App(component: RootComponent) {
@@ -29,7 +41,8 @@ fun App(component: RootComponent) {
             animation = stackAnimation(slide())
         ) { child ->
             AppTheme {
-                when (val instance = child.instance) {
+                val instance = child.instance
+                when (instance) {
                     is RootComponent.Child.AppStartAnimationScreenChild -> {
                         AppStartAnimationScreen(instance.component)
                     }
@@ -70,6 +83,27 @@ fun App(component: RootComponent) {
                         LeaderboardScreen(instance.component)
                     }
                 }
+                BackHandler(instance.component.backHandler) {
+                    instance.component.onBackPressed()
+                }
+            }
+            val instance = child.instance
+            // TODO: find cleaner way
+            val requester = remember { FocusRequester() }
+            Box(
+                modifier = Modifier
+                    .onKeyEvent {
+                        if (it.key == Key.Escape) {
+                            instance.component.onBackPressed()
+                            return@onKeyEvent true
+                        }
+                        false
+                    }
+                    .focusRequester(requester)
+                    .focusable()
+            )
+            LaunchedEffect(child.instance::class) {
+                requester.requestFocus()
             }
         }
     }
