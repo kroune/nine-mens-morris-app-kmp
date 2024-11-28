@@ -121,11 +121,11 @@ android {
             keyAlias = "upload"
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
                 val file = File.createTempFile("keyStore", ".jks")
-                file.writeBytes(Base64.decode(System.getenv("keyStore")!!.toByteArray()))
+                file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
 
                 storeFile = file
-                storePassword = System.getenv("keyStorePassword")!!
-                keyPassword = System.getenv("keyStorePassword")!!
+                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
                 storeFile = file("/home/olow/home/olowo/keystore.jks")
                 storePassword = file("/home/olowo/signPass").readText()
