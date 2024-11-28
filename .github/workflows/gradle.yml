@@ -31,12 +31,12 @@ jobs:
           # linux
           - target: desktopJar
             tag: linux
-            directory: composeApp/build/libs/composeApp-desktop.jar
+            directory: composeApp/build/compose/binaries/main-release/deb/
             os: ubuntu-latest
           # windows
-          - target: desktopJar
+          - target: packageReleaseExe
             tag: windows
-            directory: composeApp/build/libs/composeApp-desktop.jar
+            directory: composeApp/build/compose/binaries/main-release/exe/
             os: windows-latest
     runs-on: ${{ matrix.os }}
 

@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -34,7 +33,6 @@ kotlin {
     }
 
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -97,7 +95,7 @@ kotlin {
 
 @OptIn(ExperimentalEncodingApi::class)
 android {
-    namespace = "com.kroune.nine_mens_morris_kmp_app"
+    namespace = "com.kroune.nine_mens_morris"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -153,11 +151,22 @@ android {
 
 compose.desktop {
     application {
+        buildTypes.release.proguard {
+            version.set("7.6.0")
+//            configurationFiles.from("proguard.pro")
+        }
         mainClass = "com.kroune.nine_mens_morris_kmp_app.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.kroune.nine_mens_morris_kmp_app"
+            targetFormats(
+                // macos
+                TargetFormat.Dmg, TargetFormat.Pkg,
+                // linux
+                TargetFormat.Rpm, TargetFormat.Deb,
+                // windows
+                TargetFormat.Msi, TargetFormat.Exe
+            )
+            packageName = "com.kroune.nine_mens_morris"
             packageVersion = "1.0.0"
         }
     }
