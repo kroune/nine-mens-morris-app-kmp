@@ -29,7 +29,7 @@ jobs:
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # linux
-          - target: desktopJar
+          - target: packageReleaseDeb
             tag: linux
             directory: composeApp/build/compose/binaries/main-release/deb/
             os: ubuntu-latest
