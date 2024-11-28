@@ -38,11 +38,24 @@ class GameWithBotScreenComponent(
             }
         },
         onUndo = {
+            defaultOnUndo()
             botJob?.cancel()
             botJob = CoroutineScope(Dispatchers.Default).launch {
                 delay(800)
                 while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
                     botMove()
+                }
+            }
+        },
+        onRedo = {
+            if (pos.value.pieceToMove) {
+                defaultOnRedo()
+                botJob?.cancel()
+                botJob = CoroutineScope(Dispatchers.Default).launch {
+                    delay(800)
+                    while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
+                        botMove()
+                    }
                 }
             }
         },

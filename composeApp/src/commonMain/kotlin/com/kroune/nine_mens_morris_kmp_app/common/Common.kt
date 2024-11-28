@@ -328,7 +328,7 @@ fun DrawRating(
             it == null -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .aspectRatio(1f)
                         .padding(12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -339,7 +339,6 @@ fun DrawRating(
             it.isSuccess -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(start = 12.dp, top = 12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -350,7 +349,6 @@ fun DrawRating(
             it.isFailure -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(start = 12.dp, top = 12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -362,7 +360,7 @@ fun DrawRating(
                             contentDescription = "Error",
                             modifier = Modifier
                                 .padding(start = 12.dp, top = 12.dp)
-                                .fillMaxHeight(0.1f)
+                                .aspectRatio(1f)
                                 .clip(CircleShape)
                         )
                     }

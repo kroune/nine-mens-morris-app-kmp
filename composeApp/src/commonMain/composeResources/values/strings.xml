@@ -17,7 +17,7 @@
     <string name="invalid_login">Your login is invalid</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
-    <string name="no_account_question_mark">Don\'t have an account?</string>
+    <string name="no_account_question_mark">Don't have an account?</string>
     <string name="repeat_pass">Repeat your password</string>
     <string name="passes_do_not_match">Your passwords do not match</string>
     <string name="have_account_question_mark">Have an account?</string>
@@ -35,7 +35,7 @@
     <string name="tutorial_placement_highlighting">Possible moves are highlighted</string>
     <string name="tutorial_normal_moves_condition">If you don't have any pieces to place and your total pieces count > 3 you can move any of them to the next cell</string>
     <string name="tutorial_normal_moves_highlighting">Possible moves are highlighted when you have selected a piece to move</string>
-    <string name="tutorial_fly_condition">If you don\'t have any figures to place and your pieces count = 3 you can "fly" (move you piece to any empty place)</string>
+    <string name="tutorial_fly_condition">If you don't have any figures to place and your pieces count = 3 you can "fly" (move you piece to any empty place)</string>
     <string name="tutorial_fly_highlighting">Possible moves are highlighted when you have selected a piece to move</string>
     <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>
     <string name="tutorial_triples_highlighting">Such rows are highlighted with grey</string>

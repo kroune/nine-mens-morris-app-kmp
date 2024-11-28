@@ -42,9 +42,9 @@ fun ViewAccountScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         backgroundColor = Color.Transparent
-    ) { contentPadding ->
+    ) { _ ->
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             Row(
                 modifier = Modifier
@@ -83,7 +83,7 @@ fun ViewAccountScreen(
             if (isOwnAccount) {
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight(),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     DrawOwnAccountOptions(

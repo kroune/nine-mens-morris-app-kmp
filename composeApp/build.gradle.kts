@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -30,16 +32,16 @@ kotlin {
         }
         binaries.executable()
     }
-    
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     jvm("desktop")
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -50,7 +52,7 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         val desktopMain by getting
         iosMain.dependencies {
@@ -93,6 +95,7 @@ kotlin {
     }
 }
 
+@OptIn(ExperimentalEncodingApi::class)
 android {
     namespace = "com.kroune.nine_mens_morris_kmp_app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -102,7 +105,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.kroune.nine_mens_morris_kmp_app"
+        applicationId = "com.kroune.nine_mens_morris"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -113,9 +116,27 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            keyAlias = "upload"
+            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
+                val file = File.createTempFile("keyStore", ".jks")
+                file.writeBytes(Base64.decode(System.getenv("keyStore")!!.toByteArray()))
+
+                storeFile = file
+                storePassword = System.getenv("keyStorePassword")!!
+                keyPassword = System.getenv("keyStorePassword")!!
+            } else {
+                storeFile = file("/home/olow/home/olowo/keystore.jks")
+                storePassword = file("/home/olowo/signPass").readText()
+                keyPassword = file("/home/olowo/signPass").readText()
+            }
+        }
+    }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

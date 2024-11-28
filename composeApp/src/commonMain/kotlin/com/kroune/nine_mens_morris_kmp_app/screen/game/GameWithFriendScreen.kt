@@ -40,10 +40,6 @@ fun GameWithFriendScreen(
         }
     )
     RenderPieceCount(pos = component.position)
-    RenderUndoRedo(
-        handleUndo = { onEvent(GameWithFriendEvent.Undo) },
-        handleRedo = { onEvent(GameWithFriendEvent.Redo) }
-    )
     Box(
         modifier = Modifier
             .padding(0.dp, GAME_BOARD_BUTTON_WIDTH * 9.5f, 0.dp, 0.dp)
@@ -58,4 +54,8 @@ fun GameWithFriendScreen(
             decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
         )
     }
+    RenderUndoRedo(
+        handleUndo = { onEvent(GameWithFriendEvent.Undo) },
+        handleRedo = { onEvent(GameWithFriendEvent.Redo) }
+    )
 }

@@ -27,12 +27,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.redo_move
 import ninemensmorrisappkmp.composeapp.generated.resources.undo_move
 import org.jetbrains.compose.resources.painterResource
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * renders game board
@@ -289,6 +292,7 @@ private fun RowOfCircles(
  * @param elementIndex index of this circle
  * @param onClick function we execute on click
  */
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
 private fun CircledButton(
     elementIndex: Int,
@@ -297,6 +301,7 @@ private fun CircledButton(
     moveHints: List<Int>,
     onClick: (Int) -> Unit
 ) {
+    Base64.decode("")
     Box(
         modifier = Modifier
             .size(GAME_BOARD_BUTTON_WIDTH),
@@ -340,6 +345,7 @@ private fun CircledButton(
 fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
     Row(
         modifier = Modifier
+            .zIndex(2f)
             .fillMaxSize(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
@@ -352,7 +358,7 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
             },
         ) {
             Icon(
-                painter = painterResource(Res.drawable.redo_move), "undo"
+                painter = painterResource(Res.drawable.undo_move), "undo"
             )
         }
         IconButton(modifier = Modifier
@@ -361,7 +367,7 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
                 handleRedo()
             }) {
             Icon(
-                painter = painterResource(Res.drawable.undo_move), "redo"
+                painter = painterResource(Res.drawable.redo_move), "redo"
             )
         }
     }
