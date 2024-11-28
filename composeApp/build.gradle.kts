@@ -95,7 +95,7 @@ kotlin {
 
 @OptIn(ExperimentalEncodingApi::class)
 android {
-    namespace = "com.kroune.nine_mens_morris"
+    namespace = "com.kroune.nine_mens_morris_kmp_app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
