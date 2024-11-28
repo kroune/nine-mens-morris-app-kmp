@@ -126,7 +126,6 @@ android {
                 keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
                 storeFile = file("/home/olowo/keystore.jks")
-                println(file("/home/olowo/signPass").readText())
                 storePassword = file("/home/olowo/signPass").readText()
                 keyPassword = file("/home/olowo/signPass").readText()
             }
@@ -153,8 +152,8 @@ android {
 compose.desktop {
     application {
         buildTypes.release.proguard {
+            this.isEnabled = false
             version.set("7.6.0")
-//            configurationFiles.from("proguard.pro")
         }
         mainClass = "com.kroune.nine_mens_morris_kmp_app.MainKt"
 
@@ -167,7 +166,7 @@ compose.desktop {
                 // windows
                 TargetFormat.Msi, TargetFormat.Exe
             )
-            packageName = "com.kroune.nine_mens_morris"
+            packageName = "nineMensMorris"
             packageVersion = "1.0.0"
         }
     }
