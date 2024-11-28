@@ -41,6 +41,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       repository_name: NineMensMorris
     steps:
     - uses: actions/checkout@v4
