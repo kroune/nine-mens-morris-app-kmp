@@ -125,7 +125,8 @@ android {
                 storePassword = System.getenv("KEYSTORE_PASSWORD")!!
                 keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
-                storeFile = file("/home/olow/home/olowo/keystore.jks")
+                storeFile = file("/home/olowo/keystore.jks")
+                println(file("/home/olowo/signPass").readText())
                 storePassword = file("/home/olowo/signPass").readText()
                 keyPassword = file("/home/olowo/signPass").readText()
             }

@@ -16,7 +16,7 @@ jobs:
           # android
           - target: assembleRelease
             tag: android
-            directory: composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk
+            directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
           # ios
           - target: iosSimulatorArm64Binaries
