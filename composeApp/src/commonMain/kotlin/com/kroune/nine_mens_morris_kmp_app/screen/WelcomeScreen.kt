@@ -86,7 +86,7 @@ fun WelcomeScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         backgroundColor = Color.Transparent
-    ) { contentPadding ->
+    ) { _ ->
         val isInAccount = component.isInAccount
         val checkingJwtTokenJob = component.checkingJwtTokenJob.collectAsStateWithLifecycle().value
         val onEvent: (WelcomeScreenEvent) -> Unit = { component.onEvent(it) }
