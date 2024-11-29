@@ -73,4 +73,5 @@ jobs:
         name:  ${{ env.repository_name }}-${{ matrix.tag }}-artifact
         path: ${{ matrix.directory }}
     - name: List all directories
+      if: always()
       run: find composeApp/build/
