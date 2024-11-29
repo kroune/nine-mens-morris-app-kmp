@@ -78,7 +78,8 @@ class OnlineGameComponent(
     val onGiveUp: suspend () -> Unit = {
         channelToSendMoves.send(Movement(null, null))
     }
-    lateinit var onGiveClose: suspend () -> Unit
+    private var onGiveClose: (suspend () -> Unit)? = null
+    var displayGiveUpConfirmation = mutableStateOf(false)
 
 
     init {
@@ -138,6 +139,7 @@ class OnlineGameComponent(
     fun onEvent(event: OnlineGameScreenEvent) {
         when (event) {
             OnlineGameScreenEvent.GiveUp -> {
+                displayGiveUpConfirmation.value = false
                 CoroutineScope(Dispatchers.Default).launch {
                     onGiveUp()
                 }
@@ -172,10 +174,14 @@ class OnlineGameComponent(
             OnlineGameScreenEvent.NavigateToMainScreen -> {
                 onNavigationToWelcomeScreen()
             }
+
+            OnlineGameScreenEvent.GiveUpDiscarded -> {
+                displayGiveUpConfirmation.value = false
+            }
         }
     }
 
     override fun onBackPressed() {
-        onEvent(OnlineGameScreenEvent.GiveUp)
+        displayGiveUpConfirmation.value = true
     }
 }

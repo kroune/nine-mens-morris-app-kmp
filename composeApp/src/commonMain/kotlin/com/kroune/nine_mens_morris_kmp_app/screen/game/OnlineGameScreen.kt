@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,16 +39,19 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
-import com.kroune.nine_mens_morris_kmp_app.common.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.back_to_main_screen
 import ninemensmorrisappkmp.composeapp.generated.resources.baseline_account_circle_48
+import ninemensmorrisappkmp.composeapp.generated.resources.game_ended
+import ninemensmorrisappkmp.composeapp.generated.resources.keep_me_here
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * renders online game screen
@@ -72,8 +76,11 @@ fun OnlineGameScreen(
                 enemyAccountRating = component.enemyAccountRating,
             )
 
-            if (displayGiveUpConfirmation.value) {
+            if (component.displayGiveUpConfirmation.value) {
                 GiveUpConfirm(
+                    onGiveUpDiscarded = {
+                        component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
+                    },
                     onGiveUp = {
                         component.onEvent(OnlineGameScreenEvent.GiveUp)
                     }
@@ -81,10 +88,8 @@ fun OnlineGameScreen(
             }
             var showGameEndDialog by remember { mutableStateOf(true) }
             if (!component.gameEnded) {
+                // reset showing status to default
                 showGameEndDialog = true
-                BackHandler(component.backHandler) {
-                    displayGiveUpConfirmation.value = true
-                }
             } else {
                 if (showGameEndDialog) {
                     AlertDialog(
@@ -94,42 +99,44 @@ fun OnlineGameScreen(
                         onDismissRequest = { showGameEndDialog = false },
                         title = {
                             Box(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("Game has ended")
+                                Text(stringResource(Res.string.game_ended))
                             }
-                            Spacer(modifier = Modifier.height(5.dp))
                         },
                         buttons = {
+                            Spacer(modifier = Modifier.height(20.dp))
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-                                verticalAlignment = Alignment.CenterVertically
+                                modifier = Modifier
+                                    .height(intrinsicSize = IntrinsicSize.Max),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Button(
                                     modifier = Modifier
-                                        .height(IntrinsicSize.Max),
+                                        .weight(1f)
+                                        .fillMaxHeight(),
                                     colors = BlackGrayColors(),
                                     onClick = { showGameEndDialog = false }
                                 ) {
-                                    Text("Keep me here")
+                                    Text(stringResource(Res.string.keep_me_here))
                                 }
-                                Spacer(
-                                    modifier = Modifier
-                                        .width(10.dp)
-                                        .height(IntrinsicSize.Max)
-                                )
+                                Spacer(modifier = Modifier.width(15.dp))
                                 Button(
                                     modifier = Modifier
-                                        .height(IntrinsicSize.Max),
+                                        .weight(1f)
+                                        .fillMaxHeight(),
                                     colors = BlackGrayColors(),
                                     onClick = {
                                         component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
                                     }
                                 ) {
-                                    Text("Go back to main screen")
+                                    Text(stringResource(Res.string.back_to_main_screen))
                                 }
                             }
+                            Spacer(modifier = Modifier.height(20.dp))
                         },
                         backgroundColor = Color.DarkGray
                     )
@@ -148,33 +155,37 @@ fun OnlineGameScreen(
     }
 }
 
-private val displayGiveUpConfirmation = mutableStateOf(false)
-
 @Composable
 private fun GiveUpConfirm(
+    onGiveUpDiscarded: () -> Unit,
     onGiveUp: () -> Unit
 ) {
-    AlertDialog(onDismissRequest = {
-        displayGiveUpConfirmation.value = false
-    },
+    AlertDialog(
+        onDismissRequest = {
+            onGiveUpDiscarded()
+        },
         title = {
             Text("Are you sure you want to give up?")
         },
         buttons = {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Button(onClick = {
-                    onGiveUp()
-                    displayGiveUpConfirmation.value = false
-                }) {
-                    Text("Yes")
-                }
-                Button(onClick = {
-                    displayGiveUpConfirmation.value = false
+                    onGiveUpDiscarded()
                 }) {
                     Text("No")
                 }
+                Button(onClick = {
+                    onGiveUp()
+                }) {
+                    Text("Yes")
+                }
             }
-        })
+        },
+        backgroundColor = Color.Gray
+    )
 }
 
 @Composable

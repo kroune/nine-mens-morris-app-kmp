@@ -39,6 +39,7 @@
     <string name="tutorial_triples_highlighting">Такие линии подсвеченны серым цветом</string>
     <string name="tutorial_removal_moves_explanation">Для удаления фишки противника просто нажмите на неё</string>
     <string name="rating">Рейтинг</string>
+    <string name="keep_me_here">Оставьте меня тут</string>
     <!--    <string name="you_have_lost">Вы проиграли</string>-->
     <!--    <string name="you_have_won">Вы выграли</string>-->
     <!--    <string name="server_error">Ошибка сервера, попробуйте чуть позже  или сообщите об этом на гитхабе</string>-->

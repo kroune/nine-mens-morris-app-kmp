@@ -30,6 +30,7 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,7 @@ import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -90,25 +92,25 @@ fun WelcomeScreen(
         val isInAccount = component.isInAccount
         val checkingJwtTokenJob = component.checkingJwtTokenJob.collectAsStateWithLifecycle().value
         val onEvent: (WelcomeScreenEvent) -> Unit = { component.onEvent(it) }
-        val hasSeen = component.hasSeenTutorial
         val viewAccountDataLoadingOverlay = remember { mutableStateOf(false) }
-        val playOnlineGameOverlay = remember { mutableStateOf(false) }
         val coroutine = rememberCoroutineScope()
-        // we check this to prevent race condition, since if user is searching for game
-        // viewing account gets less priority
-        if (viewAccountDataLoadingOverlay.value && !playOnlineGameOverlay.value) {
-            HandleAccountViewOverlay(
+        if (viewAccountDataLoadingOverlay.value) {
+            WaitingForAccountVerificationOverlay(
                 checkingJwtTokenJob,
                 onEvent
             )
         }
-        if (playOnlineGameOverlay.value) {
-            HandleOverlay()
-        }
-        val scrollState = rememberScrollState(if (!hasSeen) Int.MAX_VALUE else 0)
+        val scrollState = rememberScrollState(0)
         val topScreen = remember { mutableStateOf(true) }
-        if (scrollState.value == 0) {
-            onEvent(WelcomeScreenEvent.CloseTutorial)
+        // show that this screen can be scrolled
+        LaunchedEffect(Unit) {
+            delay(250L)
+            if (!component.hasSeenTutorial) {
+                scrollState.animateScrollTo(
+                    scrollState.maxValue,
+                    animationSpec = tween(durationMillis = 750, easing = LinearEasing)
+                )
+            }
         }
         class CustomFlingBehaviour : FlingBehavior {
             override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
@@ -118,7 +120,12 @@ fun WelcomeScreen(
                 topScreen.value = scrollUp
                 coroutine.launch {
                     scrollState.animateScrollTo(
-                        if (scrollUp) 0 else scrollState.maxValue,
+                        if (scrollUp) {
+                            onEvent(WelcomeScreenEvent.CloseTutorial)
+                            0
+                        } else {
+                            scrollState.maxValue
+                        },
                         animationSpec = tween(durationMillis = 300, easing = LinearEasing)
                     )
                 }
@@ -397,7 +404,7 @@ private fun BoxScope.ViewAccountElement(
  * decides where should we be navigated
  */
 @Composable
-private fun HandleAccountViewOverlay(
+private fun WaitingForAccountVerificationOverlay(
     checkingJwtTokenJob: Job,
     onEvent: (WelcomeScreenEvent) -> Unit,
 ) {

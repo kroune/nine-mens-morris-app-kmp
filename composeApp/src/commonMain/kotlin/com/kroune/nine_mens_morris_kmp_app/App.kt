@@ -30,6 +30,9 @@ import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithFriendScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.OnlineGameScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.SearchingForGameScreen
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -88,7 +91,6 @@ fun App(component: RootComponent) {
                 }
             }
             val instance = child.instance
-            // TODO: find cleaner way
             val requester = remember { FocusRequester() }
             Box(
                 modifier = Modifier
@@ -102,8 +104,14 @@ fun App(component: RootComponent) {
                     .focusRequester(requester)
                     .focusable()
             )
-            LaunchedEffect(child.instance::class) {
-                requester.requestFocus()
+            // TODO: find cleaner way
+            LaunchedEffect(Unit) {
+                while (true) {
+                    withContext(Dispatchers.Main) {
+                        requester.requestFocus()
+                    }
+                    delay(500L)
+                }
             }
         }
     }

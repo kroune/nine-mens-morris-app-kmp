@@ -41,6 +41,8 @@
     <string name="tutorial_triples_highlighting">Such rows are highlighted with grey</string>
     <string name="tutorial_removal_moves_explanation">For removing enemy's piece simply click on it</string>
     <string name="rating">Rating</string>
+    <string name="keep_me_here">Keep me here</string>
+    <string name="back_to_main_screen">Back to main screen</string>
 <!--    <string name="you_have_lost">You have lost</string>-->
 <!--    <string name="you_have_won">You have won</string>-->
 <!--    <string name="server_error">Server error, pls try later or report this at GitHub</string>-->

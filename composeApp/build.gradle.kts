@@ -158,6 +158,12 @@ compose.desktop {
         mainClass = "com.kroune.nine_mens_morris_kmp_app.MainKt"
 
         nativeDistributions {
+            linux {
+                iconFile = project.file("icons/icon.png")
+            }
+            windows {
+                iconFile = project.file("icons/icon.ico")
+            }
             targetFormats(
                 // macos
                 TargetFormat.Dmg, TargetFormat.Pkg,
