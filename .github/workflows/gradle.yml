@@ -18,6 +18,11 @@ jobs:
             tag: android
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
+          # macos
+          - target: packageReleasePkg
+            tag: ios
+            directory: composeApp/build/compose/binaries/main-release/pkg/
+            os: macos-latest
           # ios
           - target: iosSimulatorArm64Binaries
             tag: ios
@@ -67,3 +72,4 @@ jobs:
       with:
         name:  ${{ env.repository_name }}-${{ matrix.tag }}-artifact
         path: ${{ matrix.directory }}
+    - name: List all directories
