@@ -174,7 +174,7 @@ compose.desktop {
             )
             packageName = "nineMensMorris"
             packageVersion = "1.0.0"
-            description = "Implementation of a table game called \"Nine men's morris\""
+            description = "Implementation of a table game called <Nine mens morris>"
             copyright = "© 2024 Kroune. All rights reserved."
             licenseFile = project.file("LICENSE")
         }
