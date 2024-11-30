@@ -77,6 +77,5 @@ jobs:
         path: ${{ matrix.directory }}
     - name: List all directories
       if: always()
-      run: | 
-        find composeApp/build/
-        find composeApp/build/ -type f -name "*.txt" -exec cat {} \;
+      run: |
+        ls -R
