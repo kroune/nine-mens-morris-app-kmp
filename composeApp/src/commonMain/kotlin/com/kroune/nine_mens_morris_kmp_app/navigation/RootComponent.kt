@@ -5,6 +5,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
@@ -48,6 +49,14 @@ class RootComponent(
         handleBackButton = false,
         childFactory = ::createChild
     )
+
+    private fun popOrReplaceWithWelcomeScreenIfStackIsEmpty() {
+        navigation.pop {
+            if (!it) {
+                navigation.replaceCurrent(WelcomeScreen)
+            }
+        }
+    }
 
     fun createChild(
         config: Configuration,
@@ -110,7 +119,7 @@ class RootComponent(
                 ViewAccountScreenChild(
                     ViewAccountScreenComponent(
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                         },
                         config.isOwnAccount,
                         config.accountId,
@@ -123,14 +132,14 @@ class RootComponent(
                 SignUpScreenChild(
                     SignUpScreenComponent(
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                         },
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                             navigation.pushToFront(SignInScreen(it))
                         },
                         { it: Configuration ->
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                             navigation.pushToFront(it)
                         },
                         config.nextScreen,
@@ -143,14 +152,14 @@ class RootComponent(
                 SignInScreenChild(
                     SignInScreenComponent(
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                         },
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                             navigation.pushToFront(SignUpScreen(it))
                         },
                         { it: Configuration ->
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                             navigation.pushToFront(it)
                         },
                         config.nextScreen,
@@ -163,7 +172,7 @@ class RootComponent(
                 GameWithFriendChild(
                     GameWithFriendScreenComponent(
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                         },
                         context
                     )
@@ -174,7 +183,7 @@ class RootComponent(
                 GameWithBotChild(
                     GameWithBotScreenComponent(
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                         },
                         context
                     )
@@ -185,12 +194,12 @@ class RootComponent(
                 SearchingForGameChild(
                     SearchingForGameComponent(
                         { gameId ->
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                             navigation.pushToFront(OnlineGameScreen(gameId))
                         },
                         {
                             // we don't save state
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                             navigation.pushToFront(WelcomeScreen)
                         },
                         context
@@ -214,7 +223,7 @@ class RootComponent(
                 Child.LeaderboardChild(
                     LeaderboardComponent(
                         {
-                            navigation.pop()
+                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
                         },
                         context
                     )

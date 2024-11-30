@@ -29,9 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.common.DrawIcon
-import com.kroune.nine_mens_morris_kmp_app.common.DrawName
-import com.kroune.nine_mens_morris_kmp_app.common.DrawRating
 import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
 import com.kroune.nine_mens_morris_kmp_app.component.Player
 import com.kroune.nine_mens_morris_kmp_app.event.LeaderboardEvent

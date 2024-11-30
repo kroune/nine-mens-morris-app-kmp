@@ -17,10 +17,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.kroune.nine_mens_morris_kmp_app.common.DrawAccountCreationDate
-import com.kroune.nine_mens_morris_kmp_app.common.DrawIcon
-import com.kroune.nine_mens_morris_kmp_app.common.DrawName
-import com.kroune.nine_mens_morris_kmp_app.common.DrawRating
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
 

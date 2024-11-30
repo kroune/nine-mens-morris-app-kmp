@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.common
+package com.kroune.nine_mens_morris_kmp_app.screen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackHandler
+import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountPictureByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.CreationDateByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
@@ -206,7 +207,7 @@ fun DrawAccountCreationDate(
                     )
                 }
             }
-            val exception = accountCreationDate.exceptionOrNull()
+            val exception = accountCreationDate.exceptionOrNull()!!
             val exceptionText: String = when (exception) {
                 !is CreationDateByIdApiResponses -> {
                     stringResource(Res.string.unknown_error)
@@ -309,7 +310,7 @@ fun DrawIcon(
                         )
                     }
                 }
-                val exception = it.exceptionOrNull()
+                val exception = it.exceptionOrNull()!!
                 val text: String = when (exception) {
                     !is AccountPictureByIdApiResponses -> {
                         stringResource(Res.string.unknown_error)
@@ -337,8 +338,8 @@ fun DrawIcon(
                 }
                 val retryText = stringResource(Res.string.retry)
                 scope.launch {
-                    snackbarHostState.showSnackbar(text, retryText).let {
-                        if (it == SnackbarResult.ActionPerformed) {
+                    snackbarHostState.showSnackbar(text, retryText).let { result ->
+                        if (result == SnackbarResult.ActionPerformed) {
                             onReload()
                         }
                     }
@@ -431,8 +432,8 @@ fun DrawName(
             }
             val retryText = stringResource(Res.string.retry)
             scope.launch {
-                snackbarHostState.showSnackbar(exceptionText, retryText).let {
-                    if (it == SnackbarResult.ActionPerformed) {
+                snackbarHostState.showSnackbar(exceptionText, retryText).let { result ->
+                    if (result == SnackbarResult.ActionPerformed) {
                         onReload()
                     }
                 }

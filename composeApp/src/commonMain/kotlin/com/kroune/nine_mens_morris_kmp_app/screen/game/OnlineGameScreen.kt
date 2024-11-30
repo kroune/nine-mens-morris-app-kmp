@@ -6,10 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,19 +37,15 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
-import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
-import ninemensmorrisappkmp.composeapp.generated.resources.back_to_main_screen
 import ninemensmorrisappkmp.composeapp.generated.resources.baseline_account_circle_48
-import ninemensmorrisappkmp.composeapp.generated.resources.game_ended
-import ninemensmorrisappkmp.composeapp.generated.resources.keep_me_here
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 /**
  * renders online game screen
@@ -92,53 +86,16 @@ fun OnlineGameScreen(
                 showGameEndDialog = true
             } else {
                 if (showGameEndDialog) {
-                    AlertDialog(
-                        modifier = Modifier
-                            .background(Color.Gray.copy(alpha = 0.5f))
-                            .border(1.dp, Color.White),
-                        onDismissRequest = { showGameEndDialog = false },
-                        title = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(stringResource(Res.string.game_ended))
-                            }
+                    GameEndPopUp(
+                        {
+                            showGameEndDialog = false
                         },
-                        buttons = {
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Row(
-                                modifier = Modifier
-                                    .height(intrinsicSize = IntrinsicSize.Max),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Button(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight(),
-                                    colors = BlackGrayColors(),
-                                    onClick = { showGameEndDialog = false }
-                                ) {
-                                    Text(stringResource(Res.string.keep_me_here))
-                                }
-                                Spacer(modifier = Modifier.width(15.dp))
-                                Button(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight(),
-                                    colors = BlackGrayColors(),
-                                    onClick = {
-                                        component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
-                                    }
-                                ) {
-                                    Text(stringResource(Res.string.back_to_main_screen))
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
+                        {
+                            component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
                         },
-                        backgroundColor = Color.DarkGray
+                        {
+                            component.onEvent(OnlineGameScreenEvent.GiveUp)
+                        }
                     )
                 }
                 BackCallback() {

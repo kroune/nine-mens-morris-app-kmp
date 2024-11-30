@@ -2,6 +2,7 @@ package com.kroune.nine_mens_morris_kmp_app.component.game
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.GameState
 import com.kroune.nineMensMorrisLib.gameStartPosition
@@ -21,6 +22,7 @@ class GameWithBotScreenComponent(
 
     private var botJob: Job? = null
 
+    var gameEnded by mutableStateOf(false)
     private val gameUseCase = GameBoardUseCase(
         mutableStateOf(gameStartPosition),
         onClick = { index ->
@@ -60,6 +62,7 @@ class GameWithBotScreenComponent(
             }
         },
         onGameEnd = {
+            gameEnded = true
         }
     )
 
@@ -71,7 +74,6 @@ class GameWithBotScreenComponent(
     val position by gameUseCase.pos
     val selectedButton by gameUseCase.selectedButton
     val moveHints by gameUseCase.moveHints
-
     fun onEvent(event: GameWithBotEvent) {
         when (event) {
             is GameWithBotEvent.OnPieceClick -> {

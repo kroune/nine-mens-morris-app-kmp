@@ -12,7 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.common.BackHandler
+import com.kroune.nine_mens_morris_kmp_app.screen.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.SearchingForGameScreenEvent

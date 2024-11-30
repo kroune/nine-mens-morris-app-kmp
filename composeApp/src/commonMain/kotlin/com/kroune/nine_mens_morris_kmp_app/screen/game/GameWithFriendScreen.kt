@@ -29,7 +29,18 @@ fun GameWithFriendScreen(
     }
     var gameEndPopUpClosed by remember { mutableStateOf(false) }
     if (!gameEndPopUpClosed && component.gameEnded) {
-        GameEndPopUp({ gameEndPopUpClosed = true })
+        GameEndPopUp(
+            {
+                gameEndPopUpClosed = true
+            },
+            {
+                gameEndPopUpClosed = true
+            },
+            {
+                gameEndPopUpClosed = false
+                component.onEvent(GameWithFriendEvent.Back)
+            }
+        )
     }
     RenderGameBoard(
         pos = component.position,
@@ -55,7 +66,13 @@ fun GameWithFriendScreen(
         )
     }
     RenderUndoRedo(
-        handleUndo = { onEvent(GameWithFriendEvent.Undo) },
-        handleRedo = { onEvent(GameWithFriendEvent.Redo) }
+        handleUndo = {
+            if (!component.gameEnded)
+                onEvent(GameWithFriendEvent.Undo)
+        },
+        handleRedo = {
+            if (!component.gameEnded)
+                onEvent(GameWithFriendEvent.Redo)
+        }
     )
 }
