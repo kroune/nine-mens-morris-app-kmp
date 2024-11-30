@@ -18,11 +18,14 @@ jobs:
             tag: android
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
+#            this causes
+#          Bundler Mac PKG Package skipped because of a configuration problem: invalid mac bundle identifier [com.kroune.nine_mens_morris_kmp_app].
+#          Advice to fix: specify identifier with "--mac-package-identifier".
           # macos
-          - target: packageReleasePkg
-            tag: ios
-            directory: composeApp/build/compose/binaries/main-release/pkg/
-            os: macos-latest
+#          - target: packageReleasePkg
+#            tag: ios
+#            directory: composeApp/build/compose/binaries/main-release/pkg/
+#            os: macos-latest
           # ios
           - target: iosSimulatorArm64Binaries
             tag: ios
