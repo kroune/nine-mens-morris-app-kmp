@@ -1,6 +1,5 @@
 package com.kroune.nine_mens_morris_kmp_app.component
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.event.LeaderboardEvent
@@ -11,15 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LeaderboardComponent(
-    val onNavigationBack: () -> Unit,
+    private val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    val players = mutableStateListOf<Player>()
+    val players = mutableStateListOf<AccountInfoUseCase.PlayerInfo>()
     private val useCases = mutableListOf<AccountInfoUseCase>()
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
-            val leaderboardData = accountInfoInteractor.getLeaderboard().getOrNull()
+            val leaderboardData = accountInfoInteractor.getLeaderboard().onFailure {
+                println(it.stackTraceToString())
+            }.getOrNull()
             if (leaderboardData == null) {
                 players.clear()
                 return@launch
@@ -27,11 +28,7 @@ class LeaderboardComponent(
                 leaderboardData.forEach { id ->
                     val userInfoUseCase = AccountInfoUseCase(id, needCreationDate = false)
                     useCases.add(userInfoUseCase)
-                    val player = Player(
-                        accountName = userInfoUseCase.name,
-                        pictureByteArray = userInfoUseCase.accountPicture,
-                        accountRating = userInfoUseCase.rating
-                    )
+                    val player = userInfoUseCase.playerInfo
                     players.add(player)
                 }
             }
@@ -62,12 +59,3 @@ class LeaderboardComponent(
         onEvent(LeaderboardEvent.Back)
     }
 }
-
-/**
- * holds info about player
- */
-data class Player(
-    val accountName: State<Result<String>?>,
-    val pictureByteArray: State<Result<ByteArray>?>,
-    val accountRating: State<Result<Long>?>
-)

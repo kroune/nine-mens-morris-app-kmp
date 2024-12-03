@@ -1,6 +1,5 @@
 package com.kroune.nine_mens_morris_kmp_app.screen.game
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,34 +18,39 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nineMensMorrisLib.Position
-import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
-import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawName
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawRating
 import com.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
+import kotlinx.coroutines.CoroutineScope
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
-import ninemensmorrisappkmp.composeapp.generated.resources.baseline_account_circle_48
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.decodeToImageBitmap
-import org.jetbrains.compose.resources.painterResource
+import ninemensmorrisappkmp.composeapp.generated.resources.no
+import ninemensmorrisappkmp.composeapp.generated.resources.time_left
+import ninemensmorrisappkmp.composeapp.generated.resources.want_to_give_up
+import ninemensmorrisappkmp.composeapp.generated.resources.yes
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * renders online game screen
@@ -54,23 +59,56 @@ import org.jetbrains.compose.resources.painterResource
 fun OnlineGameScreen(
     component: OnlineGameComponent
 ) {
-    AppTheme {
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        backgroundColor = Color.Transparent
+    ) { _ ->
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PlayersUI(
-                pos = component.position,
-                timeLeft = component.timeLeft,
-                isGreen = component.isGreen,
-                ownAccountName = component.ownAccountName,
-                ownPictureByteArray = component.ownPictureByteArray,
-                ownAccountRating = component.ownAccountRating,
-                enemyAccountName = component.enemyAccountName,
-                enemyPictureByteArray = component.enemyPictureByteArray,
-                enemyAccountRating = component.enemyAccountRating,
-            )
+            Row(
+                modifier = Modifier
+                    .heightIn(max = 110.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    PlayerCard(
+                        playerName = component.ownAccountName,
+                        pictureByteArray = component.ownPictureByteArray,
+                        isGreen = component.isGreen,
+                        rating = component.ownAccountRating,
+                        pos = component.position,
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        onEvent = { component.onEvent(it) },
+                        ownAccount = true
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Box(modifier = Modifier.weight(1f)) {
+                    PlayerCard(
+                        playerName = component.enemyAccountName,
+                        pictureByteArray = component.enemyPictureByteArray,
+                        isGreen = !component.isGreen,
+                        rating = component.enemyAccountRating,
+                        pos = component.position,
+                        scope = scope,
+                        snackbarHostState = snackbarHostState,
+                        onEvent = { component.onEvent(it) },
+                        ownAccount = true
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            TurnTimerUI(component.timeLeft)
 
-            if (component.displayGiveUpConfirmation.value) {
+            if (component.displayGiveUpConfirmation.value && !component.gameEnded) {
                 GiveUpConfirm(
                     onGiveUpDiscarded = {
                         component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
@@ -98,7 +136,7 @@ fun OnlineGameScreen(
                         }
                     )
                 }
-                BackCallback() {
+                BackCallback {
                     component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
                 }
             }
@@ -122,7 +160,7 @@ private fun GiveUpConfirm(
             onGiveUpDiscarded()
         },
         title = {
-            Text("Are you sure you want to give up?")
+            Text(stringResource(Res.string.want_to_give_up))
         },
         buttons = {
             Row(
@@ -132,12 +170,12 @@ private fun GiveUpConfirm(
                 Button(onClick = {
                     onGiveUpDiscarded()
                 }) {
-                    Text("No")
+                    Text(stringResource(Res.string.no))
                 }
                 Button(onClick = {
                     onGiveUp()
                 }) {
-                    Text("Yes")
+                    Text(stringResource(Res.string.yes))
                 }
             }
         },
@@ -154,7 +192,7 @@ fun TurnTimerUI(timeLeft: Int) {
             .padding(8.dp)
     ) {
         Text(
-            text = "Time left: $timeLeft s",
+            text = "${stringResource(Res.string.time_left)}: $timeLeft",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.DarkGray
@@ -162,69 +200,51 @@ fun TurnTimerUI(timeLeft: Int) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PlayerCard(
     playerName: Result<String>?,
     pictureByteArray: Result<ByteArray>?,
     isGreen: Boolean,
     rating: Result<Long>?,
-    pos: Position
+    pos: Position,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (OnlineGameScreenEvent) -> Unit,
+    ownAccount: Boolean
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-            .padding(10.dp)
+            .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
+            .fillMaxSize()
     ) {
-        when {
-            pictureByteArray == null -> {
-                Icon(
-                    painter = painterResource(Res.drawable.baseline_account_circle_48),
-                    contentDescription = "profile loading icon",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                )
-            }
-
-            pictureByteArray.isSuccess -> {
-                Image(
-                    bitmap = pictureByteArray.getOrThrow().decodeToImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(Color.Gray, shape = CircleShape)
-                )
-            }
-
-            pictureByteArray.isFailure -> {
-                Text("error loading profile picture ${pictureByteArray.exceptionOrNull()!!.message}")
-            }
-        }
-        Spacer(modifier = Modifier.width(8.dp))
+        DrawIcon(
+            modifier = Modifier
+                .padding(5.dp),
+            pictureByteArray = pictureByteArray,
+            onReload = {
+                onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount))
+            },
+            scope = scope,
+            snackbarHostState = snackbarHostState
+        )
         Column(
             verticalArrangement = Arrangement.Center
         ) {
-            when {
-                playerName == null -> {
-                    Text(text = "loading info...", fontSize = 16.sp)
-                }
-
-                playerName.isSuccess -> {
-                    Text(text = playerName.getOrThrow(), fontSize = 16.sp)
-                }
-
-                playerName.isFailure -> {
-                    Text("error loading profile name ${playerName.exceptionOrNull()!!.message}")
-                }
-            }
+            DrawName(
+                text = @Composable {
+                    Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                },
+                accountName = playerName,
+                onReload = { onEvent(OnlineGameScreenEvent.ReloadName(ownAccount)) },
+                scope = scope,
+                snackbarHostState = snackbarHostState
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier =
                 Modifier.size(
-                    (GAME_BOARD_BUTTON_WIDTH.value * when {
+                    (30 * when {
                         isGreen && pos.pieceToMove -> 1.5f
                         !isGreen && !pos.pieceToMove -> 1.5f
                         else -> 1f
@@ -247,66 +267,16 @@ fun PlayerCard(
                     },
                 )
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-            when {
-                rating == null -> {
-                    Text(text = "loading info...", fontSize = 16.sp)
-                }
-
-                rating.isSuccess -> {
-                    Text(text = rating.getOrThrow().toString(), fontSize = 16.sp)
-                }
-
-                rating.isFailure -> {
-                    Text("error loading profile rating ${rating.exceptionOrNull()!!.message}")
-                }
-            }
+            Spacer(modifier = Modifier.height(5.dp))
+            DrawRating(
+                {
+                    Text(it.toString())
+                },
+                rating,
+                { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
+                scope,
+                snackbarHostState
+            )
         }
     }
 }
-
-@Composable
-fun PlayersUI(
-    pos: Position,
-    timeLeft: Int,
-    isGreen: Boolean?,
-    ownAccountName: Result<String>?,
-    ownPictureByteArray: Result<ByteArray>?,
-    ownAccountRating: Result<Long>?,
-    enemyAccountName: Result<String>?,
-    enemyPictureByteArray: Result<ByteArray>?,
-    enemyAccountRating: Result<Long>?,
-) {
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            PlayerCard(
-                playerName = ownAccountName,
-                pictureByteArray = ownPictureByteArray,
-                isGreen = isGreen == true,
-                rating = ownAccountRating,
-                pos = pos,
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-            PlayerCard(
-                playerName = enemyAccountName,
-                pictureByteArray = enemyPictureByteArray,
-                isGreen = isGreen == false,
-                rating = enemyAccountRating,
-                pos = pos,
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        TurnTimerUI(timeLeft)
-    }
-}
-

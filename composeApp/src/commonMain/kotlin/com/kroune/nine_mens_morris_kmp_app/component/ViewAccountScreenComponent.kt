@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 
 class ViewAccountScreenComponent(
@@ -24,12 +24,14 @@ class ViewAccountScreenComponent(
     private var _accountPicture = mutableStateOf<Result<ByteArray>?>(null)
     var accountPicture by _accountPicture
 
-    val accountInfoUseCase = AccountInfoUseCase(
+    private val accountInfoUseCase = AccountInfoUseCase(
         accountId,
-        name = _accountName,
-        rating = _accountRating,
-        creationDate = _accountCreationDate,
-        accountPicture = _accountPicture
+        playerInfo = AccountInfoUseCase.PlayerInfo(
+            name = _accountName,
+            rating = _accountRating,
+            creationDate = _accountCreationDate,
+            accountPicture = _accountPicture
+        )
     )
 
     fun onEvent(event: ViewAccountScreenEvent) {

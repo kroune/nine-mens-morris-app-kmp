@@ -9,8 +9,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -26,7 +26,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackHandler
@@ -76,8 +75,7 @@ fun DrawRating(
             it == null -> {
                 Box(
                     modifier = Modifier
-                        .aspectRatio(1f)
-                        .padding(12.dp),
+                        .aspectRatio(1f),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     LoadingCircle()
@@ -86,8 +84,6 @@ fun DrawRating(
 
             it.isSuccess -> {
                 Box(
-                    modifier = Modifier
-                        .padding(start = 12.dp, top = 12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     text(it.getOrThrow())
@@ -97,7 +93,7 @@ fun DrawRating(
             it.isFailure -> {
                 Box(
                     modifier = Modifier
-                        .padding(start = 12.dp, top = 12.dp),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     IconButton(onClick = {
@@ -107,7 +103,7 @@ fun DrawRating(
                             painter = painterResource(Res.drawable.error),
                             contentDescription = "Error",
                             modifier = Modifier
-                                .padding(start = 12.dp, top = 12.dp)
+                                .fillMaxSize()
                                 .aspectRatio(1f)
                                 .clip(CircleShape)
                         )
@@ -164,8 +160,7 @@ fun DrawAccountCreationDate(
         accountCreationDate == null -> {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart
             ) {
                 LoadingCircle()
@@ -175,8 +170,7 @@ fun DrawAccountCreationDate(
         accountCreationDate.isSuccess -> {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
@@ -189,8 +183,7 @@ fun DrawAccountCreationDate(
         accountCreationDate.isFailure -> {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart
             ) {
                 IconButton(onClick = {
@@ -200,8 +193,7 @@ fun DrawAccountCreationDate(
                         painter = painterResource(Res.drawable.error),
                         contentDescription = "Error",
                         modifier = Modifier
-                            .padding(start = 12.dp, top = 12.dp)
-                            .fillMaxHeight(0.1f)
+                            .fillMaxHeight()
                             .aspectRatio(1f)
                             .clip(CircleShape)
                     )
@@ -267,7 +259,6 @@ fun DrawIcon(
             it == null -> {
                 Box(
                     modifier = modifier
-                        .padding(start = 12.dp, top = 12.dp)
                         .fillMaxHeight()
                         .aspectRatio(1f)
                         .clip(CircleShape),
@@ -282,7 +273,6 @@ fun DrawIcon(
                     bitmap = it.getOrThrow().decodeToImageBitmap(),
                     contentDescription = "Profile icon",
                     modifier = modifier
-                        .padding(start = 12.dp, top = 12.dp)
                         .fillMaxHeight()
                         .aspectRatio(1f)
                         .clip(CircleShape)
@@ -293,8 +283,7 @@ fun DrawIcon(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .aspectRatio(1f)
-                        .padding(start = 12.dp, top = 12.dp),
+                        .aspectRatio(1f),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     IconButton(onClick = {
@@ -355,7 +344,9 @@ fun DrawIcon(
  */
 @Composable
 fun DrawName(
-    text: (String) -> String,
+    text: @Composable (String) -> Unit = @Composable {
+        Text(it, fontSize = 20.sp)
+    },
     accountName: Result<String>?,
     onReload: () -> Unit,
     scope: CoroutineScope,
@@ -364,8 +355,6 @@ fun DrawName(
     when {
         accountName == null -> {
             Box(
-                modifier = Modifier
-                    .padding(start = 12.dp, top = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 LoadingCircle()
@@ -374,21 +363,17 @@ fun DrawName(
 
         accountName.isSuccess -> {
             Box(
-                modifier = Modifier
-                    .padding(start = 12.dp, top = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(text(accountName.getOrThrow()), fontSize = 20.sp)
+                text(accountName.getOrThrow())
             }
         }
 
         accountName.isFailure -> {
             Box(
                 modifier = Modifier
-                    .padding(start = 12.dp, top = 12.dp)
-                    .fillMaxHeight(0.75f)
-                    .aspectRatio(1f)
-                    .padding(start = 12.dp, top = 12.dp),
+                    .fillMaxHeight()
+                    .aspectRatio(1f),
                 contentAlignment = Alignment.CenterStart
             ) {
                 IconButton(onClick = {

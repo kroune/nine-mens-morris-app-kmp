@@ -18,6 +18,7 @@
     <string name="no_account_question_mark">Нет аккаунта?</string>
     <string name="repeat_pass">повторите ваш пароль</string>
     <string name="passes_do_not_match">Ваши пароли не совпадают</string>
+    <string name="game_ended">Игра закончилась</string>
     <string name="have_account_question_mark">Уже есть аккаунт?</string>
     <string name="sign_up">Зарегистрируйтесь</string>
     <string name="login_in_use">Этот логин уже используется</string>
@@ -40,11 +41,16 @@
     <string name="tutorial_removal_moves_explanation">Для удаления фишки противника просто нажмите на неё</string>
     <string name="rating">Рейтинг</string>
     <string name="keep_me_here">Оставьте меня тут</string>
-    <!--    <string name="you_have_lost">Вы проиграли</string>-->
-    <!--    <string name="you_have_won">Вы выграли</string>-->
-    <!--    <string name="server_error">Ошибка сервера, попробуйте чуть позже  или сообщите об этом на гитхабе</string>-->
-    <!--    <string name="network_error">Запрос к серверу не удался, проверьте ваше соединение</string>-->
-    <!--    <string name="auth_app_error">Неопознанная ошибка. Либо версия приложения устарела, либо что-то серьезное сломалось</string>-->
-    <!--    <string name="auth_no_account_found">Аккаунт с таким логином + паролем не был найден</string>-->
-    <!--    <string name="auth_server_error">Ошибка сервера, должно быть, произошло что-то очень плохое. Сообщите об этой ошибке на github</string>-->
+    <string name="back_to_main_screen">Обратно на главный экран</string>
+    <string name="log_out">Выйти</string>
+    <string name="image_was_updated">Картинка была обновлена, перезайдите на этот экран, чтобы увидеть изменения</string>
+    <string name="image_too_large">Картинка слишком большая, вы можете использовать только картинки меньше %1$d x %2$d</string>
+    <string name="upload_picture">Загрузить картинку</string>
+    <string name="press_to_start">Нажмите, чтобы начать</string>
+    <string name="analyze">Анализировать</string>
+    <string name="depth">глубина</string>
+    <string name="time_left">Оставшееся время</string>
+    <string name="want_to_give_up">Вы уверены, что хотите сдаться</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

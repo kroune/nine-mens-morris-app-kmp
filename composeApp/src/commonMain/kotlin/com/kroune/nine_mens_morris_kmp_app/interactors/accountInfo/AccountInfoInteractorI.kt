@@ -7,4 +7,5 @@ interface AccountInfoInteractorI {
     suspend fun getAccountPictureById(id: Long): Result<ByteArray>
     suspend fun getOwnAccountId(): Result<Long>
     suspend fun getLeaderboard(): Result<List<Long>>
+    suspend fun uploadPicture(picture: ByteArray): Result<Unit>
 }

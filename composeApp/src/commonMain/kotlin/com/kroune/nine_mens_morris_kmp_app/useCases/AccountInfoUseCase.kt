@@ -9,21 +9,25 @@ import kotlinx.coroutines.launch
 
 class AccountInfoUseCase(
     val accountId: Long,
-    val needName: Boolean = true,
-    val needRating: Boolean = true,
-    val needCreationDate: Boolean = true,
-    val needPicture: Boolean = true,
-    val name: MutableState<Result<String>?> = mutableStateOf(null),
-    val rating: MutableState<Result<Long>?> = mutableStateOf(null),
-    val creationDate: MutableState<Result<Triple<Int, Int, Int>>?> = mutableStateOf(null),
-    val accountPicture: MutableState<Result<ByteArray>?> = mutableStateOf(null)
+    private val needName: Boolean = true,
+    private val needRating: Boolean = true,
+    private val needCreationDate: Boolean = true,
+    private val needPicture: Boolean = true,
+    val playerInfo: PlayerInfo = PlayerInfo()
 ) {
-    val scope = CoroutineScope(Dispatchers.Default)
+    class PlayerInfo(
+        val name: MutableState<Result<String>?> = mutableStateOf(null),
+        val rating: MutableState<Result<Long>?> = mutableStateOf(null),
+        val creationDate: MutableState<Result<Triple<Int, Int, Int>>?> = mutableStateOf(null),
+        val accountPicture: MutableState<Result<ByteArray>?> = mutableStateOf(null)
+    )
+
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     fun reloadName() {
         if (needName) {
             scope.launch {
-                name.value = accountInfoInteractor.getAccountLoginById(accountId)
+                playerInfo.name.value = accountInfoInteractor.getAccountLoginById(accountId)
             }
         }
     }
@@ -31,7 +35,7 @@ class AccountInfoUseCase(
     fun reloadRating() {
         if (needRating) {
             scope.launch {
-                rating.value = accountInfoInteractor.getAccountRatingById(accountId)
+                playerInfo.rating.value = accountInfoInteractor.getAccountRatingById(accountId)
             }
         }
     }
@@ -39,7 +43,7 @@ class AccountInfoUseCase(
     fun reloadCreationDate() {
         if (needCreationDate) {
             scope.launch {
-                creationDate.value = accountInfoInteractor.getAccountCreationDateById(accountId)
+                playerInfo.creationDate.value = accountInfoInteractor.getAccountCreationDateById(accountId)
             }
         }
     }
@@ -47,7 +51,7 @@ class AccountInfoUseCase(
     fun reloadPicture() {
         if (needPicture) {
             scope.launch {
-                accountPicture.value = accountInfoInteractor.getAccountPictureById(accountId)
+                playerInfo.accountPicture.value = accountInfoInteractor.getAccountPictureById(accountId)
             }
         }
     }

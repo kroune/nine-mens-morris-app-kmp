@@ -9,8 +9,11 @@ import com.kroune.nine_mens_morris_kmp_app.data.remote.CreationDateByIdApiRespon
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LeaderboardApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RatingByIdApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.UploadPictureApiResponses
 import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -309,6 +312,59 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             Json.decodeFromString<List<Long>>(request.bodyAsText())
         }.recoverNetworkError(LeaderboardApiResponses.NetworkError).onFailure {
+            println("exception in $route - ${it.printStackTrace()}")
+        }
+    }
+
+    override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): Result<Unit> {
+        val route = "http${SERVER_ADDRESS}${USER_API}/upload-picture"
+        return runCatching {
+            val request = network.post(route) {
+                method = HttpMethod.Post
+                url {
+                    parameters["jwtToken"] = jwtToken
+                }
+                setBody<ByteArray>(picture)
+            }
+            when (request.status) {
+                HttpStatusCode.BadRequest -> {
+                    when (request.bodyAsText()) {
+                        "no [jwtToken] parameter found" -> {
+                            throw UploadPictureApiResponses.ClientError
+                        }
+                    }
+                }
+
+                HttpStatusCode.Forbidden -> {
+                    when (request.bodyAsText()) {
+                        "[jwtToken] parameter is not valid" -> {
+                            throw UploadPictureApiResponses.CredentialsError
+                        }
+                    }
+                    if (request.bodyAsText()
+                            .startsWith("provided image (byte array) is too large, it can be")
+                    ) {
+                        val modifiedString = request.bodyAsText()
+                            .removeSurrounding(
+                                "provided image (byte array) is too large, it can be ",
+                                " at max"
+                            )
+                        val maxWidth = modifiedString.dropLastWhile { it != 'x' }.dropLast(1).toInt()
+                        val maxHeight = modifiedString.dropWhile { it != 'x' }.drop(1).toInt()
+                        throw UploadPictureApiResponses.TooLargeImage(maxWidth, maxHeight)
+                    }
+                }
+
+                HttpStatusCode.InternalServerError -> {
+                    when (request.bodyAsText()) {
+                        "Internal server error" -> {
+                            throw UploadPictureApiResponses.ServerError
+                        }
+                    }
+                }
+            }
+            require(request.status == HttpStatusCode.OK)
+        }.recoverNetworkError(UploadPictureApiResponses.NetworkError).onFailure {
             println("exception in $route - ${it.printStackTrace()}")
         }
     }

@@ -43,11 +43,15 @@
     <string name="rating">Rating</string>
     <string name="keep_me_here">Keep me here</string>
     <string name="back_to_main_screen">Back to main screen</string>
-<!--    <string name="you_have_lost">You have lost</string>-->
-<!--    <string name="you_have_won">You have won</string>-->
-<!--    <string name="server_error">Server error, pls try later or report this at GitHub</string>-->
-<!--    <string name="network_error">Network request has failed, check your internet connection</string>-->
-<!--    <string name="auth_app_error">Unrecognised error. Either app version is obsolete or something serious broke</string>-->
-<!--    <string name="auth_no_account_found">No account with such login + password found</string>-->
-<!--    <string name="auth_server_error">Server error, something bad must have happened. Report this issue on github</string>-->
+    <string name="log_out">Log out</string>
+    <string name="image_was_updated">Image was updated, reopen this screen to see changes</string>
+    <string name="image_too_large">Image is too large, you can use %1$d x %2$d size at most</string>
+    <string name="upload_picture">Upload picture</string>
+    <string name="press_to_start">Press to start</string>
+    <string name="analyze">Analyze</string>
+    <string name="depth">depth</string>
+    <string name="time_left">Time left</string>
+    <string name="want_to_give_up">Are you sure you want to give up</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

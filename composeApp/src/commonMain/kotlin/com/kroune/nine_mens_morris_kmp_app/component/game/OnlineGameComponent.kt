@@ -27,8 +27,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OnlineGameComponent(
-    val gameId: Long,
-    val onNavigationToWelcomeScreen: () -> Unit,
+    private val gameId: Long,
+    private val onNavigationToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private var _enemyAccountName = mutableStateOf<Result<String>?>(null)
@@ -76,57 +76,72 @@ class OnlineGameComponent(
     private val channelToSendMoves: Channel<Movement> = Channel()
     private val channelToReceiveMoves: Channel<Movement> = Channel()
     val onGiveUp: suspend () -> Unit = {
-        channelToSendMoves.send(Movement(null, null))
+        channelToSendMoves.trySend(Movement(null, null))
     }
     private var onGiveClose: (suspend () -> Unit)? = null
     var displayGiveUpConfirmation = mutableStateOf(false)
+    private lateinit var ownAccountInfoUseCase: AccountInfoUseCase
+    private lateinit var enemyAccountInfoUseCase: AccountInfoUseCase
 
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
-            val gameEnded: CompletableDeferred<Boolean>
-            // TODO: handle errors
-            val enemyId: Long
-            onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves).let {
-                _position.value = it.first.startPosition.await()
-                _isGreen.value = it.first.isGreen.await()
-                enemyId = it.first.enemyId.await()
-                onGiveClose = it.second
-                gameEnded = it.first.gameEnded
-            }
-            AccountInfoUseCase(
-                accountIdInteractor.getAccountId().getOrThrow(),
-                needCreationDate = false,
-                name = _ownAccountName,
-                rating = _ownAccountRating,
-                accountPicture = _ownPictureByteArray
-            )
-            AccountInfoUseCase(
-                enemyId,
-                needCreationDate = false,
-                name = _enemyAccountName,
-                rating = _enemyAccountRating,
-                accountPicture = _enemyPictureByteArray
-            )
-            while (!gameEnded.isCompleted) {
-                val moveResult = channelToReceiveMoves.receiveCatching()
-                if (moveResult.isFailure) {
-                    // game ended
-                    if (gameEnded.isCompleted && gameEnded.getCompleted()) {
-                        break
-                    } else {
-                        // some error happened
-                        // TODO: notify user
-                        withContext(Dispatchers.Main) {
-                            onNavigationToWelcomeScreen()
-                        }
-                        return@launch
+            runCatching {
+                val gameEnded: CompletableDeferred<Boolean>
+                // TODO: handle errors
+                val enemyId: Long
+                onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves)
+                    .let {
+                        _position.value = it.first.startPosition.await()
+                        _isGreen.value = it.first.isGreen.await()
+                        enemyId = it.first.enemyId.await()
+                        onGiveClose = it.second
+                        gameEnded = it.first.gameEnded
                     }
+                ownAccountInfoUseCase = AccountInfoUseCase(
+                    accountIdInteractor.getAccountId().getOrThrow(),
+                    needCreationDate = false,
+                    playerInfo = AccountInfoUseCase.PlayerInfo(
+                        name = _ownAccountName,
+                        rating = _ownAccountRating,
+                        accountPicture = _ownPictureByteArray
+                    )
+                )
+                enemyAccountInfoUseCase = AccountInfoUseCase(
+                    enemyId,
+                    needCreationDate = false,
+                    playerInfo = AccountInfoUseCase.PlayerInfo(
+                        name = _enemyAccountName,
+                        rating = _enemyAccountRating,
+                        accountPicture = _enemyPictureByteArray
+                    )
+                )
+                while (!gameEnded.isCompleted) {
+                    val moveResult = channelToReceiveMoves.receiveCatching()
+                    if (moveResult.isFailure) {
+                        // game ended
+                        if (gameEnded.isCompleted && gameEnded.getCompleted()) {
+                            break
+                        } else {
+                            // some error happened
+                            // TODO: notify user
+                            println(moveResult.exceptionOrNull()!!.stackTraceToString())
+                            withContext(Dispatchers.Main) {
+                                onNavigationToWelcomeScreen()
+                            }
+                            return@launch
+                        }
+                    }
+                    val move = moveResult.getOrThrow()
+                    gameUseCase.processMove(move)
                 }
-                val move = moveResult.getOrThrow()
-                gameUseCase.processMove(move)
+                _gameEnded.value = true
+            }.onFailure {
+                println(it.stackTraceToString())
+                withContext(Dispatchers.Main) {
+                    onNavigationToWelcomeScreen()
+                }
             }
-            _gameEnded.value = true
         }
         CoroutineScope(Dispatchers.Default).launch {
             while (!gameEnded) {
@@ -178,10 +193,36 @@ class OnlineGameComponent(
             OnlineGameScreenEvent.GiveUpDiscarded -> {
                 displayGiveUpConfirmation.value = false
             }
+
+            is OnlineGameScreenEvent.ReloadIcon -> {
+                if (event.ownAccount) {
+                    ownAccountInfoUseCase.reloadPicture()
+                } else {
+                    enemyAccountInfoUseCase.reloadPicture()
+                }
+            }
+
+            is OnlineGameScreenEvent.ReloadName -> {
+                if (event.ownAccount) {
+                    ownAccountInfoUseCase.reloadName()
+                } else {
+                    enemyAccountInfoUseCase.reloadName()
+                }
+            }
+            is OnlineGameScreenEvent.ReloadRating -> {
+                if (event.ownAccount) {
+                    ownAccountInfoUseCase.reloadRating()
+                } else {
+                    enemyAccountInfoUseCase.reloadRating()
+                }
+            }
         }
     }
 
     override fun onBackPressed() {
-        displayGiveUpConfirmation.value = true
+        if (!gameEnded)
+            displayGiveUpConfirmation.value = true
+        else
+            onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
     }
 }

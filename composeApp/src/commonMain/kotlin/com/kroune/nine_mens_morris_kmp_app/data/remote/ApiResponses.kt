@@ -27,6 +27,14 @@ sealed class LoginByIdApiResponses: Exception() {
     data object ClientError: LoginByIdApiResponses()
 }
 
+sealed class UploadPictureApiResponses: Exception() {
+    data object CredentialsError: UploadPictureApiResponses()
+    data object NetworkError: UploadPictureApiResponses()
+    data object ServerError: UploadPictureApiResponses()
+    data object ClientError: UploadPictureApiResponses()
+    data class TooLargeImage(val maxWidth: Int, val maxHeight: Int): UploadPictureApiResponses()
+}
+
 sealed class LeaderboardApiResponses: Exception() {
     data object CredentialsError: LeaderboardApiResponses()
     data object NetworkError: LeaderboardApiResponses()

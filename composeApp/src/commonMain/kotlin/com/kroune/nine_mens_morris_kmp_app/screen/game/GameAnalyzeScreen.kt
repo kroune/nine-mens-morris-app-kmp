@@ -26,6 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
+import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.analyze
+import ninemensmorrisappkmp.composeapp.generated.resources.depth
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Renders game analysis
@@ -75,7 +79,7 @@ fun RenderGameAnalyzeScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Analyze")
+                Text(stringResource(Res.string.analyze))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -101,7 +105,7 @@ fun RenderGameAnalyzeScreen(
                         Text("-", fontSize = 30.sp)
                     }
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text("depth - $depth", fontSize = 13.sp)
+                    Text("${stringResource(Res.string.depth)} - $depth", fontSize = 13.sp)
                     Spacer(modifier = Modifier.width(10.dp))
                     Button(
                         onClick = {

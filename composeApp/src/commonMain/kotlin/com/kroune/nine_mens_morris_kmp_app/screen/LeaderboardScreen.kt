@@ -30,8 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
-import com.kroune.nine_mens_morris_kmp_app.component.Player
 import com.kroune.nine_mens_morris_kmp_app.event.LeaderboardEvent
+import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.CoroutineScope
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
@@ -85,7 +85,7 @@ fun LeaderboardScreen(component: LeaderboardComponent) {
  */
 @Composable
 fun LeaderboardItem(
-    player: Player,
+    player: AccountInfoUseCase.PlayerInfo,
     onEvent: (LeaderboardEvent) -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
@@ -106,7 +106,7 @@ fun LeaderboardItem(
             DrawIcon(
                 modifier = Modifier
                     .sizeIn(maxWidth = 80.dp, maxHeight = 80.dp),
-                player.pictureByteArray.value,
+                player.accountPicture.value,
                 {
                     onEvent(LeaderboardEvent.ReloadIcon(index))
                 },
@@ -116,8 +116,8 @@ fun LeaderboardItem(
             Column(verticalArrangement = Arrangement.Center) {
                 Box(modifier = Modifier.height(40.dp)) {
                     DrawName(
-                        { it },
-                        player.accountName.value,
+                        { Text(it) },
+                        player.name.value,
                         { onEvent(LeaderboardEvent.ReloadName(index)) },
                         scope,
                         snackbarHostState
@@ -132,7 +132,7 @@ fun LeaderboardItem(
                                 color = Color.Gray
                             )
                         },
-                        player.accountRating.value,
+                        player.rating.value,
                         { onEvent(LeaderboardEvent.ReloadRating(index)) },
                         scope,
                         snackbarHostState

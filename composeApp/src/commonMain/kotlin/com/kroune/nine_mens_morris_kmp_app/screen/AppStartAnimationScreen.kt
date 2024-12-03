@@ -25,6 +25,9 @@ import androidx.compose.ui.zIndex
 import com.kroune.nine_mens_morris_kmp_app.common.TransparentColors
 import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.event.AppStartAnimationScreenEvent
+import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.press_to_start
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.sin
 
 @Composable
@@ -110,7 +113,7 @@ private fun StartButton(
             colors = TransparentColors()
         ) {
             Text(
-                text = "Press to start",
+                text = stringResource(Res.string.press_to_start),
                 modifier = Modifier
                     .alpha(animatedProgress),
                 color = Color.White,

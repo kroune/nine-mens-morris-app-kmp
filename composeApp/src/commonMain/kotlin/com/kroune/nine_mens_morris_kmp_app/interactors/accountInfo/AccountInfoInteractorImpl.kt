@@ -35,4 +35,9 @@ class AccountInfoInteractorImpl : AccountInfoInteractorI {
         val jwtToken = jwtTokenInteractor.getJwtToken()!!
         return remote.getLeaderboard(jwtToken)
     }
+
+    override suspend fun uploadPicture(picture: ByteArray): Result<Unit> {
+        val jwtToken = jwtTokenInteractor.getJwtToken()!!
+        return remote.uploadPicture(picture, jwtToken)
+    }
 }

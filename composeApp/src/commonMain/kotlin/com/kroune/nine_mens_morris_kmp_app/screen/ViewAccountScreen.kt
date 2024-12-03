@@ -18,7 +18,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.data.remote.UploadPictureApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
+import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.client_error
+import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
+import ninemensmorrisappkmp.composeapp.generated.resources.image_too_large
+import ninemensmorrisappkmp.composeapp.generated.resources.image_was_updated
+import ninemensmorrisappkmp.composeapp.generated.resources.log_out
+import ninemensmorrisappkmp.composeapp.generated.resources.network_error
+import ninemensmorrisappkmp.composeapp.generated.resources.rating
+import ninemensmorrisappkmp.composeapp.generated.resources.server_error
+import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
+import ninemensmorrisappkmp.composeapp.generated.resources.upload_picture
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ViewAccountScreen(
@@ -55,7 +76,7 @@ fun ViewAccountScreen(
                 )
                 DrawName(
                     {
-                        it
+                        Text(it)
                     },
                     name,
                     { onEvent(ViewAccountScreenEvent.ReloadName) },
@@ -65,7 +86,7 @@ fun ViewAccountScreen(
             }
             DrawRating(
                 text = {
-                    Text("User rating is $it")
+                    Text("${stringResource(Res.string.rating)}: $it")
                 },
                 accountRating = rating,
                 reloadRating = { onEvent(ViewAccountScreenEvent.ReloadRating) },
@@ -76,6 +97,52 @@ fun ViewAccountScreen(
                 { (first, second, third) -> "$first-$second-$third" },
                 creationDate, onEvent, scope, snackbarHostState
             )
+            val launcher = rememberFilePickerLauncher(
+                type = PickerType.Image,
+                mode = PickerMode.Single
+            ) { file ->
+                if (file == null) {
+                    return@rememberFilePickerLauncher
+                }
+                CoroutineScope(Dispatchers.Default).launch {
+                    // Handle picked files
+                    val result = accountInfoInteractor.uploadPicture(file.readBytes())
+                    result.onSuccess {
+                        snackbarHostState.showSnackbar(getString(Res.string.image_was_updated))
+                    }.onFailure {
+                        val text = when (it) {
+                            !is UploadPictureApiResponses -> {
+                                getString(Res.string.unknown_error)
+                            }
+                            is UploadPictureApiResponses.ClientError -> {
+                                getString(Res.string.client_error)
+                            }
+                            is UploadPictureApiResponses.ServerError -> {
+                                getString(Res.string.server_error)
+                            }
+                            is UploadPictureApiResponses.NetworkError -> {
+                                getString(Res.string.network_error)
+                            }
+                            is UploadPictureApiResponses.CredentialsError -> {
+                                getString(Res.string.credentials_error)
+                            }
+                            is UploadPictureApiResponses.TooLargeImage -> {
+                                getString(Res.string.image_too_large, it.maxWidth, it.maxHeight)
+                            }
+
+                            else -> {
+                                error("kotlin broke")
+                            }
+                        }
+                        snackbarHostState.showSnackbar(text)
+                    }
+                }
+            }
+            Button({
+                launcher.launch()
+            }) {
+                Text(stringResource(Res.string.upload_picture))
+            }
             if (isOwnAccount) {
                 Box(
                     modifier = Modifier
@@ -103,6 +170,6 @@ fun DrawOwnAccountOptions(
             onEvent(ViewAccountScreenEvent.Logout)
         }
     ) {
-        Text("Log out")
+        Text(stringResource(Res.string.log_out))
     }
 }
