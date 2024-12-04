@@ -132,12 +132,9 @@ fun OnlineGameScreen(
                             component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
                         },
                         {
-                            component.onEvent(OnlineGameScreenEvent.GiveUp)
+                            component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
                         }
                     )
-                }
-                BackCallback {
-                    component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
                 }
             }
             RenderGameBoard(
