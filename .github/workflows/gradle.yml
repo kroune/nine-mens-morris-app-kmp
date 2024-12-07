@@ -22,7 +22,7 @@ jobs:
           - target: packageReleaseDmg
             tag: macos
             directory: composeApp/build/compose/binaries/main-release/dmg/
-            os: macos-latest
+            os: macos-12
           # ios
           - target: iosSimulatorArm64Binaries
             tag: ios
