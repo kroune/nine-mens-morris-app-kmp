@@ -20,7 +20,7 @@ jobs:
             os: ubuntu-latest
           # macos
           - target: packageReleaseDmg
-            tag: ios
+            tag: macos
             directory: composeApp/build/compose/binaries/main-release/dmg/
             os: macos-latest
           # ios
