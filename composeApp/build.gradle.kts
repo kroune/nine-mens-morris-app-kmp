@@ -167,7 +167,7 @@ compose.desktop {
             }
             targetFormats(
                 // macos
-                TargetFormat.Dmg, TargetFormat.Pkg,
+                TargetFormat.Dmg,
                 // linux
                 TargetFormat.Rpm, TargetFormat.Deb,
                 // windows
