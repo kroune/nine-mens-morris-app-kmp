@@ -108,7 +108,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.1"
     }
     packaging {
         resources {
@@ -177,7 +177,7 @@ compose.desktop {
                 TargetFormat.Msi, TargetFormat.Exe
             )
             packageName = "nineMensMorris"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             description = "Implementation of a table game called <Nine mens morris>"
             copyright = "© 2024 Kroune. All rights reserved."
             licenseFile = project.file("LICENSE")
