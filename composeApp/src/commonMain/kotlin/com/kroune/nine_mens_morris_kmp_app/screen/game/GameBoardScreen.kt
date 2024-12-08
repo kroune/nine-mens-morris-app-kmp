@@ -53,7 +53,6 @@ fun RenderGameBoard(
     ) {
         Box(
             modifier = Modifier
-                .padding(GAME_BOARD_BUTTON_WIDTH)
                 .clip(RoundedCornerShape(15))
                 .size(GAME_BOARD_BUTTON_WIDTH * 8.25f)
                 .background(Color(0xFF8F8F8F)),

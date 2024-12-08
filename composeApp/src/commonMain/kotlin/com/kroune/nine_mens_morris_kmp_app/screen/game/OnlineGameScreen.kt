@@ -36,7 +36,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.arkivanov.essenty.backhandler.BackCallback
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
@@ -105,7 +104,6 @@ fun OnlineGameScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
             TurnTimerUI(component.timeLeft)
 
             if (component.displayGiveUpConfirmation.value && !component.gameEnded) {
@@ -129,7 +127,7 @@ fun OnlineGameScreen(
                             showGameEndDialog = false
                         },
                         {
-                            component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
+                            showGameEndDialog = false
                         },
                         {
                             component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
@@ -184,9 +182,7 @@ private fun GiveUpConfirm(
 fun TurnTimerUI(timeLeft: Int) {
     Box(
         modifier = Modifier
-            .padding(16.dp)
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
-            .padding(8.dp)
     ) {
         Text(
             text = "${stringResource(Res.string.time_left)}: $timeLeft",

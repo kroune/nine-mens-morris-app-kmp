@@ -137,7 +137,7 @@ class OnlineGameComponent(
                 }
                 _gameEnded.value = true
             }.onFailure {
-                println(it.stackTraceToString())
+                println("caught unhandled exception at online game ${it.stackTraceToString()}")
                 withContext(Dispatchers.Main) {
                     onNavigationToWelcomeScreen()
                 }

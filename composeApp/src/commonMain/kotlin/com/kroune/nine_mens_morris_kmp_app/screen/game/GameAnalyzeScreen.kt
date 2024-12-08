@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
-import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.analyze
 import ninemensmorrisappkmp.composeapp.generated.resources.depth
@@ -46,7 +44,6 @@ fun RenderGameAnalyzeScreen(
     if (positions.isNotEmpty()) {
         Box(
             modifier = Modifier
-                .padding(0.dp, GAME_BOARD_BUTTON_WIDTH * 3f, 0.dp, 0.dp)
                 .background(Color.DarkGray, RoundedCornerShape(5))
         ) {
             Column {
