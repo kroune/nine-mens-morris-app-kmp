@@ -2,6 +2,7 @@ package com.kroune.nine_mens_morris_kmp_app.navigation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.active
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
@@ -35,6 +36,10 @@ import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuratio
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.WelcomeScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 class RootComponent(
@@ -50,6 +55,17 @@ class RootComponent(
         childFactory = ::createChild
     )
 
+    init {
+        // TODO: fix this absolute garbage
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                BackHandler.setCallbackAction {
+                    childStack.active.instance.component.onBackPressed()
+                }
+                delay(500L)
+            }
+        }
+    }
     private fun popOrReplaceWithWelcomeScreenIfStackIsEmpty() {
         navigation.pop {
             if (!it) {
