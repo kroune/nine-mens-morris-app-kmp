@@ -1,21 +1,63 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop.
+<div align="center">
+<p>
+    <img width="200" src="composeApp/icons/icon.svg" alt="icon">
+</p>
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+[nine-men-s-morris.me](http://nine-men-s-morris.me/)
+</div>
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## This is a Kotlin Multiplatform project targeting Android, Web, Linux, MacOS, Windows of a game called "Nine men's morris"
+<br>
+
+## History
+
+This first version of the app (which was for android only) is located
+at https://github.com/kroune/nine-mens-morris-app
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+## Used projects
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
+This app uses my own projects such as [backend](https://github.com/kroune/nine-mens-morris-server)
+written in kotlin, kmp [library](https://github.com/kroune/nine-mens-morris-lib-kmp) and ktor,
+coroutines, decompose, filekit, kotlin serialization, multiplatform settings and other.
 
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+## License
+
+This project is subject to the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). This
+does only apply for source code located directly in this clean repository. During the development and compilation
+process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL
+license.
+
+For those who are unfamiliar with the license, here is a summary of its main points. This is by no means legal advice
+nor legally binding.
+
+*Actions that you are allowed to do:*
+
+- Use
+- Share
+- Modify
+
+*If you do decide to use ANY code from the source:*
+
+- **You must disclose the source code of your modified work and the source code you took from this project. This means
+  you are not allowed to use code from this project (even partially) in a closed-source (or even obfuscated)
+  application.**
+- **Your modified application must also be licensed under the GPL**
+
+
+## Contributing
+
+We appreciate contributions and testing. So if you want to support us, feel free to make changes to our source code and
+submit a [pull request](https://github.com/kroune/nine-mens-morris-app-kmp/pullsv) or report a bug in [github issues](https://github.com/kroune/nine-mens-morris-app-kmp/issues).
+
+We would **heavily** appreciate adding support for the ios.
+
+
+## Setting up a Workspace
+
+Our project is multiplatform, so make sure to use [android studio](https://developer.android.com/studio) or [fleet](https://www.jetbrains.com/fleet/)
+
+1. Clone the repository using `git clone https://github.com/kroune/nine-mens-morris-app-kmp`.
+2. CD into the local repository.
+3. Run `./gradlew build`.
+4. Open the folder as a Gradle project in the IDE.
