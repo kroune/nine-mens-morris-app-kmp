@@ -8,7 +8,7 @@ import java.io.IOException
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-actual fun getScreenSize(): IntSize {
+actual fun getScreenIntSize(): IntSize {
     return LocalWindowInfo.current.containerSize
 }
 

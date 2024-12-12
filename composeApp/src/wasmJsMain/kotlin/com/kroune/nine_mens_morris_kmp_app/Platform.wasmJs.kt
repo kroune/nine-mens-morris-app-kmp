@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.IntSize
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-actual fun getScreenSize(): IntSize {
+actual fun getScreenIntSize(): IntSize {
     return LocalWindowInfo.current.containerSize
 }
 

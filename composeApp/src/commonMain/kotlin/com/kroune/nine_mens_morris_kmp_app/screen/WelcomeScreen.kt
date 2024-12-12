@@ -55,7 +55,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.triangleShape
 import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.WelcomeScreenEvent
-import com.kroune.nine_mens_morris_kmp_app.getScreenSize
+import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -142,13 +142,26 @@ fun WelcomeScreen(
                     state = scrollState, flingBehavior = CustomFlingBehaviour()
                 )
         ) {
-            RenderMainScreen(
-                isInAccount,
-                checkingJwtTokenJob,
-                viewAccountDataLoadingOverlay,
-                onEvent
-            )
-            TutorialScreen()
+            val screenSize = getScreenDpSize()
+            Box(
+                modifier = Modifier
+                    .height(screenSize.height)
+                    .width(screenSize.width)
+            ) {
+                RenderMainScreen(
+                    isInAccount,
+                    checkingJwtTokenJob,
+                    viewAccountDataLoadingOverlay,
+                    onEvent
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .height(screenSize.height)
+                    .width(screenSize.width)
+            ) {
+                TutorialScreen()
+            }
         }
     }
 
@@ -200,26 +213,25 @@ fun RenderMainScreen(
     viewAccountDataLoadingOverlay: MutableState<Boolean>,
     onEvent: (WelcomeScreenEvent) -> Unit
 ) {
-    val screenSize = getScreenSize()
-    val width = screenSize.width
+    val screenSize = getScreenDpSize()
     val height = screenSize.height
     Box(
-        modifier = Modifier.size(width.dp, height.dp),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(IntrinsicSize.Max)
-                .padding(top = (height * 0.2).dp, bottom = (height * 0.2).dp),
+                .padding(top = height * 0.2f, bottom = height * 0.2f),
             verticalArrangement = Arrangement.spacedBy(
-                (height * 0.05).dp, Alignment.CenterVertically
+                height * 0.05f, Alignment.CenterVertically
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
                 modifier = Modifier
-                    .height((height * 0.1).dp)
+                    .height(height * 0.1f)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
@@ -236,7 +248,7 @@ fun RenderMainScreen(
             }
             Button(
                 modifier = Modifier
-                    .height((height * 0.1).dp)
+                    .height(height * 0.1f)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
@@ -253,7 +265,7 @@ fun RenderMainScreen(
             }
             Button(
                 modifier = Modifier
-                    .height((height * 0.1).dp)
+                    .height(height * 0.1f)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
@@ -275,7 +287,7 @@ fun RenderMainScreen(
             }
             Button(
                 modifier = Modifier
-                    .height((height * 0.1).dp)
+                    .height(height * 0.1f)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
@@ -320,12 +332,12 @@ private fun BoxScope.ViewAccountElement(
     isInAccount: Result<Boolean>?
 ) {
     val coroutine = rememberCoroutineScope()
-    val screenSize = getScreenSize()
+    val screenSize = getScreenDpSize()
     val width = screenSize.width
     val height = screenSize.height
     val offset = remember { mutableStateOf(0f) }
-    val startTriangleLength = min(width, height) / 4f
-    val offsetToFillRightBottomCorner = height - startTriangleLength
+    val startTriangleLength = min(width.value, height.value) / 4f
+    val offsetToFillRightBottomCorner = height.value - startTriangleLength
     // TODO: rewrite this
     val isTriangle = remember {
         derivedStateOf {
@@ -347,11 +359,11 @@ private fun BoxScope.ViewAccountElement(
         }, enabled = canDrag.value, onDragStopped = {
             // if we should animate transition to the start pos or
             // continue animation (switch to another screen)
-            val shouldRollBack = offset.value + startTriangleLength < width / 2
+            val shouldRollBack = offset.value + startTriangleLength < width.value / 2
             val destination = if (shouldRollBack) {
                 0f
             } else {
-                offsetToFillRightBottomCorner + width
+                offsetToFillRightBottomCorner + width.value
             }
             canDrag.value = false
             coroutine.launch {

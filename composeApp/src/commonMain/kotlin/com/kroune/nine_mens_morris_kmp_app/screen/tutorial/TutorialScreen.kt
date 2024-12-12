@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
-import com.kroune.nine_mens_morris_kmp_app.getScreenSize
+import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderFlyingMovesTutorialScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderIndicatorsTutorialScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderLoseTutorialScreen
@@ -69,7 +69,7 @@ private val tutorialScreens: List<@Composable () -> Unit> = listOf(
 
 @Composable
 fun TutorialScreen() {
-    val screenSize = getScreenSize()
+    val screenSize = getScreenDpSize()
     val width = screenSize.width
     val height = screenSize.height
     val coroutine = rememberCoroutineScope()
@@ -102,7 +102,7 @@ fun TutorialScreen() {
         Row(
             modifier = Modifier
                 .height(20.dp)
-                .width(width.dp)
+                .width(width)
                 .zIndex(5f),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -131,8 +131,8 @@ fun TutorialScreen() {
         }
         LazyRow(
             modifier = Modifier
-                .height(height.dp)
-                .width(width.dp),
+                .height(height)
+                .width(width),
             state = listState,
             flingBehavior = CustomFlingBehaviour()
         ) {
@@ -142,8 +142,8 @@ fun TutorialScreen() {
                 }) {
                 Box(
                     modifier = Modifier
-                        .height(height.dp)
-                        .width(width.dp)
+                        .height(height)
+                        .width(width)
                 ) {
                     tutorialScreens[it]()
                 }
@@ -152,7 +152,7 @@ fun TutorialScreen() {
         Row(
             modifier = Modifier
                 .zIndex(5f)
-                .height(height.dp)
+                .height(height)
                 .width(tutorialScreens.size * 3 * 7.dp)
                 .padding(bottom = 50.dp),
             verticalAlignment = Alignment.Bottom,
