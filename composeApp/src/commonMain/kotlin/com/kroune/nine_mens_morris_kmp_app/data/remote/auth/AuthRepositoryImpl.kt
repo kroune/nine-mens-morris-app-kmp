@@ -1,8 +1,7 @@
 package com.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
-import com.kroune.nine_mens_morris_kmp_app.common.SERVER_ADDRESS
-import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
+import com.kroune.nine_mens_morris_kmp_app.common.serverApi
 import com.kroune.nine_mens_morris_kmp_app.data.remote.CheckJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RegisterApiResponses
@@ -11,11 +10,16 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.appendPathSegments
 import kotlinx.serialization.json.Json
 
 class AuthRepositoryImpl : AuthRepositoryI {
     override suspend fun register(login: String, password: String): Result<String> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/reg"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("reg")
+        }
         return runCatching {
             val request =
                 network.get(route) {
@@ -61,7 +65,10 @@ class AuthRepositoryImpl : AuthRepositoryI {
     }
 
     override suspend fun login(login: String, password: String): Result<String> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/login"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("login")
+        }
         return runCatching {
             val request =
                 network.get(route) {
@@ -107,7 +114,10 @@ class AuthRepositoryImpl : AuthRepositoryI {
     }
 
     override suspend fun checkJwtToken(jwtToken: String): Result<Boolean> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/check-jwt-token"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("check-jwt-token")
+        }
         return runCatching {
             val request = network.get(route) {
                 method = HttpMethod.Get

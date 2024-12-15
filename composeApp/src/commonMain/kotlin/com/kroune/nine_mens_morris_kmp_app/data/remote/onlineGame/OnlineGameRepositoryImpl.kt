@@ -2,14 +2,15 @@ package com.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame
 
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
-import com.kroune.nine_mens_morris_kmp_app.common.SERVER_ADDRESS
-import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
 import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserialized
 import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
 import com.kroune.nine_mens_morris_kmp_app.common.sendSerializedCatching
+import com.kroune.nine_mens_morris_kmp_app.common.serverApi
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.http.URLProtocol
+import io.ktor.http.appendPathSegments
 import io.ktor.websocket.close
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,11 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
         val session: CompletableDeferred<DefaultClientWebSocketSession?> = CompletableDeferred(null)
         val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred()
         CoroutineScope(Dispatchers.Default).launch {
-            network.webSocket("ws$SERVER_ADDRESS$USER_API/game",
+            val route = serverApi {
+                protocol = URLProtocol.WS
+                appendPathSegments("game")
+            }.toString()
+            network.webSocket(route,
                 request = {
                     url {
                         parameters["jwtToken"] = jwtToken

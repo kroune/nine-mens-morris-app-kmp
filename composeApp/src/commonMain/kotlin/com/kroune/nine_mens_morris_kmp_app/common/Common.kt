@@ -32,6 +32,9 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
+import io.ktor.http.URLBuilder
+import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
@@ -92,16 +95,24 @@ val network = HttpClient() {
 }
 
 /**
- * The server's address.
- * 10.0.2.2:8080 for testing on androids
- * 0.0.0.0:8080 for testing on other targets
+ * The server's address
  */
-const val SERVER_ADDRESS = "://nine-men-s-morris.me"
+val serverUrl
+    get() = URLBuilder(host = "nine-men-s-morris.me")
 
 /**
  * The API endpoint for user-related operations.
  */
-const val USER_API = "/api/v1/user"
+val serverApi
+    get() = serverUrl.apply {
+        appendPathSegments("/api/v1/user")
+    }
+
+fun serverApi(modification: URLBuilder.() -> Unit): Url {
+    return serverApi.apply {
+        modification()
+    }.build()
+}
 
 /**
  * a simple infinite loading animation

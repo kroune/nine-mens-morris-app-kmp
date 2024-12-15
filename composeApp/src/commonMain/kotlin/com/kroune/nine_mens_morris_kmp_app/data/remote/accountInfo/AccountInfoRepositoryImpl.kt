@@ -1,8 +1,7 @@
 package com.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
-import com.kroune.nine_mens_morris_kmp_app.common.SERVER_ADDRESS
-import com.kroune.nine_mens_morris_kmp_app.common.USER_API
 import com.kroune.nine_mens_morris_kmp_app.common.network
+import com.kroune.nine_mens_morris_kmp_app.common.serverApi
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountPictureByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.CreationDateByIdApiResponses
@@ -17,11 +16,16 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.appendPathSegments
 import kotlinx.serialization.json.Json
 
 class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getAccountRatingById(id: Long, jwtToken: String): Result<Long> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/get-rating-by-id"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("get-rating-by-id")
+        }
         return runCatching {
             val request = network.get(route) {
                 method = HttpMethod.Get
@@ -77,7 +81,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
         id: Long,
         jwtToken: String
     ): Result<Triple<Int, Int, Int>> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/get-creation-date-by-id"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("get-creation-date-by-id")
+        }
         return runCatching {
             val request = network.get(route) {
                 method = HttpMethod.Get
@@ -130,7 +137,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getAccountLoginById(id: Long, jwtToken: String): Result<String> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/get-login-by-id"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("get-login-by-id")
+        }
         return runCatching {
             val request = network.get(route) {
                 method = HttpMethod.Get
@@ -183,7 +193,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getAccountPictureById(id: Long, jwtToken: String): Result<ByteArray> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/get-picture-by-id"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("get-picture-by-id")
+        }
         return runCatching {
             val request =
                 network.get(route) {
@@ -237,7 +250,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getAccountIdByJwtToken(jwtToken: String): Result<Long> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/get-id-by-jwt-token"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("get-id-by-jwt-token")
+        }
         return runCatching {
             val request = network.get(route) {
                 method = HttpMethod.Get
@@ -277,7 +293,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getLeaderboard(jwtToken: String): Result<List<Long>> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/leaderboard"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("leaderboard")
+        }
         return runCatching {
             val request = network.get(route) {
                 method = HttpMethod.Get
@@ -317,7 +336,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): Result<Unit> {
-        val route = "http${SERVER_ADDRESS}${USER_API}/upload-picture"
+        val route = serverApi {
+            protocol = URLProtocol.HTTP
+            appendPathSegments("upload-picture")
+        }
         return runCatching {
             val request = network.post(route) {
                 method = HttpMethod.Post
@@ -349,7 +371,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                                 "provided image (byte array) is too large, it can be ",
                                 " at max"
                             )
-                        val maxWidth = modifiedString.dropLastWhile { it != 'x' }.dropLast(1).toInt()
+                        val maxWidth =
+                            modifiedString.dropLastWhile { it != 'x' }.dropLast(1).toInt()
                         val maxHeight = modifiedString.dropWhile { it != 'x' }.drop(1).toInt()
                         throw UploadPictureApiResponses.TooLargeImage(maxWidth, maxHeight)
                     }
