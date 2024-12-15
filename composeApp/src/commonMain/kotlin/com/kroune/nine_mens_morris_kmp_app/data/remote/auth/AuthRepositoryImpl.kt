@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 class AuthRepositoryImpl : AuthRepositoryI {
     override suspend fun register(login: String, password: String): Result<String> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("reg")
         }
         return runCatching {
@@ -66,7 +66,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
 
     override suspend fun login(login: String, password: String): Result<String> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("login")
         }
         return runCatching {
@@ -115,7 +115,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
 
     override suspend fun checkJwtToken(jwtToken: String): Result<Boolean> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("check-jwt-token")
         }
         return runCatching {

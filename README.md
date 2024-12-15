@@ -3,7 +3,7 @@
     <img width="200" src="composeApp/icons/icon.svg" alt="icon">
 </p>
 
-[nine-men-s-morris.me](http://nine-men-s-morris.me/)
+[play online](https://kroune.github.io)
 </div>
 
 ## This is a Kotlin Multiplatform project targeting Android, Web, Linux, MacOS, Windows of a game called "Nine men's morris"

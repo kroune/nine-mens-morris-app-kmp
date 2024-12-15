@@ -23,7 +23,7 @@ import kotlinx.serialization.json.Json
 class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getAccountRatingById(id: Long, jwtToken: String): Result<Long> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("get-rating-by-id")
         }
         return runCatching {
@@ -82,7 +82,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
         jwtToken: String
     ): Result<Triple<Int, Int, Int>> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("get-creation-date-by-id")
         }
         return runCatching {
@@ -138,7 +138,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
 
     override suspend fun getAccountLoginById(id: Long, jwtToken: String): Result<String> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("get-login-by-id")
         }
         return runCatching {
@@ -194,7 +194,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
 
     override suspend fun getAccountPictureById(id: Long, jwtToken: String): Result<ByteArray> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("get-picture-by-id")
         }
         return runCatching {
@@ -251,7 +251,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
 
     override suspend fun getAccountIdByJwtToken(jwtToken: String): Result<Long> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("get-id-by-jwt-token")
         }
         return runCatching {
@@ -294,7 +294,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
 
     override suspend fun getLeaderboard(jwtToken: String): Result<List<Long>> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("leaderboard")
         }
         return runCatching {
@@ -337,7 +337,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
 
     override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): Result<Unit> {
         val route = serverApi {
-            protocol = URLProtocol.HTTP
+            protocol = URLProtocol.HTTPS
             appendPathSegments("upload-picture")
         }
         return runCatching {
