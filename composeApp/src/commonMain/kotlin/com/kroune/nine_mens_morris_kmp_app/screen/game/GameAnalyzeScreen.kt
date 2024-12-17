@@ -6,8 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,34 +39,10 @@ fun RenderGameAnalyzeScreen(
     increaseDepth: () -> Unit,
     decreaseDepth: () -> Unit
 ) {
-    // TODO: decide what to do when there isn't enough space for analyze screen
-    if (positions.isNotEmpty()) {
-        Box(
-            modifier = Modifier
-                .background(Color.DarkGray, RoundedCornerShape(5))
-        ) {
-            Column {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .weight(1f, false)
-                ) {
-                    positions.forEach {
-                        RenderGameBoard(
-                            it,
-                            null,
-                            mutableListOf(),
-                            onClick = {}
-                        )
-                    }
-                }
-            }
-        }
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(), Alignment.TopCenter
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier.verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = {
             startAnalyze()
@@ -123,6 +98,25 @@ fun RenderGameAnalyzeScreen(
                         // may be it is a bit better to use some icons
                         // but I will leave it like this for now
                         Text("+", fontSize = 22.sp)
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        if (positions.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .background(Color.DarkGray, RoundedCornerShape(5))
+            ) {
+                Column {
+                    positions.forEach {
+                        RenderGameBoard(
+                            it,
+                            null,
+                            mutableListOf(),
+                            onClick = {}
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
                 }
             }

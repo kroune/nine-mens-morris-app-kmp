@@ -1,20 +1,21 @@
 package com.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.event.GameWithFriendEvent
+import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 
 /**
@@ -42,37 +43,40 @@ fun GameWithFriendScreen(
             }
         )
     }
-    RenderGameBoard(
-        pos = component.position,
-        selectedButton = component.selectedButton,
-        moveHints = component.moveHints,
-        onClick = {
-            onEvent(GameWithFriendEvent.OnPieceClick(it))
+    Column(modifier = Modifier.height(getScreenDpSize().height)) {
+        Box {
+            RenderGameBoard(
+                pos = component.position,
+                selectedButton = component.selectedButton,
+                moveHints = component.moveHints,
+                onClick = {
+                    onEvent(GameWithFriendEvent.OnPieceClick(it))
+                }
+            )
+            RenderPieceCount(pos = component.position)
         }
-    )
-    RenderPieceCount(pos = component.position)
-    Box(
-        modifier = Modifier
-            .padding(0.dp, GAME_BOARD_BUTTON_WIDTH * 9.5f, 0.dp, 0.dp)
-            .height(IntrinsicSize.Max)
-            .fillMaxWidth()
-    ) {
-        RenderGameAnalyzeScreen(
-            positions = component.gameAnalyzePositions,
-            depth = component.analyzeDepth,
-            startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
-            increaseDepth = { onEvent(GameWithFriendEvent.IncreaseAnalyzeDepth) },
-            decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
-        )
+        Spacer(modifier = Modifier.height(5.dp))
+        Box(
+            modifier = Modifier.fillMaxHeight(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            RenderGameAnalyzeScreen(
+                positions = component.gameAnalyzePositions,
+                depth = component.analyzeDepth,
+                startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
+                increaseDepth = { onEvent(GameWithFriendEvent.IncreaseAnalyzeDepth) },
+                decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
+            )
+            RenderUndoRedo(
+                handleUndo = {
+                    if (!component.gameEnded)
+                        onEvent(GameWithFriendEvent.Undo)
+                },
+                handleRedo = {
+                    if (!component.gameEnded)
+                        onEvent(GameWithFriendEvent.Redo)
+                }
+            )
+        }
     }
-    RenderUndoRedo(
-        handleUndo = {
-            if (!component.gameEnded)
-                onEvent(GameWithFriendEvent.Undo)
-        },
-        handleRedo = {
-            if (!component.gameEnded)
-                onEvent(GameWithFriendEvent.Redo)
-        }
-    )
 }
