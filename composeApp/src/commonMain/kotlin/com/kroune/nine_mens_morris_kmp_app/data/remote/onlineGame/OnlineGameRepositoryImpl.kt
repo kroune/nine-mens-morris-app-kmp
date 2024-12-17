@@ -8,7 +8,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
 import com.kroune.nine_mens_morris_kmp_app.common.sendSerializedCatching
 import com.kroune.nine_mens_morris_kmp_app.common.serverApi
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.client.plugins.websocket.wss
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.close
@@ -38,10 +38,10 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
         val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred()
         CoroutineScope(Dispatchers.Default).launch {
             val route = serverApi {
-                protocol = URLProtocol.WS
+                protocol = URLProtocol.WSS
                 appendPathSegments("game")
             }.toString()
-            network.webSocket(route,
+            network.wss(route,
                 request = {
                     url {
                         parameters["jwtToken"] = jwtToken
@@ -52,11 +52,11 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                 // session was created
                 session.complete(this)
                 // if we have green pieces
-                receivedIsGreenStatus.complete(this@webSocket.receiveDeserialized<Boolean>())
+                receivedIsGreenStatus.complete(this@wss.receiveDeserialized<Boolean>())
                 // enemy id
-                enemyId.complete(this@webSocket.receiveDeserialized<Long>())
+                enemyId.complete(this@wss.receiveDeserialized<Long>())
                 // game start position
-                positionReceivedOnConnection.complete(this@webSocket.receiveDeserialized<Position>())
+                positionReceivedOnConnection.complete(this@wss.receiveDeserialized<Position>())
                 CoroutineScope(Dispatchers.Default).launch {
                     while (!gameEnded.isCompleted) {
                         val movementResult = channelToSendMoves.receiveCatching()
@@ -66,7 +66,7 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                         }
                         val movement = movementResult.getOrThrow()
                         println("sent move $movement")
-                        val sendResult = this@webSocket.sendSerializedCatching(movement)
+                        val sendResult = this@wss.sendSerializedCatching(movement)
                         if (sendResult != null && !channelClosedNormally) {
                             // something went wrong
                             println("received exception when sending move ${sendResult.stackTraceToString()}")
@@ -100,7 +100,7 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                             println("channel was closed ${moveResult.exceptionOrNull()}")
                             moveResult.getOrThrow()
                         }
-                        return@webSocket
+                        return@wss
                     }
                     val move = moveResult.getOrThrow()
                     println("received move $move")

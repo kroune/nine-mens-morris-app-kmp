@@ -6,7 +6,7 @@ import com.kroune.nine_mens_morris_kmp_app.common.serverApi
 import com.kroune.nine_mens_morris_kmp_app.data.remote.SearchingForGameResponses
 import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.client.plugins.websocket.wss
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.close
@@ -23,7 +23,7 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
         jwtToken: String
     ): Pair<CompletableDeferred<Result<Long>?>, suspend () -> Unit> {
         val route = serverApi {
-            protocol = URLProtocol.WS
+            protocol = URLProtocol.WSS
             appendPathSegments("search-for-game")
         }.toString()
         val session: CompletableDeferred<DefaultClientWebSocketSession?> = CompletableDeferred(null)
@@ -31,7 +31,7 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
         CoroutineScope(Dispatchers.Default).launch {
             var gameIdValue: Long? = null
             val result = runCatching {
-                network.webSocket(route,
+                network.wss(route,
                     request = {
                         url {
                             parameters["jwtToken"] = jwtToken
