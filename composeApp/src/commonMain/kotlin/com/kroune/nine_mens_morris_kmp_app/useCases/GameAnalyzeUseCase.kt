@@ -55,6 +55,7 @@ class GameAnalyzeUseCase() {
             var currentPos = pos
             // see https://github.com/detekt/detekt/issues/3566
             // however we can't exit repeat with break
+            positionsValue.clear()
             @Suppress("UnusedPrivateProperty")
             for (i in 1..depthValue.value) {
                 val move = currentPos.findBestMove(depthValue.value.toUByte()) ?: break

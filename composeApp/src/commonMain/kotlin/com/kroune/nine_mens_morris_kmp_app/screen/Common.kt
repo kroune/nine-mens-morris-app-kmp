@@ -9,7 +9,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -92,8 +91,7 @@ fun DrawRating(
 
             it.isFailure -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier,
                     contentAlignment = Alignment.CenterStart
                 ) {
                     IconButton(onClick = {
@@ -103,7 +101,6 @@ fun DrawRating(
                             painter = painterResource(Res.drawable.error),
                             contentDescription = "Error",
                             modifier = Modifier
-                                .fillMaxSize()
                                 .aspectRatio(1f)
                                 .clip(CircleShape)
                         )
@@ -282,7 +279,6 @@ fun DrawIcon(
             it.isFailure -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
                         .aspectRatio(1f),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -293,7 +289,6 @@ fun DrawIcon(
                             painter = painterResource(Res.drawable.error),
                             contentDescription = "Error",
                             modifier = modifier
-                                .fillMaxHeight()
                                 .aspectRatio(1f)
                                 .clip(CircleShape)
                         )
@@ -372,7 +367,6 @@ fun DrawName(
         accountName.isFailure -> {
             Box(
                 modifier = Modifier
-                    .fillMaxHeight()
                     .aspectRatio(1f),
                 contentAlignment = Alignment.CenterStart
             ) {

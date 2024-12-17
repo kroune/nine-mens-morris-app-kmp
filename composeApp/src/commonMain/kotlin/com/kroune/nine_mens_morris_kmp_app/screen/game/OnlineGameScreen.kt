@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -213,7 +215,8 @@ fun PlayerCard(
     ) {
         DrawIcon(
             modifier = Modifier
-                .padding(5.dp),
+                .padding(5.dp)
+                .aspectRatio(1f),
             pictureByteArray = pictureByteArray,
             onReload = {
                 onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount))
@@ -224,25 +227,30 @@ fun PlayerCard(
         Column(
             verticalArrangement = Arrangement.Center
         ) {
-            DrawName(
-                text = @Composable {
-                    Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                },
-                accountName = playerName,
-                onReload = { onEvent(OnlineGameScreenEvent.ReloadName(ownAccount)) },
-                scope = scope,
-                snackbarHostState = snackbarHostState
-            )
+            Box(modifier = Modifier
+                .height(with(LocalDensity.current) { 20.sp.toDp() })
+            ) {
+                DrawName(
+                    text = @Composable {
+                        Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    },
+                    accountName = playerName,
+                    onReload = { onEvent(OnlineGameScreenEvent.ReloadName(ownAccount)) },
+                    scope = scope,
+                    snackbarHostState = snackbarHostState
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier =
-                Modifier.size(
+                Modifier.requiredSize(
                     (30 * when {
                         isGreen && pos.pieceToMove -> 1.5f
                         !isGreen && !pos.pieceToMove -> 1.5f
                         else -> 1f
                     }).dp
                 )
+                    .aspectRatio(1f)
                     .background(if (isGreen) Color.Green else Color.Blue, CircleShape)
                     .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
                 contentAlignment = Alignment.Center

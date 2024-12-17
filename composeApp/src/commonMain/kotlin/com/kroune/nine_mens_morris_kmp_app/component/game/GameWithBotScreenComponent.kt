@@ -35,6 +35,7 @@ class GameWithBotScreenComponent(
                 botJob = CoroutineScope(Dispatchers.Default).launch {
                     while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
                         botMove()
+                        handleHighLighting()
                     }
                 }
             }
@@ -46,6 +47,7 @@ class GameWithBotScreenComponent(
                 delay(800)
                 while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
                     botMove()
+                    handleHighLighting()
                 }
             }
         },
@@ -57,6 +59,7 @@ class GameWithBotScreenComponent(
                     delay(800)
                     while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
                         botMove()
+                        handleHighLighting()
                     }
                 }
             }
@@ -66,7 +69,7 @@ class GameWithBotScreenComponent(
         }
     )
 
-    fun GameBoardUseCase.botMove() {
+    private fun GameBoardUseCase.botMove() {
         val bestMove = pos.value.findBestMove(4u)
         processMove(bestMove!!)
     }
