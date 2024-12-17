@@ -9,6 +9,12 @@
 ## This is a Kotlin Multiplatform project targeting Android, Web, Linux, MacOS, Windows of a game called "Nine men's morris"
 <br>
 
+## Preview
+* [android](demo/android.mkv)
+<br>
+
+Other previews will be added in the future
+
 ## History
 
 This first version of the app (which was for android only) is located
