@@ -166,8 +166,8 @@ android {
 compose.desktop {
     application {
         buildTypes.release.proguard {
-            this.isEnabled = false
-            version.set("7.6.0")
+            configurationFiles.setFrom("proguard-rules.pro")
+            version.set("7.6.1")
         }
         mainClass = "com.kroune.nine_mens_morris_kmp_app.MainKt"
 

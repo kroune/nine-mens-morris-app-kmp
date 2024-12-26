@@ -1,0 +1,5 @@
+-keep class com.arkivanov.decompose.** { *; }
+-keep class io.ktor.** { *; }
+-keep class com.kroune.nine_mens_morris_kmp_app.** { *; }
+-keep class androidx.compose.** { *; }
+-keep class kotlinx.coroutines.** { *; }
