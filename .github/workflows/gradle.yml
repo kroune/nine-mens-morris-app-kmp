@@ -33,6 +33,11 @@ jobs:
             tag: web
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
+          # jar
+          - target: packageReleaseUberJarForCurrentOS
+            tag: jar
+            directory: composeApp/build/jars/
+            os: ubuntu-latest
           # linux
           - target: packageReleaseDeb
             tag: linux
