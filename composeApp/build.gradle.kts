@@ -176,6 +176,7 @@ compose.desktop {
                 iconFile = project.file("icons/icon.icns")
             }
             linux {
+                modules("jdk.security.auth")
                 iconFile = project.file("icons/icon.png")
             }
             windows {
