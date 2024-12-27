@@ -1,3 +1,5 @@
+package com.kroune.nine_mens_morris_kmp_app
+
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
@@ -38,5 +40,6 @@ class AppStartAnimationScreenTest {
         assertFalse(actionPerformed)
         onNodeWithTag("pressToStart", true).performClick()
         assertTrue(actionPerformed)
+
     }
 }
