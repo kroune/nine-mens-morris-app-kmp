@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.component.auth
+package com.kroune.nine_mens_morris_kmp_app.component.auth.signIn
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.SignInScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration
@@ -22,24 +22,14 @@ class SignInScreenComponent(
     val switchingScreensLambda: (Configuration) -> Unit,
     val nextScreen: (Long) -> Configuration,
     componentContext: ComponentContext
-) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    var username by mutableStateOf("")
-    var usernameValid by mutableStateOf(false)
-    var password by mutableStateOf("")
-    var passwordValid by mutableStateOf(false)
+) : ComponentContext by componentContext, ComponentContextWithBackHandle, SignInScreenComponentI {
+    override var username by mutableStateOf("")
+    override var usernameValid by mutableStateOf(false)
+    override var password by mutableStateOf("")
+    override var passwordValid by mutableStateOf(false)
 
-    var loginResult: Result<*>? by mutableStateOf(null)
-    var loginInProcess by mutableStateOf(false)
-
-    fun updateUsername(newUsername: String) {
-        username = newUsername
-        usernameValid = authRepositoryInteractor.loginValidator(newUsername)
-    }
-
-    fun updatePassword(newPassword: String) {
-        password = newPassword
-        passwordValid = authRepositoryInteractor.passwordValidator(newPassword)
-    }
+    override var loginResult: Result<*>? by mutableStateOf(null)
+    override var loginInProcess by mutableStateOf(false)
 
     private fun login() {
         CoroutineScope(Dispatchers.Default).launch {
@@ -81,7 +71,7 @@ class SignInScreenComponent(
         }
     }
 
-    fun onEvent(event: SignInScreenEvent) {
+    override fun onEvent(event: SignInScreenEvent) {
         when (event) {
             SignInScreenEvent.Login -> {
                 login()
@@ -93,6 +83,16 @@ class SignInScreenComponent(
 
             SignInScreenEvent.Back -> {
                 onNavigationBack()
+            }
+
+            is SignInScreenEvent.UsernameUpdate -> {
+                username = event.newText
+                usernameValid = authRepositoryInteractor.loginValidator(event.newText)
+            }
+
+            is SignInScreenEvent.PasswordUpdate -> {
+                password = event.newText
+                passwordValid = authRepositoryInteractor.passwordValidator(event.newText)
             }
         }
     }

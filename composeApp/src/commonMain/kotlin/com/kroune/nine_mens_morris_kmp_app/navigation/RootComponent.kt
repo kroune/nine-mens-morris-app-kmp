@@ -7,12 +7,12 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.router.stack.replaceCurrent
-import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
-import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.auth.SignInScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent

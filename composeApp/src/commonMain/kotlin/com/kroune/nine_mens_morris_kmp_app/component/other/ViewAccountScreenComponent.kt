@@ -1,10 +1,11 @@
-package com.kroune.nine_mens_morris_kmp_app.component
+package com.kroune.nine_mens_morris_kmp_app.component.other
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import com.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 

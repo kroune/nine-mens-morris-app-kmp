@@ -7,7 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RegisterApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.SignUpScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.auth.SignUpScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration

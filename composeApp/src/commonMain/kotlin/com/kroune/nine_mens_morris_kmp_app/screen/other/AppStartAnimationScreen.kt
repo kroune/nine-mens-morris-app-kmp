@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.screen
+package com.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
@@ -20,11 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.kroune.nine_mens_morris_kmp_app.common.TransparentColors
-import com.kroune.nine_mens_morris_kmp_app.component.AppStartAnimationComponent
-import com.kroune.nine_mens_morris_kmp_app.event.AppStartAnimationScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponentI
+import com.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.press_to_start
 import org.jetbrains.compose.resources.stringResource
@@ -32,7 +33,7 @@ import kotlin.math.sin
 
 @Composable
 fun AppStartAnimationScreen(
-    component: AppStartAnimationComponent
+    component: AppStartAnimationComponentI
 ) {
     DrawAnimation()
     StartButton(component)
@@ -85,7 +86,7 @@ private fun DrawAnimation() {
  */
 @Composable
 private fun StartButton(
-    component: AppStartAnimationComponent
+    component: AppStartAnimationComponentI
 ) {
     val infiniteScale = rememberInfiniteTransition(label = "buttonAnimation")
     val animatedProgress by infiniteScale.animateFloat(
@@ -115,6 +116,7 @@ private fun StartButton(
             Text(
                 text = stringResource(Res.string.press_to_start),
                 modifier = Modifier
+                    .testTag("pressToStart")
                     .alpha(animatedProgress),
                 color = Color.White,
                 fontSize = 22.sp

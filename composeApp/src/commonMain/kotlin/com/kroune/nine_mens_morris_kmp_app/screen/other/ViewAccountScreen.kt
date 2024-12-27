@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.screen
+package com.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,10 +17,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.kroune.nine_mens_morris_kmp_app.component.ViewAccountScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.data.remote.UploadPictureApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawName
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawRating
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType

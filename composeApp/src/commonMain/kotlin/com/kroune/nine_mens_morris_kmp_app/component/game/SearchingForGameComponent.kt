@@ -2,7 +2,7 @@ package com.kroune.nine_mens_morris_kmp_app.component.game
 
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import com.kroune.nine_mens_morris_kmp_app.event.SearchingForGameScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.SearchingForGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.searchingForGameInteractor
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope

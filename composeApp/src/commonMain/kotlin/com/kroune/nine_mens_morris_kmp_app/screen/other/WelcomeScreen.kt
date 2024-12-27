@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.screen
+package com.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animate
@@ -52,9 +52,9 @@ import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.common.ParallelogramShape
 import com.kroune.nine_mens_morris_kmp_app.common.triangleShape
-import com.kroune.nine_mens_morris_kmp_app.component.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.WelcomeScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope

@@ -9,11 +9,11 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
-import com.kroune.nine_mens_morris_kmp_app.screen.AppStartAnimationScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.BackHandler
-import com.kroune.nine_mens_morris_kmp_app.screen.LeaderboardScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.ViewAccountScreen
-import com.kroune.nine_mens_morris_kmp_app.screen.WelcomeScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
+import com.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.auth.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen

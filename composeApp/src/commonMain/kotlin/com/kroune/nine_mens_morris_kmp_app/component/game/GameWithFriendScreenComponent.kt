@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import com.kroune.nine_mens_morris_kmp_app.event.GameWithFriendEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 

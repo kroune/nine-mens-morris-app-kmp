@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
-import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import com.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import com.kroune.nine_mens_morris_kmp_app.screen.DrawRating

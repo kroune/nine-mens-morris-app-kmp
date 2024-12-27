@@ -1,8 +1,9 @@
-package com.kroune.nine_mens_morris_kmp_app.component
+package com.kroune.nine_mens_morris_kmp_app.component.other
 
 import androidx.compose.runtime.mutableStateListOf
 import com.arkivanov.decompose.ComponentContext
-import com.kroune.nine_mens_morris_kmp_app.event.LeaderboardEvent
+import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import com.kroune.nine_mens_morris_kmp_app.event.other.LeaderboardEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.CoroutineScope

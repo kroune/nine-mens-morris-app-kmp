@@ -22,9 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import com.kroune.nine_mens_morris_kmp_app.component.auth.SignInScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponentI
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.SignInScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error
@@ -45,7 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SignInScreen(
-    component: SignInScreenComponent,
+    component: SignInScreenComponentI,
 ) {
     val username = component.username
     val isUsernameValid = component.usernameValid
@@ -71,7 +71,7 @@ fun SignInScreen(
             TextField(
                 username,
                 { newValue ->
-                    component.updateUsername(newValue)
+                    component.onEvent(SignInScreenEvent.UsernameUpdate(newValue))
                 },
                 label = {
                     if (!isUsernameValid) {
@@ -95,7 +95,7 @@ fun SignInScreen(
             TextField(
                 password,
                 { newValue ->
-                    component.updatePassword(newValue)
+                    component.onEvent(SignInScreenEvent.PasswordUpdate(newValue))
                 },
                 label = {
                     if (!isPasswordValid) {

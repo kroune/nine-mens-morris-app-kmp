@@ -8,7 +8,7 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import com.kroune.nine_mens_morris_kmp_app.event.OnlineGameScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase

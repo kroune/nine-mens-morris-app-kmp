@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.screen
+package com.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -29,8 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.component.LeaderboardComponent
-import com.kroune.nine_mens_morris_kmp_app.event.LeaderboardEvent
+import com.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
+import com.kroune.nine_mens_morris_kmp_app.event.other.LeaderboardEvent
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawName
+import com.kroune.nine_mens_morris_kmp_app.screen.DrawRating
 import com.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.CoroutineScope
 import ninemensmorrisappkmp.composeapp.generated.resources.Res

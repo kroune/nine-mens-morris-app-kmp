@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.event.GameWithBotEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.GameWithBotEvent
 import com.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 
 /**

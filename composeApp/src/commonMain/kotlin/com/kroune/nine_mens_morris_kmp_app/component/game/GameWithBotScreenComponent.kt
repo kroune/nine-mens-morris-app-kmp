@@ -7,7 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.GameState
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import com.kroune.nine_mens_morris_kmp_app.event.GameWithBotEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.GameWithBotEvent
 import com.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

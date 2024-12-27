@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app.event
+package com.kroune.nine_mens_morris_kmp_app.event.game
 
 sealed interface GameWithBotEvent {
     data class OnPieceClick(val index: Int): GameWithBotEvent

@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RegisterApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.SignUpScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.auth.SignUpScreenEvent
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error

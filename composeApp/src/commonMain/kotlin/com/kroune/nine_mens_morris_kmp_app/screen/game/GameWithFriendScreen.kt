@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.event.GameWithFriendEvent
+import com.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
 import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 

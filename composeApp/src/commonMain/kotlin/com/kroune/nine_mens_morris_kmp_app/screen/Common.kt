@@ -33,7 +33,7 @@ import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountPictureByIdApiResp
 import com.kroune.nine_mens_morris_kmp_app.data.remote.CreationDateByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RatingByIdApiResponses
-import com.kroune.nine_mens_morris_kmp_app.event.ViewAccountScreenEvent
+import com.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
