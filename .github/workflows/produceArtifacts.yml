@@ -2,10 +2,9 @@ name: Builds app on all targets
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: [ "Build project" ]
-    types:
-      - completed
+  pull_request:
+  push:
+
 
 permissions:
   contents: read
@@ -36,6 +35,7 @@ jobs:
         with:
           arguments: build
   produceArtifacts:
+    needs: build
     strategy:
       matrix:
         include:
