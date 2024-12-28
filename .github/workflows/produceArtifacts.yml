@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  basicTest:
     runs-on: ubuntu-latest
     env:
       KEYSTORE: ${{ secrets.KEYSTORE }}
@@ -30,12 +30,49 @@ jobs:
         with:
           java-version: 21
           distribution: 'zulu'
-      - name: Build with Gradle
+      - name: Run basic tests with Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          arguments: build
+          arguments: test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+  uiTest:
+    runs-on: macos-13
+    env:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      repository_name: NineMensMorris
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-${{ hashFiles('**/.lock') }}
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+      - name: Run tests on ios
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          arguments: iosSimulatorArm64Test
+      - name: Run tests on desktop
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          arguments: desktopTest
+      - name: Run tests on web
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          arguments: wasmJsTest
+      - name: Run tests on android
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          arguments: connectedAndroidTest
+
   produceArtifacts:
-    needs: build
+    needs: basicTest
     strategy:
       matrix:
         include:
