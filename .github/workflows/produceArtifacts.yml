@@ -2,8 +2,10 @@ name: Builds app on all targets
 
 on:
   workflow_dispatch:
-  pull_request:
-  push:
+  workflow_run:
+    workflows: [ "Build project" ]
+    types:
+      - completed
 
 permissions:
   contents: read
