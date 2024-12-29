@@ -129,4 +129,4 @@ jobs:
 
     - name: Upload artifacts to artifacts microservice
       run: |
-        curl  -w '%{http_code}\n' --connect-timeout 30 -m 300 -X POST -T ${{ matrix.directory }} https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}&type=Testing&platform=${{ matrix.tag }}&commit={{ github.event.head_commit.id }}&branch=${{ github.ref_name }}
+        curl -w '%{http_code}\n' --connect-timeout 30 -m 300 -X POST -T ${{ matrix.directory }} https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}&type=Testing&platform=${{ matrix.tag }}&commit=${{ github.event.head_commit.id }}&branch=${{ github.ref_name }}
