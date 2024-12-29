@@ -15,11 +15,11 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.roborazzi)
 }
 
 composeCompiler {
     featureFlags = setOf(
-        ComposeFeatureFlag.StrongSkipping,
         ComposeFeatureFlag.OptimizeNonSkippingGroups,
         ComposeFeatureFlag.PausableComposition
     )
@@ -33,6 +33,11 @@ kotlin {
         }
         moduleName = "nineMensMorrisApp"
         browser {
+            testTask {
+                useKarma {
+                    useDebuggableChrome()
+                }
+            }
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
                 outputFileName = "composeApp.js"

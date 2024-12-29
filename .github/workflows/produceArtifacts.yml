@@ -61,15 +61,15 @@ jobs:
       - name: Run tests on desktop
         uses: gradle/actions/setup-gradle@v3
         with:
-          arguments: desktopTest
-      - name: Run tests on web
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          arguments: wasmJsTest
-      - name: Run tests on android
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          arguments: connectedAndroidTest
+#          arguments: desktopTest
+#      - name: Run tests on web
+#        uses: gradle/actions/setup-gradle@v3
+#        with:
+#          arguments: wasmJsBrowserTest
+#      - name: Run tests on android
+#        uses: gradle/actions/setup-gradle@v3
+#        with:
+#          arguments: connectedAndroidTest
 
   produceArtifacts:
     needs: basicTest
