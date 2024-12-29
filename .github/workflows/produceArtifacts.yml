@@ -67,44 +67,42 @@ jobs:
         include:
           # android
           - target: assembleRelease
-            tag: android
+            tag: Android
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
           # macos
           - target: packageReleaseDmg
-            tag: macos
+            tag: Macos
             directory: composeApp/build/compose/binaries/main-release/dmg/
             os: macos-13
           # ios
           - target: iosSimulatorArm64Binaries
-            tag: ios
+            tag: Ios
             directory: composeApp/build/libs/composeApp-desktop.jar
             os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
-            tag: web
+            tag: Web
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # jar
           - target: packageReleaseUberJarForCurrentOS
-            tag: jar
+            tag: Jar
             directory: composeApp/build/compose/jars/
             os: ubuntu-latest
           # linux
           - target: packageReleaseDeb
-            tag: linux
+            tag: Linux
             directory: composeApp/build/compose/binaries/main-release/deb/
             os: ubuntu-latest
           # windows
           - target: packageReleaseExe
-            tag: windows
+            tag: Windows
             directory: composeApp/build/compose/binaries/main-release/exe/
             os: windows-latest
     runs-on: ${{ matrix.os }}
 
     env:
-      KEYSTORE: ${{ secrets.KEYSTORE }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       repository_name: NineMensMorris
     steps:
     - uses: actions/checkout@v4
@@ -121,8 +119,12 @@ jobs:
     - name: Produce artifacts
       run: ./gradlew ${{ matrix.target }}
 
-    - name: Upload artifacts - ${{ env.repository_name }}
+    - name: Upload artifacts to github
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.repository_name }}-${{ matrix.tag }}-artifact
         path: ${{ matrix.directory }}
+
+    - name: Upload artifacts to artifacts microservice
+      run: |
+        curl --connect-timeout 30 -m 300 -X POST -T ${{ matrix.directory } https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}&type=Testing&platform=${{ matrix.tag }}&commit={{ github.sha }}&branch=${{ github.ref_name }}
