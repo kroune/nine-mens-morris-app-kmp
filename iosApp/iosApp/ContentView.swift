@@ -3,14 +3,8 @@ import SwiftUI
 import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
-    private var component: RootComponent
-
-    init(_ component: TodoRoot) {
-        self.component = component
-    }
-
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController(root: component)
+        MainViewControllerKt.MainViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
