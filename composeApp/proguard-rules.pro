@@ -1,3 +1,7 @@
+-optimizationpasses 5
+-repackageclasses
+-allowaccessmodification
+
 -keep class com.arkivanov.decompose.** { *; }
 # i think proguard deletes it because of runtime engine selection
 -keep class io.ktor.client.engine.cio.** { *; }
