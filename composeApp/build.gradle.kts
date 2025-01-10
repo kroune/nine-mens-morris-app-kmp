@@ -187,6 +187,8 @@ compose.desktop {
         buildTypes.release.proguard {
             configurationFiles.setFrom("proguard-rules.pro")
             version.set("7.6.1")
+            obfuscate.set(true)
+            optimize.set(true)
         }
         mainClass = "com.kroune.nine_mens_morris_kmp_app.MainKt"
 
