@@ -1,23 +1,27 @@
 package com.kroune.nine_mens_morris_kmp_app.navigation
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimator
+import com.arkivanov.decompose.extensions.compose.stack.animation.scale
+import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.active
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.router.stack.replaceCurrent
-import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
+import com.kroune.nine_mens_morris_kmp_app.common.customSlide
+import com.kroune.nine_mens_morris_kmp_app.common.pop
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import com.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
-import com.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.AppStartAnimationScreenChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithBotChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithFriendChild
@@ -36,10 +40,6 @@ import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuratio
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.WelcomeScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 class RootComponent(
@@ -50,41 +50,39 @@ class RootComponent(
     val childStack = childStack(
         source = navigation,
         serializer = Configuration.serializer(),
-        initialConfiguration = AppStartAnimation,
+        initialConfiguration = AppStartAnimation(scale()),
         handleBackButton = false,
         childFactory = ::createChild
     )
 
-    init {
-        // TODO: fix this absolute garbage
-        CoroutineScope(Dispatchers.Default).launch {
-            while (true) {
-                BackHandler.setCallbackAction {
-                    childStack.active.instance.component.onBackPressed()
-                }
-                delay(500L)
-            }
-        }
-    }
-    private fun popOrReplaceWithWelcomeScreenIfStackIsEmpty() {
-        navigation.pop {
+    private fun popOrFallbackScreen(
+        customAnimation: StackAnimator,
+        fallBackScreen: Configuration = WelcomeScreen(customAnimation)
+    ) {
+        navigation.pop(animation = customAnimation) {
             if (!it) {
-                navigation.replaceCurrent(WelcomeScreen)
+                navigation.replaceCurrent(fallBackScreen)
             }
         }
     }
 
+    /**
+     * Child factory
+     */
     fun createChild(
         config: Configuration,
         context: ComponentContext
     ): Child {
+        BackHandler.setCallbackAction {
+            childStack.active.instance.component.onBackPressed()
+        }
         return when (config) {
             is AppStartAnimation -> {
                 AppStartAnimationScreenChild(
                     AppStartAnimationComponent(
-                        context,
-                        {
-                            navigation.pushToFront(WelcomeScreen)
+                        componentContext = context,
+                        onNavigationToWelcomeScreen = {
+                            navigation.pushToFront(WelcomeScreen(scale()))
                         }
                     )
                 )
@@ -93,39 +91,68 @@ class RootComponent(
             is WelcomeScreen -> {
                 WelcomeScreenChild(
                     WelcomeScreenComponent(
-                        context,
-                        {
-                            navigation.pushToFront(GameWithFriendScreen)
+                        componentContext = context,
+                        onNavigationToGameWithFriendScreen = {
+                            navigation.pushToFront(GameWithFriendScreen(scale()))
                         },
-                        {
-                            navigation.pushToFront(GameWithBotScreen)
+                        onNavigationToGameWithBotScreen = {
+                            navigation.pushToFront(GameWithBotScreen(scale()))
                         },
-                        {
-                            navigation.pushToFront(SearchingForGameScreen)
+                        onNavigationToOnlineGameScreen = {
+                            navigation.pushToFront(SearchingForGameScreen(scale()))
                         },
-                        {
-                            navigation.pushToFront(Configuration.LeaderboardScreen)
+                        onNavigationToLeaderboardScreen = {
+                            navigation.pushToFront(Configuration.LeaderboardScreen(scale()))
                         },
-                        {
-                            navigation.pushToFront(SignUpScreen { accountId ->
-                                ViewAccountScreen(true, accountId)
-                            })
+                        onNavigationToAccountRegistrationThenViewAccountScreen = {
+                            navigation.pushToFront(
+                                SignUpScreen(
+                                    nextScreen = { accountId ->
+                                        ViewAccountScreen(
+                                            isOwnAccount = true,
+                                            accountId = accountId,
+                                            customAnimation = customSlide(invertDirection = true)
+                                        )
+                                    },
+                                    customAnimation = customSlide(invertDirection = true)
+                                )
+                            )
                         },
-                        {
-                            navigation.pushToFront(SignUpScreen { _ ->
-                                SearchingForGameScreen
-                            })
+                        onNavigationToAccountRegistrationThenOnlineGameScreen = {
+                            navigation.pushToFront(
+                                SignUpScreen(
+                                    nextScreen = { _ ->
+                                        SearchingForGameScreen(scale())
+                                    },
+                                    customAnimation = scale()
+                                )
+                            )
                         },
-                        {
-                            navigation.pushToFront(SignUpScreen { _ ->
-                                Configuration.LeaderboardScreen
-                            })
+                        onNavigationToAccountRegistrationThenLeaderboardScreen = {
+                            navigation.pushToFront(
+                                SignUpScreen(
+                                    nextScreen = { _ ->
+                                        Configuration.LeaderboardScreen(scale())
+                                    },
+                                    customAnimation = scale()
+                                )
+                            )
                         },
-                        { accountId ->
-                            navigation.pushToFront(ViewAccountScreen(true, accountId))
+                        onNavigationToAccountViewScreen = { accountId ->
+                            navigation.pushToFront(
+                                ViewAccountScreen(
+                                    isOwnAccount = true,
+                                    accountId = accountId,
+                                    customAnimation = customSlide(invertDirection = true)
+                                )
+                            )
                         },
-                        {
-                            navigation.pushToFront(AppStartAnimation)
+                        onNavigationToAppStartAnimationScreen = {
+                            navigation.pushToFront(
+                                AppStartAnimation(
+                                    customAnimation = scale()
+                                )
+                            )
                         }
                     )
                 )
@@ -134,12 +161,12 @@ class RootComponent(
             is ViewAccountScreen -> {
                 ViewAccountScreenChild(
                     ViewAccountScreenComponent(
-                        {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
+                        onNavigationBack = {
+                            popOrFallbackScreen(config.animation)
                         },
-                        config.isOwnAccount,
-                        config.accountId,
-                        context
+                        isOwnAccount = config.isOwnAccount,
+                        accountId = config.accountId,
+                        componentContext = context
                     )
                 )
             }
@@ -147,19 +174,24 @@ class RootComponent(
             is SignUpScreen -> {
                 SignUpScreenChild(
                     SignUpScreenComponent(
-                        {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
+                        onNavigationBack = {
+                            popOrFallbackScreen(
+                                customSlide(invertDirection = true)
+                            )
                         },
-                        {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
-                            navigation.pushToFront(SignInScreen(it))
+                        onNavigationToSignInScreen = {
+                            navigation.replaceCurrent(
+                                SignInScreen(
+                                    nextScreen = it,
+                                    customAnimation = customSlide(invertDirection = true)
+                                )
+                            )
                         },
-                        { it: Configuration ->
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
-                            navigation.pushToFront(it)
+                        switchingScreensLambda = { it: Configuration ->
+                            navigation.replaceCurrent(it)
                         },
-                        config.nextScreen,
-                        context
+                        nextScreen = config.nextScreen,
+                        componentContext = context
                     )
                 )
             }
@@ -167,56 +199,68 @@ class RootComponent(
             is SignInScreen -> {
                 SignInScreenChild(
                     SignInScreenComponent(
-                        {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
+                        onNavigationBack = {
+                            popOrFallbackScreen(config.animation)
                         },
-                        {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
-                            navigation.pushToFront(SignUpScreen(it))
+                        onNavigationToSignUpScreen = {
+                            navigation.replaceCurrent(
+                                SignUpScreen(
+                                    nextScreen = it,
+                                    customAnimation = customSlide(invertDirection = true)
+                                )
+                            )
                         },
-                        { it: Configuration ->
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
-                            navigation.pushToFront(it)
+                        switchingScreensLambda = { it: Configuration ->
+                            navigation.replaceCurrent(it)
                         },
-                        config.nextScreen,
-                        context
+                        nextScreen = config.nextScreen,
+                        componentContext = context
                     )
                 )
             }
 
-            GameWithFriendScreen -> {
+            is GameWithFriendScreen -> {
                 GameWithFriendChild(
                     GameWithFriendScreenComponent(
                         {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
+                            popOrFallbackScreen(config.animation)
                         },
                         context
                     )
                 )
             }
 
-            GameWithBotScreen -> {
+            is GameWithBotScreen -> {
                 GameWithBotChild(
                     GameWithBotScreenComponent(
                         {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
+                            popOrFallbackScreen(config.animation)
                         },
                         context
                     )
                 )
             }
 
-            SearchingForGameScreen -> {
+            is SearchingForGameScreen -> {
                 SearchingForGameChild(
                     SearchingForGameComponent(
-                        { gameId ->
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
-                            navigation.pushToFront(OnlineGameScreen(gameId))
+                        onGameFind = { gameId ->
+                            popOrFallbackScreen(config.animation)
+                            navigation.pushToFront(
+                                OnlineGameScreen(
+                                    gameId,
+                                    scale()
+                                )
+                            )
                         },
-                        {
+                        onGoingToWelcomeScreen = {
                             // we don't save state
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
-                            navigation.pushToFront(WelcomeScreen)
+                            popOrFallbackScreen(config.animation)
+                            navigation.pushToFront(
+                                WelcomeScreen(
+                                    scale()
+                                )
+                            )
                         },
                         context
                     )
@@ -228,18 +272,18 @@ class RootComponent(
                     OnlineGameComponent(
                         config.gameId,
                         {
-                            navigation.pushToFront(WelcomeScreen)
+                            navigation.pushToFront(WelcomeScreen(scale()))
                         },
                         context
                     )
                 )
             }
 
-            Configuration.LeaderboardScreen -> {
+            is Configuration.LeaderboardScreen -> {
                 Child.LeaderboardChild(
                     LeaderboardComponent(
                         {
-                            popOrReplaceWithWelcomeScreenIfStackIsEmpty()
+                            popOrFallbackScreen(config.animation)
                         },
                         context
                     )
@@ -249,65 +293,103 @@ class RootComponent(
     }
 
     sealed class Child(open val component: ComponentContextWithBackHandle) {
-        data class AppStartAnimationScreenChild(override val component: AppStartAnimationComponent) :
-            Child(component)
+        data class AppStartAnimationScreenChild(
+            override val component: AppStartAnimationComponent
+        ) : Child(component)
 
-        data class WelcomeScreenChild(override val component: WelcomeScreenComponent) :
-            Child(component)
+        data class WelcomeScreenChild(
+            override val component: WelcomeScreenComponent
+        ) : Child(component)
 
-        data class ViewAccountScreenChild(override val component: ViewAccountScreenComponent) :
-            Child(component)
+        data class ViewAccountScreenChild(
+            override val component: ViewAccountScreenComponent
+        ) : Child(component)
 
-        data class SignUpScreenChild(override val component: SignUpScreenComponent) :
-            Child(component)
+        data class SignUpScreenChild(
+            override val component: SignUpScreenComponent
+        ) : Child(component)
 
-        data class SignInScreenChild(override val component: SignInScreenComponent) :
-            Child(component)
+        data class SignInScreenChild(
+            override val component: SignInScreenComponent
+        ) : Child(component)
 
-        data class GameWithFriendChild(override val component: GameWithFriendScreenComponent) :
-            Child(component)
+        data class GameWithFriendChild(
+            override val component: GameWithFriendScreenComponent
+        ) : Child(component)
 
-        data class GameWithBotChild(override val component: GameWithBotScreenComponent) :
-            Child(component)
+        data class GameWithBotChild(
+            override val component: GameWithBotScreenComponent
+        ) : Child(component)
 
-        data class SearchingForGameChild(override val component: SearchingForGameComponent) :
-            Child(component)
+        data class SearchingForGameChild(
+            override val component: SearchingForGameComponent
+        ) : Child(component)
 
-        data class OnlineGameChild(override val component: OnlineGameComponent) : Child(component)
-        data class LeaderboardChild(override val component: LeaderboardComponent) : Child(component)
+        data class OnlineGameChild(
+            override val component: OnlineGameComponent
+        ) : Child(component)
+
+        data class LeaderboardChild(
+            override val component: LeaderboardComponent
+        ) : Child(component)
     }
 
     @Serializable
-    sealed class Configuration {
+    sealed class Configuration(var animation: StackAnimator = slide()) {
         @Serializable
-        data object AppStartAnimation : Configuration()
+        data class AppStartAnimation(
+            val customAnimation: StackAnimator
+        ) : Configuration(scale())
 
         @Serializable
-        data object WelcomeScreen : Configuration()
+        data class WelcomeScreen(
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data class ViewAccountScreen(val isOwnAccount: Boolean, val accountId: Long) :
-            Configuration()
+        data class ViewAccountScreen(
+            val isOwnAccount: Boolean,
+            val accountId: Long,
+            val customAnimation: StackAnimator
+        ) :
+            Configuration(customAnimation)
 
         @Serializable
-        data class SignUpScreen(val nextScreen: (Long) -> Configuration) : Configuration()
+        data class SignUpScreen(
+            val nextScreen: (Long) -> Configuration,
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data class SignInScreen(val nextScreen: (Long) -> Configuration) : Configuration()
+        data class SignInScreen(
+            val nextScreen: (Long) -> Configuration,
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data object GameWithFriendScreen : Configuration()
+        data class GameWithFriendScreen(
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data object GameWithBotScreen : Configuration()
+        data class GameWithBotScreen(
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data object SearchingForGameScreen : Configuration()
+        data class SearchingForGameScreen(
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data class OnlineGameScreen(val gameId: Long) : Configuration()
+        data class OnlineGameScreen(
+            val gameId: Long,
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
 
         @Serializable
-        data object LeaderboardScreen : Configuration()
+        data class LeaderboardScreen(
+            val customAnimation: StackAnimator
+        ) : Configuration(customAnimation)
     }
 }

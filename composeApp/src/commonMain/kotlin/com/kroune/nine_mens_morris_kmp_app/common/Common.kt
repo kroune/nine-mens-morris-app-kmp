@@ -118,20 +118,23 @@ fun serverApi(modification: URLBuilder.() -> Unit): Url {
  * a simple infinite loading animation
  */
 @Composable
-fun LoadingCircle() {
+fun LoadingCircle(
+    modifier: Modifier = Modifier,
+    durationMillis: Int = 1000
+) {
     val animatedProgress by rememberInfiniteTransition(label = "").animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1000, easing = LinearEasing
+                durationMillis = durationMillis, easing = LinearEasing
             ), repeatMode = RepeatMode.Reverse
         ),
         label = ""
     )
     CircularProgressIndicator(
         progress = animatedProgress,
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f)
     )
 }
