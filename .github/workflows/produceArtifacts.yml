@@ -52,6 +52,9 @@ jobs:
             os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
+    env:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
