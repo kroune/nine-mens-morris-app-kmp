@@ -30,12 +30,28 @@ jobs:
 
       - name: Run basic tests with Gradle
         run: ./gradlew test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+
   uiTest:
-    runs-on: macos-13
-    env:
-      KEYSTORE: ${{ secrets.KEYSTORE }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      repository_name: NineMensMorris
+    strategy:
+      matrix:
+        include:
+#          # android
+#          - target: connectedAndroidTest -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
+#            os: ubuntu-latest
+
+          # ios
+          - target: iosSimulatorArm64Test -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+            os: macos-13
+
+#          # web
+#          - target: wasmJsBrowserTest -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+#            os: ubuntu-latest
+
+          # desktop
+          - target: desktopTest -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,17 +64,8 @@ jobs:
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run tests on ios
-        run: ./gradlew iosSimulatorArm64Test -x test
-
-      - name: Run tests on desktop
-        run: ./gradlew desktopTest -x test
-
-  #      - name: Run tests on web
-  #        run: ./gradlew wasmJsBrowserTest -x test
-
-  #      - name: Run tests on android
-  #        run: ./gradlew connectedAndroidTest -x test
+      - name: Run tests
+        run: ./gradlew ${{ matrix.target }}
 
   produceArtifacts:
     needs: [ basicTest, uiTest ]
