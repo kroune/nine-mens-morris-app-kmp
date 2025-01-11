@@ -38,12 +38,14 @@ kotlin {
                     useDebuggableChrome()
                 }
             }
+            val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
+                        add(rootDirPath)
                         add(projectDirPath)
                     }
                 }
@@ -75,24 +77,13 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
-        iosMain.dependencies {
-            implementation(libs.ktor.client.cio)
-        }
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.ktor.client.cio)
-            implementation(compose.uiTooling)
-        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
+//            implementation(compose.components.uiToolingPreview)
             implementation(libs.decompose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.decompose.jetbrains)
@@ -104,6 +95,15 @@ kotlin {
             implementation(libs.ninemensmorris)
             implementation(libs.filekit.compose)
         }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.cio)
+        }
+        androidMain.dependencies {
+//            implementation(compose.preview)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.cio)
+//            implementation(compose.uiTooling)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
@@ -113,7 +113,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
-            implementation(compose.uiTooling)
+//            implementation(compose.uiTooling)
         }
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.js)
