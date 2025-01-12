@@ -12,10 +12,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.screen.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
-import com.kroune.nine_mens_morris_kmp_app.event.game.SearchingForGameScreenEvent
 import kotlinx.coroutines.flow.receiveAsFlow
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.game_expected_waiting_time
@@ -26,9 +24,6 @@ import org.jetbrains.compose.resources.stringResource
 fun SearchingForGameScreen(
     component: SearchingForGameComponent
 ) {
-    BackHandler(component.backHandler) {
-        component.onEvent(SearchingForGameScreenEvent.Back)
-    }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter

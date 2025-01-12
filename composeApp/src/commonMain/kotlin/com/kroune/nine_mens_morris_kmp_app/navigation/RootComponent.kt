@@ -1,14 +1,18 @@
 package com.kroune.nine_mens_morris_kmp_app.navigation
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimator
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.active
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.childStackWebNavigation
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.router.stack.replaceCurrent
+import com.arkivanov.decompose.router.webhistory.WebNavigation
+import com.arkivanov.decompose.router.webhistory.WebNavigationOwner
 import com.kroune.nine_mens_morris_kmp_app.common.customSlide
 import com.kroune.nine_mens_morris_kmp_app.common.pop
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
@@ -47,18 +51,40 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+@OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
-    componentContext: ComponentContext
-) : ComponentContext by componentContext {
+    componentContext: ComponentContext,
+    deepLinkUrl: Url? = null
+) : ComponentContext by componentContext, WebNavigationOwner {
+
     private val navigation = StackNavigation<Configuration>()
 
     val childStack = childStack(
         source = navigation,
         serializer = Configuration.serializer(),
-        initialConfiguration = AppStartAnimation(scale()),
+        initialConfiguration = getInitialConfiguration(deepLinkUrl),
         handleBackButton = false,
         childFactory = ::createChild
     )
+
+    private fun getInitialConfiguration(deepLinkUrl: Url?): Configuration {
+        println(deepLinkUrl)
+        return AppStartAnimation(scale())
+    }
+
+    override val webNavigation: WebNavigation<*> =
+        childStackWebNavigation(
+            navigator = navigation,
+            stack = childStack,
+            serializer = Configuration.serializer(),
+            pathMapper = { it.configuration.urlName() },
+            parametersMapper = {
+                null
+            },
+            childSelector = {
+                null
+            }
+        )
 
     private fun popOrFallbackScreen(
         customAnimation: StackAnimator,
@@ -124,13 +150,6 @@ class RootComponent(
                         onNavigationToAccountRegistrationThenViewAccountScreen = {
                             navigation.pushToFront(
                                 SignUpScreen(
-                                    nextScreen = { accountId ->
-                                        ViewAccountScreen(
-                                            isOwnAccount = true,
-                                            accountId = accountId,
-                                            customAnimation = customSlide(invertDirection = true)
-                                        )
-                                    },
                                     customAnimation = customSlide(invertDirection = true)
                                 )
                             )
@@ -138,9 +157,6 @@ class RootComponent(
                         onNavigationToAccountRegistrationThenOnlineGameScreen = {
                             navigation.pushToFront(
                                 SignUpScreen(
-                                    nextScreen = { _ ->
-                                        SearchingForGameScreen(scale())
-                                    },
                                     customAnimation = scale()
                                 )
                             )
@@ -148,9 +164,6 @@ class RootComponent(
                         onNavigationToAccountRegistrationThenLeaderboardScreen = {
                             navigation.pushToFront(
                                 SignUpScreen(
-                                    nextScreen = { _ ->
-                                        Configuration.LeaderboardScreen(scale())
-                                    },
                                     customAnimation = scale()
                                 )
                             )
@@ -199,15 +212,13 @@ class RootComponent(
                         onNavigationToSignInScreen = {
                             navigation.replaceCurrent(
                                 SignInScreen(
-                                    nextScreen = it,
                                     customAnimation = customSlide(invertDirection = true)
                                 )
                             )
                         },
-                        switchingScreensLambda = { it: Configuration ->
-                            navigation.replaceCurrent(it)
+                        onSuccessfulAuth = {
+                            popOrFallbackScreen(config.animation)
                         },
-                        nextScreen = config.nextScreen,
                         componentContext = context
                     )
                 )
@@ -222,15 +233,13 @@ class RootComponent(
                         onNavigationToSignUpScreen = {
                             navigation.replaceCurrent(
                                 SignUpScreen(
-                                    nextScreen = it,
                                     customAnimation = customSlide(invertDirection = true)
                                 )
                             )
                         },
-                        switchingScreensLambda = { it: Configuration ->
-                            navigation.replaceCurrent(it)
+                        onSuccessfulAuth = {
+                            popOrFallbackScreen(config.animation)
                         },
-                        nextScreen = config.nextScreen,
                         componentContext = context
                     )
                 )
@@ -379,14 +388,12 @@ class RootComponent(
 
         @Serializable
         data class SignUpScreen(
-            val nextScreen: (Long) -> Configuration,
             @Transient
             val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class SignInScreen(
-            val nextScreen: (Long) -> Configuration,
             @Transient
             val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)

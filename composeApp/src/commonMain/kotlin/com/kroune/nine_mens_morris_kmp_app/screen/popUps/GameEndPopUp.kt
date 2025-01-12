@@ -36,7 +36,9 @@ fun GameEndPopUp(
         modifier = Modifier
             .background(Color.Gray.copy(alpha = 0.5f))
             .border(1.dp, Color.White),
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {
+            onDismiss()
+        },
         title = {
             Box(
                 modifier = Modifier

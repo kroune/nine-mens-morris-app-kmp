@@ -10,7 +10,6 @@ import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
-import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,9 +17,8 @@ import kotlinx.coroutines.withContext
 
 class SignInScreenComponent(
     val onNavigationBack: () -> Unit,
-    val onNavigationToSignUpScreen: ((Long) -> Configuration) -> Unit,
-    val switchingScreensLambda: (Configuration) -> Unit,
-    val nextScreen: (Long) -> Configuration,
+    val onNavigationToSignUpScreen: () -> Unit,
+    val onSuccessfulAuth: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle, SignInScreenComponentI {
     override var username by mutableStateOf("")
@@ -62,7 +60,7 @@ class SignInScreenComponent(
                 }
                 accountId.onSuccess {
                     withContext(Dispatchers.Main) {
-                        switchingScreensLambda(nextScreen(it))
+                        onSuccessfulAuth()
                     }
                 }
             }
@@ -78,7 +76,7 @@ class SignInScreenComponent(
             }
 
             SignInScreenEvent.SwitchToSignInScreen -> {
-                onNavigationToSignUpScreen(nextScreen)
+                onNavigationToSignUpScreen()
             }
 
             SignInScreenEvent.Back -> {
