@@ -44,9 +44,21 @@ fun RenderGameAnalyzeScreen(
         modifier = Modifier.verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = {
-            startAnalyze()
-        }) {
+        Button(
+            onClick = {
+                startAnalyze()
+            },
+            colors = object : ButtonColors {
+                @Composable
+                override fun backgroundColor(enabled: Boolean): State<Color> {
+                    return mutableStateOf(Color.DarkGray)
+                }
+
+                @Composable
+                override fun contentColor(enabled: Boolean): State<Color> {
+                    return mutableStateOf(Color.White)
+                }
+            }) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -63,7 +75,7 @@ fun RenderGameAnalyzeScreen(
                         colors = object : ButtonColors {
                             @Composable
                             override fun backgroundColor(enabled: Boolean): State<Color> {
-                                return mutableStateOf(Color(177, 134, 255, 50))
+                                return mutableStateOf(Color.DarkGray.copy(alpha = 0.2f))
                             }
 
                             @Composable
@@ -86,7 +98,7 @@ fun RenderGameAnalyzeScreen(
                         colors = object : ButtonColors {
                             @Composable
                             override fun backgroundColor(enabled: Boolean): State<Color> {
-                                return mutableStateOf(Color(177, 134, 255, 50))
+                                return mutableStateOf(Color.DarkGray.copy(alpha = 0.2f))
                             }
 
                             @Composable

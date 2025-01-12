@@ -40,7 +40,12 @@ import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuratio
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.SignUpScreen
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.ViewAccountScreen
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Configuration.WelcomeScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 class RootComponent(
     componentContext: ComponentContext
@@ -62,6 +67,18 @@ class RootComponent(
         navigation.pop(animation = customAnimation) {
             if (!it) {
                 navigation.replaceCurrent(fallBackScreen)
+            }
+        }
+    }
+
+    init {
+        // TODO: fix this absolute garbage
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                BackHandler.setCallbackAction {
+                    childStack.active.instance.component.onBackPressed()
+                }
+                delay(300L)
             }
         }
     }
@@ -335,61 +352,74 @@ class RootComponent(
     }
 
     @Serializable
-    sealed class Configuration(var animation: StackAnimator = slide()) {
+    sealed class Configuration(
+        @Transient
+        var animation: StackAnimator = slide()
+    ) {
         @Serializable
         data class AppStartAnimation(
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(scale())
 
         @Serializable
         data class WelcomeScreen(
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class ViewAccountScreen(
             val isOwnAccount: Boolean,
             val accountId: Long,
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) :
             Configuration(customAnimation)
 
         @Serializable
         data class SignUpScreen(
             val nextScreen: (Long) -> Configuration,
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class SignInScreen(
             val nextScreen: (Long) -> Configuration,
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class GameWithFriendScreen(
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class GameWithBotScreen(
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class SearchingForGameScreen(
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class OnlineGameScreen(
             val gameId: Long,
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
         @Serializable
         data class LeaderboardScreen(
-            val customAnimation: StackAnimator
+            @Transient
+            val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
     }
 }
