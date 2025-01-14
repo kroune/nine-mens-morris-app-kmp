@@ -147,37 +147,19 @@ class RootComponent(
                         onNavigationToLeaderboardScreen = {
                             navigation.pushToFront(Configuration.LeaderboardScreen(scale()))
                         },
-                        onNavigationToAccountRegistrationThenViewAccountScreen = {
-                            navigation.pushToFront(
-                                SignUpScreen(
-                                    customAnimation = customSlide(invertDirection = true)
-                                )
-                            )
+                        onNavigationToAuthScreen = {
+                            navigation.pushToFront(SignUpScreen(customSlide(invertDirection = true)))
                         },
-                        onNavigationToAccountRegistrationThenOnlineGameScreen = {
-                            navigation.pushToFront(
-                                SignUpScreen(
-                                    customAnimation = scale()
-                                )
-                            )
-                        },
-                        onNavigationToAccountRegistrationThenLeaderboardScreen = {
-                            navigation.pushToFront(
-                                SignUpScreen(
-                                    customAnimation = scale()
-                                )
-                            )
-                        },
-                        onNavigationToAccountViewScreen = { accountId ->
+                        onNavigationToAccountViewScreen = {
                             navigation.pushToFront(
                                 ViewAccountScreen(
                                     isOwnAccount = true,
-                                    accountId = accountId,
-                                    customAnimation = customSlide(invertDirection = true)
+                                    accountId = it,
+                                    customAnimation = customSlide(invertDirection = true),
                                 )
                             )
                         },
-                        onNavigationToAppStartAnimationScreen = {
+                        onNavigationBack = {
                             navigation.pushToFront(
                                 AppStartAnimation(
                                     customAnimation = scale()
@@ -280,13 +262,7 @@ class RootComponent(
                             )
                         },
                         onGoingToWelcomeScreen = {
-                            // we don't save state
                             popOrFallbackScreen(config.animation)
-                            navigation.pushToFront(
-                                WelcomeScreen(
-                                    scale()
-                                )
-                            )
                         },
                         context
                     )
@@ -383,15 +359,22 @@ class RootComponent(
             val accountId: Long,
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) :
-            Configuration(customAnimation)
+        ) : Configuration(customAnimation)
 
+        /**
+         * We don't pass lambda for navigation to the next destination
+         * because it can't be serialized, so we simply pop the screen in the end
+         */
         @Serializable
         data class SignUpScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
         ) : Configuration(customAnimation)
 
+        /**
+         * We don't pass lambda for navigation to the next destination
+         * because it can't be serialized, so we simply pop the screen in the end
+         */
         @Serializable
         data class SignInScreen(
             @Transient

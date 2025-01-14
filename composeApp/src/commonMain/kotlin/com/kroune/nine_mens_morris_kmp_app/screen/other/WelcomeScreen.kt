@@ -2,7 +2,6 @@ package com.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.stopScroll
@@ -29,7 +28,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,10 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
+import com.kroune.nine_mens_morris_kmp_app.common.valueWithLifecycle
 import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
@@ -52,13 +49,12 @@ import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
+import ninemensmorrisappkmp.composeapp.generated.resources.data_is_loading_wait
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
 import ninemensmorrisappkmp.composeapp.generated.resources.logged_in
 import ninemensmorrisappkmp.composeapp.generated.resources.main_component
@@ -67,10 +63,10 @@ import ninemensmorrisappkmp.composeapp.generated.resources.no_account
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_bot
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_friends
 import ninemensmorrisappkmp.composeapp.generated.resources.play_online_game
-import ninemensmorrisappkmp.composeapp.generated.resources.retry
 import ninemensmorrisappkmp.composeapp.generated.resources.server_error
 import ninemensmorrisappkmp.composeapp.generated.resources.settings
 import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,7 +75,6 @@ fun WelcomeScreen(
     component: WelcomeScreenComponent
 ) {
     val scrollState = rememberScrollState(0)
-    val viewAccountDataLoadingOverlay = remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val topScreen = remember { mutableStateOf(true) }
     val coroutine = rememberCoroutineScope()
@@ -92,10 +87,17 @@ fun WelcomeScreen(
             ) {
                 BottomNavigationItem(
                     false, onClick = {
-                        viewAccountDataLoadingOverlay.value = true
+                        if (component.isInAccount.value == null) {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                            }
+                            return@BottomNavigationItem
+                        }
+                        component.onEvent(WelcomeScreenEvent.NavigateToAccountView)
                     }, icon = {
                         // TODO: better error handling
-                        when (component.isInAccount?.getOrDefault(false)) {
+                        when (
+                            component.isInAccount.valueWithLifecycle()?.getOrDefault(false)) {
                             true -> {
                                 Icon(
                                     painterResource(Res.drawable.logged_in),
@@ -153,7 +155,11 @@ fun WelcomeScreen(
                 )
                 BottomNavigationItem(
                     false,
-                    onClick = {},
+                    onClick = {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            snackbarHostState.showSnackbar("This button doesn't have functionality for now, come back later")
+                        }
+                    },
                     icon = {
                         Icon(
                             painterResource(Res.drawable.settings),
@@ -175,16 +181,7 @@ fun WelcomeScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            val isInAccount = component.isInAccount
-            val checkingJwtTokenJob =
-                component.checkingJwtTokenJob.collectAsStateWithLifecycle().value
             val onEvent: (WelcomeScreenEvent) -> Unit = { component.onEvent(it) }
-            if (viewAccountDataLoadingOverlay.value) {
-                WaitingForAccountVerificationOverlay(
-                    checkingJwtTokenJob,
-                    onEvent
-                )
-            }
             // show that this screen can be scrolled
             LaunchedEffect(Unit) {
                 if (!component.hasSeenTutorial) {
@@ -235,9 +232,8 @@ fun WelcomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     RenderMainScreen(
-                        isInAccount,
-                        checkingJwtTokenJob,
-                        onEvent
+                        component,
+                        snackbarHostState
                     )
                 }
                 Spacer(Modifier.height(padding.calculateBottomPadding()))
@@ -278,14 +274,9 @@ fun WelcomeScreen(
             error("kotlin broke")
         }
     }
-    val retryText = stringResource(Res.string.retry)
     val scope = rememberCoroutineScope()
     scope.launch {
-        snackbarHostState.showSnackbar(text, retryText).let {
-            if (it == SnackbarResult.ActionPerformed) {
-                component.onEvent(WelcomeScreenEvent.RetryGettingAccountId)
-            }
-        }
+        snackbarHostState.showSnackbar(text)
     }
 }
 
@@ -295,9 +286,8 @@ fun WelcomeScreen(
  */
 @Composable
 fun RenderMainScreen(
-    isInAccount: Result<Boolean>?,
-    checkingJwtTokenJob: Job,
-    onEvent: (WelcomeScreenEvent) -> Unit
+    component: WelcomeScreenComponent,
+    snackbarHostState: SnackbarHostState
 ) {
     val screenSize = getScreenDpSize()
     val height = screenSize.height
@@ -316,7 +306,7 @@ fun RenderMainScreen(
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             onClick = {
-                onEvent(WelcomeScreenEvent.ClickGameWithFriendButton)
+                component.onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
             },
             shape = RoundedCornerShape(5.dp),
             colors = BlackGrayColors()
@@ -333,7 +323,7 @@ fun RenderMainScreen(
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             onClick = {
-                onEvent(WelcomeScreenEvent.ClickGameWithBotButton)
+                component.onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
             },
             shape = RoundedCornerShape(5.dp),
             colors = BlackGrayColors()
@@ -350,12 +340,13 @@ fun RenderMainScreen(
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             onClick = {
-                CoroutineScope(Dispatchers.Default).launch {
-                    checkingJwtTokenJob.join()
-                    withContext(Dispatchers.Main) {
-                        onEvent(WelcomeScreenEvent.ClickOnlineGameButton)
+                if (component.isInAccount.value == null) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
                     }
+                    return@Button
                 }
+                component.onEvent(WelcomeScreenEvent.NavigateToOnlineGame)
             },
             shape = RoundedCornerShape(5.dp),
             colors = BlackGrayColors()
@@ -372,15 +363,13 @@ fun RenderMainScreen(
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             onClick = {
-                CoroutineScope(Dispatchers.Default).launch {
-                    checkingJwtTokenJob.join()
-                    if (isInAccount == null) {
-                        checkingJwtTokenJob.join()
+                if (component.isInAccount.value == null) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
                     }
-                    withContext(Dispatchers.Main) {
-                        onEvent(WelcomeScreenEvent.ClickLeaderboardButton)
-                    }
+                    return@Button
                 }
+                component.onEvent(WelcomeScreenEvent.NavigateToLeaderboard)
             },
             shape = RoundedCornerShape(5.dp),
             colors = BlackGrayColors()
@@ -391,37 +380,5 @@ fun RenderMainScreen(
                 fontSize = 20.sp
             )
         }
-    }
-}
-
-/**
- * decides where should we be navigated
- */
-@Composable
-private fun WaitingForAccountVerificationOverlay(
-    checkingJwtTokenJob: Job,
-    onEvent: (WelcomeScreenEvent) -> Unit,
-) {
-    CoroutineScope(Dispatchers.Default).launch {
-        checkingJwtTokenJob.join()
-        onEvent(WelcomeScreenEvent.AccountViewButton)
-    }
-    HandleOverlay()
-}
-
-/**
- * draw overlay
- */
-@Composable
-private fun HandleOverlay(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .zIndex(1.5f)
-            .background(Color(0, 0, 0, 40)),
-        contentAlignment = Alignment.Center
-    ) {
-        // we shouldn't be stuck on this screen, since network client timeout is 5 s
-        LoadingCircle()
     }
 }

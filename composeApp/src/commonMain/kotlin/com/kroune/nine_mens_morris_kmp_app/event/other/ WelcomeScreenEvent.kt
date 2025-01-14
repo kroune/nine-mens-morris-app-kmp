@@ -1,12 +1,24 @@
 package com.kroune.nine_mens_morris_kmp_app.event.other
 
 sealed interface WelcomeScreenEvent {
-    data object ClickGameWithFriendButton: WelcomeScreenEvent
-    data object ClickGameWithBotButton: WelcomeScreenEvent
-    data object ClickOnlineGameButton: WelcomeScreenEvent
-    data object ClickLeaderboardButton: WelcomeScreenEvent
-    data object AccountViewButton: WelcomeScreenEvent
+    data object NavigateToGameWithFriend: WelcomeScreenEvent
+    data object NavigateToGameWithBot: WelcomeScreenEvent
+    /**
+     * It should be invoked when user is already authorized
+     * invoking onEvent with this object will read isInAccount status immediately
+     */
+    data object NavigateToOnlineGame: WelcomeScreenEvent
+    /**
+     * It should be invoked when user is already authorized
+     * invoking onEvent with this object will read isInAccount status immediately
+     */
+    data object NavigateToLeaderboard: WelcomeScreenEvent
+
+    /**
+     * It should be invoked when user is already authorized
+     * invoking onEvent with this object will read isInAccount status immediately
+     */
+    data object NavigateToAccountView: WelcomeScreenEvent
     data object CloseTutorial: WelcomeScreenEvent
-    data object RetryGettingAccountId: WelcomeScreenEvent
-    data object Back: WelcomeScreenEvent
+    data object NavigateBack: WelcomeScreenEvent
 }

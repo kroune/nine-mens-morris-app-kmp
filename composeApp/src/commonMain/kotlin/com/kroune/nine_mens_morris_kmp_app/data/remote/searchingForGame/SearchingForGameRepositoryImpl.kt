@@ -65,8 +65,6 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
             // TODO: handle other errors
             gameId.complete(result)
         }
-        return Pair(gameId, {
-            session.await()!!.close()
-        })
+        return gameId to { session.await()?.close() }
     }
 }

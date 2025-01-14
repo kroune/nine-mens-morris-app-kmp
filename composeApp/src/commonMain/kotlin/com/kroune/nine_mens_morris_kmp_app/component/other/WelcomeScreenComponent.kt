@@ -5,16 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import com.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
-import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,83 +24,62 @@ class WelcomeScreenComponent(
     private val onNavigationToGameWithBotScreen: () -> Unit,
     private val onNavigationToOnlineGameScreen: () -> Unit,
     private val onNavigationToLeaderboardScreen: () -> Unit,
-    private val onNavigationToAccountRegistrationThenViewAccountScreen: () -> Unit,
-    private val onNavigationToAccountRegistrationThenOnlineGameScreen: () -> Unit,
-    private val onNavigationToAccountRegistrationThenLeaderboardScreen: () -> Unit,
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
-    private val onNavigationToAppStartAnimationScreen: () -> Unit
+    private val onNavigationToAuthScreen: () -> Unit,
+    private val onNavigationBack: () -> Unit
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
 
-    var isInAccount by mutableStateOf<Result<Boolean>?>(null)
-    var accountIdFailure by mutableStateOf<Throwable?>(null)
+    private val _accountIdFailure = mutableStateOf<Throwable?>(null)
+    val accountIdFailure by _accountIdFailure
 
-    private val _checkingJwtTokenJob: MutableStateFlow<Job> = MutableStateFlow(
-        Job().apply { this.complete() }
+    val isInAccount = flowOf<Result<Boolean>?>().onStart {
+        emit(null)
+        emit(jwtTokenInteractor.checkJwtToken())
+    }.stateIn(
+        CoroutineScope(Dispatchers.Default),
+        SharingStarted.WhileSubscribed(),
+        null
     )
-
-    /**
-     * this code updates [_checkingJwtTokenJob] when we switch to another screen
-     * this way our [isInAccount] is always valid and we don't need to reload it in any other way
-     */
-    var checkingJwtTokenJob: StateFlow<Job> =
-        MutableStateFlow(_checkingJwtTokenJob.value).onStart {
-            isInAccount = null
-            _checkingJwtTokenJob.value = CoroutineScope(Dispatchers.Default).launch {
-                isInAccount = jwtTokenInteractor.checkJwtToken()
-            }
-            _checkingJwtTokenJob.value.start()
-        }.stateIn(
-            CoroutineScope(Dispatchers.Default),
-            SharingStarted.WhileSubscribed(500),
-            _checkingJwtTokenJob.value
-        )
 
     var hasSeenTutorial by mutableStateOf(Settings().getBoolean("hasSeenTutorial", false))
 
     fun onEvent(event: WelcomeScreenEvent) {
         when (event) {
-            WelcomeScreenEvent.ClickGameWithFriendButton -> {
+            WelcomeScreenEvent.NavigateToGameWithFriend -> {
                 onNavigationToGameWithFriendScreen()
             }
 
-            WelcomeScreenEvent.AccountViewButton -> {
+            WelcomeScreenEvent.NavigateToAccountView -> {
+                if (isInAccount.value?.getOrNull() != true) {
+                    // we aren't authorised
+                    onNavigationToAuthScreen()
+                    return
+                }
                 CoroutineScope(Dispatchers.Default).launch {
-                    _checkingJwtTokenJob.value.join()
-                    if (isInAccount?.getOrNull() != true) {
-                        withContext(Dispatchers.Main) {
-                            onNavigationToAccountRegistrationThenViewAccountScreen()
+                    accountIdInteractor.getAccountId().fold(
+                        onSuccess = { accountId ->
+                            withContext(Dispatchers.Main) {
+                                onNavigationToAccountViewScreen(accountId)
+                            }
+                        },
+                        onFailure = {
+                            _accountIdFailure.value = it
                         }
-                        return@launch
-                    }
-                    val checkResult = accountIdInteractor.getAccountId()
-                    checkResult.onSuccess { accountId ->
-                        withContext(Dispatchers.Main) {
-                            onNavigationToAccountViewScreen(accountId)
-                        }
-                    }
-                    checkResult.onFailure {
-                        accountIdFailure = it
-                    }
+                    )
                 }
             }
 
-            WelcomeScreenEvent.ClickGameWithBotButton -> {
+            WelcomeScreenEvent.NavigateToGameWithBot -> {
                 onNavigationToGameWithBotScreen()
             }
 
-            WelcomeScreenEvent.ClickOnlineGameButton -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    checkingJwtTokenJob.value.join()
-                    if (isInAccount!!.getOrNull() != true) {
-                        withContext(Dispatchers.Main) {
-                            onNavigationToAccountRegistrationThenOnlineGameScreen()
-                        }
-                        return@launch
-                    }
-                    withContext(Dispatchers.Main) {
-                        onNavigationToOnlineGameScreen()
-                    }
+            WelcomeScreenEvent.NavigateToOnlineGame -> {
+                if (isInAccount.value?.getOrNull() != true) {
+                    // we aren't authorised
+                    onNavigationToAuthScreen()
+                    return
                 }
+                onNavigationToOnlineGameScreen()
             }
 
             WelcomeScreenEvent.CloseTutorial -> {
@@ -110,35 +87,22 @@ class WelcomeScreenComponent(
                 Settings().putBoolean("hasSeenTutorial", true)
             }
 
-            WelcomeScreenEvent.RetryGettingAccountId -> {
-                isInAccount = null
-                _checkingJwtTokenJob.value = CoroutineScope(Dispatchers.Default).launch {
-                    isInAccount = jwtTokenInteractor.checkJwtToken()
-                }
-                _checkingJwtTokenJob.value.start()
+            WelcomeScreenEvent.NavigateBack -> {
+                onNavigationBack()
             }
 
-            WelcomeScreenEvent.Back -> {
-                onNavigationToAppStartAnimationScreen()
-            }
-
-            WelcomeScreenEvent.ClickLeaderboardButton -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    if (isInAccount!!.getOrNull() != true) {
-                        withContext(Dispatchers.Main) {
-                            onNavigationToAccountRegistrationThenLeaderboardScreen()
-                        }
-                        return@launch
-                    }
-                    withContext(Dispatchers.Main) {
-                        onNavigationToLeaderboardScreen()
-                    }
+            WelcomeScreenEvent.NavigateToLeaderboard -> {
+                if (isInAccount.value?.getOrNull() != true) {
+                    // we aren't authorised
+                    onNavigationToAuthScreen()
+                    return
                 }
+                onNavigationToLeaderboardScreen()
             }
         }
     }
 
     override fun onBackPressed() {
-        onEvent(WelcomeScreenEvent.Back)
+        onEvent(WelcomeScreenEvent.NavigateBack)
     }
 }

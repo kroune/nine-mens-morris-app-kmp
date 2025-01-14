@@ -76,6 +76,7 @@ class OnlineGameComponent(
     private val channelToSendMoves: Channel<Movement> = Channel()
     private val channelToReceiveMoves: Channel<Movement> = Channel()
     val onGiveUp: suspend () -> Unit = {
+        _gameEnded.value = true
         channelToSendMoves.trySend(Movement(null, null))
     }
     private var onGiveClose: (suspend () -> Unit)? = null

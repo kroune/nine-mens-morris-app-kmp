@@ -53,4 +53,5 @@
     <string name="want_to_give_up">Вы уверены, что хотите сдаться</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="data_is_loading_wait">Информация все еще загружается, пожалуйста, подождите</string>
 </resources>

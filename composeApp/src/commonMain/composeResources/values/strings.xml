@@ -54,4 +54,5 @@
     <string name="want_to_give_up">Are you sure you want to give up</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="data_is_loading_wait">Data is still waiting, please wait</string>
 </resources>

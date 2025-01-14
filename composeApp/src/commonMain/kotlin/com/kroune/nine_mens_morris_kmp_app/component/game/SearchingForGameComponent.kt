@@ -26,28 +26,40 @@ class SearchingForGameComponent(
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
-            val (gameId, onClose) = searchingForGameInteractor.searchForGame(expectedWaitingTime)
+            val (gameIdDeferred, onClose) = searchingForGameInteractor.searchForGame(
+                expectedWaitingTime
+            )
             disconnect.complete {
                 onClose()
             }
-            gameId.await()!!.let { gameIdResult ->
-                gameIdResult.onFailure {
-                    if (it is CancellationException)
-                    // that's ok
-                        return@let
-                    // TODO: log error
-                    it.printStackTrace()
-                    withContext(Dispatchers.Main) {
-                        onGoingToWelcomeScreen()
-                    }
+            val gameId = gameIdDeferred.await()
+            if (gameId == null) {
+                println("returned game id was null")
+                withContext(Dispatchers.Main) {
+                    onEvent(SearchingForGameScreenEvent.Back)
                 }
-                gameIdResult.onSuccess {
+                return@launch
+            }
+            gameId.fold(
+                onSuccess = {
                     println("found game, id = $it")
                     withContext(Dispatchers.Main) {
                         onGameFind(it)
                     }
+                },
+                onFailure = {
+                    if (it is CancellationException)
+                    // that's ok
+                        return@launch
+                    // TODO: log error
+                    println("getting game id failed")
+                    it.printStackTrace()
+                    withContext(Dispatchers.Main) {
+                        onEvent(SearchingForGameScreenEvent.Back)
+                    }
+                    return@launch
                 }
-            }
+            )
         }
     }
 
