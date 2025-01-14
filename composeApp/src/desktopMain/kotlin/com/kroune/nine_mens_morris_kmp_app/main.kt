@@ -11,6 +11,9 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
+import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.icon
+import org.jetbrains.compose.resources.painterResource
 
 fun main() = application {
     Window(
@@ -23,7 +26,8 @@ fun main() = application {
             } else {
                 false
             }
-        }
+        },
+        icon = painterResource(Res.drawable.icon)
     ) {
         val lifecycle = LifecycleRegistry()
         val component = remember {

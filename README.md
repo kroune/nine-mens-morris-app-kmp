@@ -11,7 +11,7 @@
 
 ## Preview
 * video - [android](demo/video/android.mkv)
-* screenshots - [android](demo/screenshots/)
+* screenshots - [android](demo/screenshots)
 <br>
 
 Other previews will be added in the future
@@ -21,6 +21,12 @@ Other previews will be added in the future
 This first version of the app (which was for android only) is located
 at https://github.com/kroune/nine-mens-morris-app
 
+## Run app
+There are several options to use it
+1. Use **jar** format. It works on all desktop platforms, usually more performant and weights less compared to native distributions ([link](https://github.com/kroune/nine-mens-morris-app-kmp/releases))
+2. Use **apk** format for Android. It is really tiny (around 2 mb) and works well ([link](https://github.com/kroune/nine-mens-morris-app-kmp/releases))
+3. Use **native** distributions (available for Windows, Linux, Mac OS). It weights more that jar file ([link](https://github.com/kroune/nine-mens-morris-app-kmp/releases))
+4. Play on the **web**. You don't have to download/install anything, but there are a few disadvantages like a worse performance compared to other installations and state not being saved in the url (due to github pages limitations)) ([link](https://kroune.github.com/))
 
 ## Used projects
 
