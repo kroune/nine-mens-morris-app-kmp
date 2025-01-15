@@ -199,10 +199,14 @@ compose.desktop {
                 iconFile = project.file("icons/icon.icns")
             }
             linux {
+                debMaintainer = "kr0ne@tuta.io"
+                appCategory = "Amusements/Games"
+                rpmLicenseType = "GPL-3.0"
                 modules("jdk.security.auth")
                 iconFile = project.file("icons/icon.png")
             }
             windows {
+                menuGroup = "start-menu-group"
                 iconFile = project.file("icons/icon.ico")
             }
             targetFormats(
@@ -213,9 +217,10 @@ compose.desktop {
                 // windows
                 TargetFormat.Msi, TargetFormat.Exe
             )
-            packageName = "nineMensMorris"
+            packageName = "NineMensMorris"
             packageVersion = "1.0.1"
             description = "Implementation of a table game called <Nine mens morris>"
+            vendor = "kroune"
             copyright = "© 2024 Kroune. All rights reserved."
             licenseFile = project.file("LICENSE")
         }
