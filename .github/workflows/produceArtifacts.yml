@@ -76,7 +76,7 @@ jobs:
       matrix:
         include:
           # android
-          - target: assembleRelease
+          - target: assembleRelease -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=240
             tag: Android
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
