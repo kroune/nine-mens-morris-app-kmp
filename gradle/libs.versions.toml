@@ -1,22 +1,30 @@
 [versions]
 agp = "8.7.3"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "34"
-androidx-activityCompose = "1.9.3"
+android-targetSdk = "35"
+androidx-activityCompose = "1.10.0"
 androidx-lifecycle = "2.8.4"
 compose-plugin = "1.7.3"
 filekitCompose = "0.8.8"
 kotlin = "2.1.0"
 ktor = "3.0.3"
 coroutines = "1.10.1"
-decompose = "3.3.0-alpha02"
+decompose = "3.3.0-alpha03"
 kotlinxSerializationJson = "1.7.3"
 multiplatformSettings = "1.3.0"
 ninemensmorris = "1.0.2"
 uiTestJunit4Android = "1.7.6"
 roborazzi = "1.38.0"
 storytale = "0.0.1+dev5"
+macroBenchmark = "1.3.3"
+profileInstaller = "1.4.1"
+junit = "1.2.1"
+espressoCore = "3.6.1"
+uiautomator = "2.3.0"
+baselineprofile = "1.4.0-alpha06"
+robolectric = "4.12"
+composeTesting = "1.8.0-alpha08"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
@@ -38,7 +46,14 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 ninemensmorris = { group = "io.github.kroune", name = "nineMensMorris", version.ref = "ninemensmorris" }
+macro-benchmark = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "macroBenchmark"}
+profile-installer = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileInstaller"}
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling"}
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeTesting" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -49,3 +64,6 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi"}
 storytale = { id = "org.jetbrains.compose.storytale", version.ref = "storytale" }
+android-test = { id = "com.android.test", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+baseline-profile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }

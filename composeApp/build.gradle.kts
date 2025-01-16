@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.baseline.profile)
 //    alias(libs.plugins.storytale)
 }
 
@@ -84,7 +85,6 @@ kotlin {
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
-//            implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.decompose)
             implementation(libs.kotlinx.serialization.json)
@@ -96,15 +96,19 @@ kotlin {
             implementation(libs.multiplatform.settings.no.arg)
             implementation(libs.ninemensmorris)
             implementation(libs.filekit.compose)
+//            implementation(compose.components.uiToolingPreview)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.cio)
         }
         androidMain.dependencies {
-//            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.cio)
 //            implementation(compose.uiTooling)
+//            implementation(compose.preview)
+        }
+        androidInstrumentedTest.dependencies {
+            implementation(libs.androidx.ui.test.manifest)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -139,10 +143,6 @@ android {
         versionCode = 1
         versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        dependencies {
-            androidTestImplementation(libs.androidx.ui.test.junit4.android)
-            debugImplementation(libs.androidx.ui.test.manifest)
-        }
     }
     packaging {
         resources {
@@ -162,8 +162,8 @@ android {
                 keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
                 storeFile = file("/home/olowo/keystore.jks")
-                storePassword = file("/home/olowo/signPass").readText()
-                keyPassword = file("/home/olowo/signPass").readText()
+                storePassword = file("/home/olowo/signPass").readText().trim()
+                keyPassword = file("/home/olowo/signPass").readText().trim()
             }
         }
     }
@@ -181,7 +181,26 @@ android {
         compose = true
     }
     dependencies {
-        debugImplementation(compose.uiTooling)
+        "baselineProfile"(project(":baselineprofile"))
+    }
+    baselineProfile {
+        baselineProfileOutputDir = "../androidMain/generated/baselineProfiles"
+        automaticGenerationDuringBuild = true
+    }
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel2api30") {
+                    // Use device profiles you typically see in Android Studio.
+                    device = "Pixel 2"
+                    // Use only API levels 27 and higher.
+                    apiLevel = 30
+                    // To include Google services, use "google".
+                    systemImageSource = "aosp"
+                }
+            }
+        }
     }
 }
 
