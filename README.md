@@ -10,8 +10,8 @@
 <br>
 
 ## Preview
-* video - [android](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/video/android.mkv)
-* screenshots - [android](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android)
+* video - [android](https://github.com/kroune/nine-mens-morris-app-kmp/tree/v1.0.1/demo/video/android.mkv)
+* screenshots - [android](https://github.com/kroune/nine-mens-morris-app-kmp/tree/v1.0.1/demo/screenshots/android)
 <br>
 
 Other previews will be added in the future
