@@ -76,7 +76,7 @@ Our project is multiplatform, so make sure to use [android studio](https://devel
 4. Open the folder as a Gradle project in the IDE.
 
 ## App showcase
-![collage](demo/screenshots/collage.png)
+![collage](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/collage.png)
 ![app_start_animation_screen](demo/screenshots/android/app_start_animation_screen.png)
 ![welcome_screen](demo/screenshots/android/welcome_screen.png)
 ![game_with_friend_screen](demo/screenshots/android/game_with_friend_screen.png)
