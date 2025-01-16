@@ -1,6 +1,6 @@
 <div align="center">
 <p>
-    <img width="200" src="composeApp/icons/icon.svg" alt="icon">
+    <img width="200" src="https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/composeApp/icons/icon.svg" alt="icon">
 </p>
 
 [play online](https://kroune.github.io)
@@ -10,8 +10,8 @@
 <br>
 
 ## Preview
-* video - [android](demo/video/android.mkv)
-* screenshots - [android](demo/screenshots/android)
+* video - [android](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/video/android.mkv)
+* screenshots - [android](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android)
 <br>
 
 Other previews will be added in the future
@@ -77,15 +77,15 @@ Our project is multiplatform, so make sure to use [android studio](https://devel
 
 ## App showcase
 ![collage](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/collage.png)
-![app_start_animation_screen](demo/screenshots/android/app_start_animation_screen.png)
-![welcome_screen](demo/screenshots/android/welcome_screen.png)
-![game_with_friend_screen](demo/screenshots/android/game_with_friend_screen.png)
-![game_with_bot_screen](demo/screenshots/android/game_with_bot_screen.png)
-![view_account_screen](demo/screenshots/android/view_account_screen.png)
-![sign_in_screen](demo/screenshots/android/sign_in_screen.png)
-![sign_up_screen](demo/screenshots/android/sign_up_screen.png)
-![tutorial_screen](demo/screenshots/android/tutorial_screen.png)
-![searching_for_game_screen](demo/screenshots/android/searching_for_game_screen.png)
-![searching_for_game_2_screen](demo/screenshots/android/searching_for_game_2_screen.png)
-![online_game_screen](demo/screenshots/android/online_game_screen.png)
-![online_game_ended_screen](demo/screenshots/android/online_game_ended_screen.png)
+![app_start_animation_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/app_start_animation_screen.png)
+![welcome_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/welcome_screen.png)
+![game_with_friend_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/game_with_friend_screen.png)
+![game_with_bot_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/game_with_bot_screen.png)
+![view_account_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/view_account_screen.png)
+![sign_in_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/sign_in_screen.png)
+![sign_up_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/sign_up_screen.png)
+![tutorial_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/tutorial_screen.png)
+![searching_for_game_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/searching_for_game_screen.png)
+![searching_for_game_2_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/searching_for_game_2_screen.png)
+![online_game_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/online_game_screen.png)
+![online_game_ended_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/online_game_ended_screen.png)
