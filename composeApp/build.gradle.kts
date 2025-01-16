@@ -16,12 +16,14 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.storytale)
 }
 
 composeCompiler {
     featureFlags = setOf(
         ComposeFeatureFlag.OptimizeNonSkippingGroups,
-        ComposeFeatureFlag.PausableComposition
+        // needs kotlin 2.1+
+//        ComposeFeatureFlag.PausableComposition
     )
 }
 

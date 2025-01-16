@@ -11,7 +11,7 @@
 
 ## Preview
 * video - [android](demo/video/android.mkv)
-* screenshots - [android](demo/screenshots)
+* screenshots - [android](demo/screenshots/android)
 <br>
 
 Other previews will be added in the future
@@ -76,15 +76,16 @@ Our project is multiplatform, so make sure to use [android studio](https://devel
 4. Open the folder as a Gradle project in the IDE.
 
 ## App showcase
-![app_start_animation_screen](demo/screenshots/app_start_animation_screen.png)
-![welcome_screen](demo/screenshots/welcome_screen.png)
-![game_with_friend_screen](demo/screenshots/game_with_friend_screen.png)
-![game_with_bot_screen](demo/screenshots/game_with_bot_screen.png)
-![view_account_screen](demo/screenshots/view_account_screen.png)
-![sign_in_screen](demo/screenshots/sign_in_screen.png)
-![sign_up_screen](demo/screenshots/sign_up_screen.png)
-![tutorial_screen](demo/screenshots/tutorial_screen.png)
-![searching_for_game_screen](demo/screenshots/searching_for_game_screen.png)
-![searching_for_game_2_screen](demo/screenshots/searching_for_game_2_screen.png)
-![online_game_screen](demo/screenshots/online_game_screen.png)
-![online_game_ended_screen](demo/screenshots/online_game_ended_screen.png)
+![collage](demo/screenshots/collage.png)
+![app_start_animation_screen](demo/screenshots/android/app_start_animation_screen.png)
+![welcome_screen](demo/screenshots/android/welcome_screen.png)
+![game_with_friend_screen](demo/screenshots/android/game_with_friend_screen.png)
+![game_with_bot_screen](demo/screenshots/android/game_with_bot_screen.png)
+![view_account_screen](demo/screenshots/android/view_account_screen.png)
+![sign_in_screen](demo/screenshots/android/sign_in_screen.png)
+![sign_up_screen](demo/screenshots/android/sign_up_screen.png)
+![tutorial_screen](demo/screenshots/android/tutorial_screen.png)
+![searching_for_game_screen](demo/screenshots/android/searching_for_game_screen.png)
+![searching_for_game_2_screen](demo/screenshots/android/searching_for_game_2_screen.png)
+![online_game_screen](demo/screenshots/android/online_game_screen.png)
+![online_game_ended_screen](demo/screenshots/android/online_game_ended_screen.png)
