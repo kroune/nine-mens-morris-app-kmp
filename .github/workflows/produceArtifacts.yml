@@ -76,42 +76,53 @@ jobs:
       matrix:
         include:
           # android
-          - target: assembleRelease -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=240
+          - target: assembleRelease
+            before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             tag: Android
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
           # macos
           - target: packageReleaseDmg
+            before: |
             tag: MacosDmg
             directory: composeApp/build/compose/binaries/main-release/dmg/
             os: macos-13
           # ios
           - target: iosSimulatorArm64Binaries
+            before: |
             tag: Ios
             directory: composeApp/build/libs/composeApp-desktop.jar
             os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
+            before: |
             tag: Web
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # jar
           - target: packageReleaseUberJarForCurrentOS
+            before: |
             tag: Jar
             directory: composeApp/build/compose/jars/
             os: ubuntu-latest
           # linux rpm
           - target: packageReleaseRpm
+            before: |
             tag: LinuxRpm
             directory: composeApp/build/compose/binaries/main-release/rpm/
             os: ubuntu-latest
           # linux deb
           - target: packageReleaseDeb
+            before: |
             tag: LinuxDeb
             directory: composeApp/build/compose/binaries/main-release/deb/
             os: ubuntu-latest
           # windows
           - target: packageReleaseExe
+            before: |
             tag: WindowsExe
             directory: composeApp/build/compose/binaries/main-release/exe/
             os: windows-latest
@@ -133,6 +144,8 @@ jobs:
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Execute before action
+        run: ${{ matrix.before }}
       - name: Produce artifacts
         run: ./gradlew ${{ matrix.target }} -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
 
