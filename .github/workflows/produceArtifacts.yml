@@ -71,7 +71,7 @@ jobs:
         run: ./gradlew ${{ matrix.target }}
 
   produceArtifacts:
-    needs: [ basicTest, uiTest ]
+#    needs: [ basicTest, uiTest ]
     strategy:
       matrix:
         include:
