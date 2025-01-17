@@ -56,8 +56,9 @@ class BaselineProfileGenerator {
             // Start default activity for your app
             pressHome()
             startActivityAndWait()
+
             device.waitForIdle()
-            repeat(10) {
+            repeat(4) {
                 val start: UiObject2 = device.findObject(By.text("Press to start"))
                 start.click()
                 device.waitForIdle()

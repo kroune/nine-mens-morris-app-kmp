@@ -8,6 +8,7 @@ plugins {
 
 baselineProfile {
     managedDevices += "pixel2Api34"
+    useConnectedDevices = false
 }
 
 android {
