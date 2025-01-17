@@ -24,7 +24,10 @@ fun main() {
         val component = DefaultComponentContext(lifecycle, stateKeeper)
         RootComponent(
             component,
-            deepLinkUrl = deepLink?.let(::Url),
+            deepLinkUrl = if (window.location.host.contains("github"))
+                null
+            else
+                deepLink?.let(::Url),
         )
     }
     ComposeViewport(document.body!!) {
