@@ -162,7 +162,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: ../artifacts
       - uses: actions/checkout@v4
         with:
           ref: 'github-pages'
@@ -173,7 +173,7 @@ jobs:
           ls -hlas ../../
           mv LICENSE ../
           rm -rf *
-          unzip ../NineMensMorris-Web-artifact.zip
+          unzip ../artifacts/NineMensMorris-Web-artifact.zip
           mv ../LICENSE .
           ls -hlas
           ls -hlas ../
