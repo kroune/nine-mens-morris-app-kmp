@@ -20,14 +20,20 @@ fun main() {
         }
     }
     val lifecycle = LifecycleRegistry()
-    val root = withWebHistory { stateKeeper, deepLink ->
-        val component = DefaultComponentContext(lifecycle, stateKeeper)
-        RootComponent(
+    val root: RootComponent
+    if (window.location.host.contains("github")) {
+        root = withWebHistory { stateKeeper, deepLink ->
+            val component = DefaultComponentContext(lifecycle, stateKeeper)
+            RootComponent(
+                component,
+                deepLinkUrl = deepLink?.let(::Url)
+            )
+        }
+    } else {
+        val component = DefaultComponentContext(lifecycle)
+        root = RootComponent(
             component,
-            deepLinkUrl = if (window.location.host.contains("github"))
-                null
-            else
-                deepLink?.let(::Url),
+            deepLinkUrl = null
         )
     }
     ComposeViewport(document.body!!) {
