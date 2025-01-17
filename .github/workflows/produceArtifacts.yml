@@ -175,6 +175,9 @@ jobs:
           cp -r ../artifacts/NineMensMorris-Web-artifact/* .
           mv ../LICENSE .
           ls -hlas
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git add .
           git commit . -m "update web artifacts"
           git push
 
@@ -189,6 +192,7 @@ jobs:
           ls -hlas
           for FILE in *; do
             PLATFORM_NAME=$(echo $FILE | cut -d "-" -f 2)
-            7z a -mx=9 $FILE.zip FILE/
-            curl -v --connect-timeout 30 -m 300 -X POST -T $FILE.zip https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
+            echo "Compressing file for $PLATFORM_NAME, file - $FILE"
+            7z a -mx=9 ../$FILE.zip FILE/
+            curl -v --connect-timeout 30 -m 300 -X POST -T ../$FILE.zip https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
           done
