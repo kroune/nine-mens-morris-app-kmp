@@ -167,17 +167,16 @@ jobs:
         with:
           ref: 'github-pages'
       - name: Upload artifacts to artifacts github pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ls -hlas
-          ls -hlas ../
-          ls -hlas ../artifacts
-          ls -hlas ../artifacts/NineMensMorris-Web-artifact
           mv LICENSE ../
           rm -rf *
           cp -r ../artifacts/NineMensMorris-Web-artifact/* .
           mv ../LICENSE .
           ls -hlas
-          ls -hlas ../
+          git commit . -m "update web artifacts"
+          git push
 
   uploadArtifactsToMicroservice:
     needs: [ produceArtifacts ]
@@ -190,5 +189,6 @@ jobs:
           ls -hlas
           for FILE in *; do
             PLATFORM_NAME=$(echo $FILE | cut -d "-" -f 2)
-            curl -v --connect-timeout 30 -m 300 -X POST -T $FILE https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
+            7z a -mx=9 $FILE.zip FILE/
+            curl -v --connect-timeout 30 -m 300 -X POST -T $FILE.zip https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
           done
