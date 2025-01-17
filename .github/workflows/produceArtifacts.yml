@@ -1,8 +1,7 @@
-name: Builds app on all targets
+name: Builds app on all targets + upload to github pages + upload to artifacts microservice
 
 on:
   workflow_dispatch:
-  pull_request:
   push:
 
 
@@ -11,7 +10,6 @@ permissions:
 
 jobs:
   basicTest:
-    if: false
     runs-on: ubuntu-latest
     env:
       KEYSTORE: ${{ secrets.KEYSTORE }}
@@ -33,7 +31,6 @@ jobs:
         run: ./gradlew test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
 
   uiTest:
-    if: false
     strategy:
       matrix:
         include:
@@ -73,31 +70,31 @@ jobs:
         run: ./gradlew ${{ matrix.target }}
 
   produceArtifacts:
-#    needs: [ basicTest, uiTest ]
+    needs: [ basicTest, uiTest ]
     strategy:
       matrix:
         include:
           # android
-#          - target: assembleRelease
-#            before: |
-#              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-#              sudo udevadm control --reload-rules
-#              sudo udevadm trigger --name-match=kvm
-#            tag: Android
-#            directory: composeApp/build/outputs/apk/release/composeApp-release.apk
-#            os: ubuntu-latest
+          - target: assembleRelease
+            before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
+            tag: Android
+            directory: composeApp/build/outputs/apk/release/composeApp-release.apk
+            os: ubuntu-latest
           # macos
-#          - target: packageReleaseDmg
-#            before: |
-#            tag: MacosDmg
-#            directory: composeApp/build/compose/binaries/main-release/dmg/
-#            os: macos-13
+          - target: packageReleaseDmg
+            before: |
+            tag: MacosDmg
+            directory: composeApp/build/compose/binaries/main-release/dmg/
+            os: macos-13
           # ios
-#          - target: iosSimulatorArm64Binaries
-#            before: |
-#            tag: Ios
-#            directory: composeApp/build/libs/composeApp-desktop.jar
-#            os: macos-latest
+          - target: iosSimulatorArm64Binaries
+            before: |
+            tag: Ios
+            directory: composeApp/build/libs/composeApp-desktop.jar
+            os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
             before: |
@@ -105,29 +102,29 @@ jobs:
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # jar
-#          - target: packageReleaseUberJarForCurrentOS
-#            before: |
-#            tag: Jar
-#            directory: composeApp/build/compose/jars/
-#            os: ubuntu-latest
+          - target: packageReleaseUberJarForCurrentOS
+            before: |
+            tag: Jar
+            directory: composeApp/build/compose/jars/
+            os: ubuntu-latest
           # linux rpm
-#          - target: packageReleaseRpm
-#            before: |
-#            tag: LinuxRpm
-#            directory: composeApp/build/compose/binaries/main-release/rpm/
-#            os: ubuntu-latest
+          - target: packageReleaseRpm
+            before: |
+            tag: LinuxRpm
+            directory: composeApp/build/compose/binaries/main-release/rpm/
+            os: ubuntu-latest
           # linux deb
-#          - target: packageReleaseDeb
-#            before: |
-#            tag: LinuxDeb
-#            directory: composeApp/build/compose/binaries/main-release/deb/
-#            os: ubuntu-latest
+          - target: packageReleaseDeb
+            before: |
+            tag: LinuxDeb
+            directory: composeApp/build/compose/binaries/main-release/deb/
+            os: ubuntu-latest
           # windows
-#          - target: packageReleaseExe
-#            before: |
-#            tag: WindowsExe
-#            directory: composeApp/build/compose/binaries/main-release/exe/
-#            os: windows-latest
+          - target: packageReleaseExe
+            before: |
+            tag: WindowsExe
+            directory: composeApp/build/compose/binaries/main-release/exe/
+            os: windows-latest
     runs-on: ${{ matrix.os }}
 
     env:

@@ -33,7 +33,7 @@ kotlin {
         compilerOptions {
             sourceMapNamesPolicy.assign(JsSourceMapNamesPolicy.SOURCE_MAP_NAMES_POLICY_SIMPLE_NAMES)
         }
-        moduleName = "nineMensMorrisApp"
+        moduleName = "NineMensMorrisApp"
         browser {
             testTask {
                 useKarma {
