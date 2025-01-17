@@ -21,7 +21,7 @@ fun main() {
     }
     val lifecycle = LifecycleRegistry()
     val root: RootComponent
-    if (window.location.host.contains("github")) {
+    if (!window.location.host.contains("github")) {
         root = withWebHistory { stateKeeper, deepLink ->
             val component = DefaultComponentContext(lifecycle, stateKeeper)
             RootComponent(
