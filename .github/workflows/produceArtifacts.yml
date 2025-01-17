@@ -174,7 +174,7 @@ jobs:
           ls -hlas ../artifacts/NineMensMorris-Web-artifact
           mv LICENSE ../
           rm -rf *
-          unzip ../artifacts/NineMensMorris-Web-artifact
+          cp -r ../artifacts/NineMensMorris-Web-artifact/* .
           mv ../LICENSE .
           ls -hlas
           ls -hlas ../
