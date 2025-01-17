@@ -152,7 +152,7 @@ android {
     }
     signingConfigs {
         create("release") {
-            keyAlias = "upload"
+            keyAlias = "release"
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
                 val file = File.createTempFile("keyStore", ".jks")
                 file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
@@ -161,9 +161,9 @@ android {
                 storePassword = System.getenv("KEYSTORE_PASSWORD")!!
                 keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
-                storeFile = file("/home/olowo/keystore.jks")
-                storePassword = file("/home/olowo/signPass").readText().trim()
-                keyPassword = file("/home/olowo/signPass").readText().trim()
+                storeFile = file("/home/olowo/secureKeystore.jks")
+                storePassword = file("/home/olowo/secureSignPass").readText().trim()
+                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
             }
         }
     }
