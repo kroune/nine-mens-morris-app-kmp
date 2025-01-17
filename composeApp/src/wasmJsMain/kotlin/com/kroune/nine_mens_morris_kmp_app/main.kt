@@ -1,5 +1,6 @@
 package com.kroune.nine_mens_morris_kmp_app
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import com.arkivanov.decompose.DefaultComponentContext
@@ -11,8 +12,17 @@ import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.Url
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.allStringResources
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.getString
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalDecomposeApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class, ExperimentalDecomposeApi::class, ExperimentalResourceApi::class
+)
 fun main() {
     window.onkeyup = {
         if (it.key == "Escape") {
@@ -37,6 +47,19 @@ fun main() {
         )
     }
     ComposeViewport(document.body!!) {
+        LaunchedEffect(Unit) {
+            onLoadFinished()
+        }
         App(root)
     }
+    // start fetching all resources asynchronously
+    with(CoroutineScope(Dispatchers.Default)) {
+        Res.allStringResources.forEach {
+            launch {
+                getString(it.value)
+            }
+        }
+    }
 }
+
+external fun onLoadFinished()

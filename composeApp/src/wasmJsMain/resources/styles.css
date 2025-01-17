@@ -6,3 +6,28 @@ html, body {
     padding: 0;
     overflow: hidden;
 }
+
+.loader,
+.loader:after {
+    border-radius: 50%;
+    width: 10em;
+    height: 10em;
+}
+.loader {
+    margin: 100px auto;
+    font-size: 10px;
+    position: relative;
+    border-top: 1.5em solid rgba(255, 255, 255, 0.2);
+    border-right: 1.5em solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1.5em solid rgba(255, 255, 255, 0.2);
+    border-left: 1.5em solid #ffffff;
+    animation: loadingAnimation 1.5s infinite linear;
+}
+@keyframes loadingAnimation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
