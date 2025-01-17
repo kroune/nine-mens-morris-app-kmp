@@ -170,7 +170,7 @@ jobs:
         run: |
           ls -hlas
           ls -hlas ../
-          ls -hlas ../../
+          ls -hlas ../artifacts
           mv LICENSE ../
           rm -rf *
           unzip ../artifacts/NineMensMorris-Web-artifact.zip
