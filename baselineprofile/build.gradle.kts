@@ -38,8 +38,8 @@ android {
     // ./gradlew :composeApp:generateBaselineProfile
     testOptions.managedDevices.devices {
         @Suppress("UnstableApiUsage")
-        create<ManagedVirtualDevice>("pixel6Api34") {
-            device = "Pixel 6"
+        create<ManagedVirtualDevice>("pixel2Api34") {
+            device = "Pixel 2"
             apiLevel = 34
             systemImageSource = "aosp-atd"
         }

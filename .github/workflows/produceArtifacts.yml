@@ -155,13 +155,27 @@ jobs:
           name: ${{ env.repository_name }}-${{ matrix.tag }}-artifact
           path: ${{ matrix.directory }}
 
+  uploadWebArtifactsToGithubPages:
+    needs: [ produceArtifacts ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 'github-pages'
+      - name: Upload artifacts to artifacts github pages
+        run: |
+          mv LICENSE ../
+          rm -rf *
+          unzip ../NineMensMorris-Web-artifact.zip
+          mv ../LICENSE .
+          ls -hlas
+          ls -hlas ../
+
   uploadArtifactsToMicroservice:
     needs: [ produceArtifacts ]
     runs-on: ubuntu-latest
-    env:
-      KEYSTORE: ${{ secrets.KEYSTORE }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      repository_name: NineMensMorris
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
