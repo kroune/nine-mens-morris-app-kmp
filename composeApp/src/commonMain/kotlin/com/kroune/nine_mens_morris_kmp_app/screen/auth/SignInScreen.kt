@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.kroune.nine_mens_morris_kmp_app.common.LinkColors
 import com.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponentI
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
@@ -136,9 +137,12 @@ fun SignInScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(stringResource(Res.string.no_account_question_mark))
-                    TextButton(modifier = Modifier, onClick = {
-                        component.onEvent(SignInScreenEvent.SwitchToSignInScreen)
-                    }) {
+                    TextButton(
+                        onClick = {
+                            component.onEvent(SignInScreenEvent.SwitchToSignInScreen)
+                        },
+                        colors = LinkColors()
+                    ) {
                         Text(stringResource(Res.string.sign_up))
                     }
                 }
@@ -146,11 +150,10 @@ fun SignInScreen(
             Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         }
     }
-    if (loginResult != null) {
-        val exception = loginResult.exceptionOrNull()
-        val text = when (exception) {
+    loginResult?.onFailure {
+        val text = when (it) {
             is LoginApiResponses -> {
-                when (exception) {
+                when (it) {
                     LoginApiResponses.ClientError -> {
                         stringResource(Res.string.client_error)
                     }

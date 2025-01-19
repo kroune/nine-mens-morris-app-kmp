@@ -54,7 +54,6 @@ import kotlinx.serialization.Transient
 @OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
     componentContext: ComponentContext,
-    deepLinkUrl: Url? = null
 ) : ComponentContext by componentContext, WebNavigationOwner {
 
     private val navigation = StackNavigation<Configuration>()
@@ -62,13 +61,12 @@ class RootComponent(
     val childStack = childStack(
         source = navigation,
         serializer = Configuration.serializer(),
-        initialConfiguration = getInitialConfiguration(deepLinkUrl),
+        initialConfiguration = getInitialConfiguration(),
         handleBackButton = false,
         childFactory = ::createChild
     )
 
-    private fun getInitialConfiguration(deepLinkUrl: Url?): Configuration {
-        println(deepLinkUrl)
+    private fun getInitialConfiguration(): Configuration {
         return AppStartAnimation(scale())
     }
 
@@ -77,13 +75,7 @@ class RootComponent(
             navigator = navigation,
             stack = childStack,
             serializer = Configuration.serializer(),
-            pathMapper = { it.configuration.urlName() },
-            parametersMapper = {
-                null
-            },
-            childSelector = {
-                null
-            }
+            pathMapper = { it.configuration.urlName() }
         )
 
     private fun popOrFallbackScreen(

@@ -1,10 +1,10 @@
 package com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
@@ -17,6 +17,7 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.GREEN
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
+import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.game.RenderGameBoard
 import com.kroune.nine_mens_morris_kmp_app.screen.game.RenderPieceCount
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -45,37 +46,28 @@ fun RenderIndicatorsTutorialScreen() {
     )
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier.verticalScroll(scrollState)
+        modifier = Modifier.verticalScroll(scrollState).size(getScreenDpSize()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box {
+        Box(contentAlignment = Alignment.TopCenter) {
+            RenderPieceCount(
+                pos = position
+            )
             RenderGameBoard(
+                modifier = Modifier.fillMaxSize(0.7f).padding(GAME_BOARD_BUTTON_WIDTH),
                 pos = position,
                 selectedButton = 3,
                 moveHints = listOf(),
                 onClick = {}
             )
-            RenderPieceCount(
-                pos = position
-            )
         }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                start = GAME_BOARD_BUTTON_WIDTH,
-                end = GAME_BOARD_BUTTON_WIDTH
-            ),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(Res.string.tutorial_indicator_piece_count),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = stringResource(Res.string.tutorial_indicator_piece_move_turn),
-                textAlign = TextAlign.Center
-            )
-        }
+        Text(
+            text = stringResource(Res.string.tutorial_indicator_piece_count),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = stringResource(Res.string.tutorial_indicator_piece_move_turn),
+            textAlign = TextAlign.Center
+        )
     }
 }

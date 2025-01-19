@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
+import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.analyze
 import ninemensmorrisappkmp.composeapp.generated.resources.depth
@@ -33,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun RenderGameAnalyzeScreen(
+    modifier: Modifier = Modifier,
     positions: List<Position>,
     depth: Int,
     startAnalyze: () -> Unit,
@@ -41,7 +44,7 @@ fun RenderGameAnalyzeScreen(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier.verticalScroll(scrollState),
+        modifier = modifier.verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
@@ -123,9 +126,13 @@ fun RenderGameAnalyzeScreen(
                 Column {
                     positions.forEach {
                         RenderGameBoard(
-                            it,
-                            null,
-                            mutableListOf(),
+                            modifier = Modifier.padding(
+                                start = GAME_BOARD_BUTTON_WIDTH,
+                                end = GAME_BOARD_BUTTON_WIDTH
+                            ),
+                            pos = it,
+                            selectedButton = null,
+                            moveHints = mutableListOf(),
                             onClick = {}
                         )
                         Spacer(modifier = Modifier.height(5.dp))

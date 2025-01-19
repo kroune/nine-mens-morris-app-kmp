@@ -9,7 +9,6 @@ import com.arkivanov.decompose.router.webhistory.withWebHistory
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
-import com.kroune.nine_mens_morris_kmp_app.navigation.Url
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
@@ -30,21 +29,14 @@ fun main() {
         }
     }
     val lifecycle = LifecycleRegistry()
-    val root: RootComponent
-    if (!window.location.host.contains("github")) {
-        root = withWebHistory { stateKeeper, deepLink ->
+    val root = if (!window.location.host.contains("github")) {
+        withWebHistory { stateKeeper, _ ->
             val component = DefaultComponentContext(lifecycle, stateKeeper)
-            RootComponent(
-                component,
-                deepLinkUrl = deepLink?.let(::Url)
-            )
+            RootComponent(component)
         }
     } else {
         val component = DefaultComponentContext(lifecycle)
-        root = RootComponent(
-            component,
-            deepLinkUrl = null
-        )
+        RootComponent(component)
     }
     ComposeViewport(document.body!!) {
         LaunchedEffect(Unit) {
@@ -54,9 +46,9 @@ fun main() {
     }
     // start fetching all resources asynchronously
     with(CoroutineScope(Dispatchers.Default)) {
-        Res.allStringResources.forEach {
+        Res.allStringResources.forEach { (_, resource) ->
             launch {
-                getString(it.value)
+                getString(resource)
             }
         }
     }

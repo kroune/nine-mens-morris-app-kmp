@@ -39,6 +39,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
+import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
+import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
@@ -138,6 +140,8 @@ fun OnlineGameScreen(
                 }
             }
             RenderGameBoard(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(start = GAME_BOARD_BUTTON_WIDTH, end = GAME_BOARD_BUTTON_WIDTH),
                 pos = component.position,
                 selectedButton = component.selectedButton,
                 moveHints = component.moveHints,
@@ -164,14 +168,20 @@ private fun GiveUpConfirm(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = {
-                    onGiveUpDiscarded()
-                }) {
+                Button(
+                    onClick = {
+                        onGiveUpDiscarded()
+                    },
+                    colors = BlackGrayColors()
+                ) {
                     Text(stringResource(Res.string.no))
                 }
-                Button(onClick = {
-                    onGiveUp()
-                }) {
+                Button(
+                    onClick = {
+                        onGiveUp()
+                    },
+                    colors = BlackGrayColors()
+                ) {
                     Text(stringResource(Res.string.yes))
                 }
             }
@@ -227,8 +237,9 @@ fun PlayerCard(
         Column(
             verticalArrangement = Arrangement.Center
         ) {
-            Box(modifier = Modifier
-                .height(with(LocalDensity.current) { 20.sp.toDp() })
+            Box(
+                modifier = Modifier
+                    .height(with(LocalDensity.current) { 20.sp.toDp() })
             ) {
                 DrawName(
                     text = @Composable {
@@ -251,15 +262,15 @@ fun PlayerCard(
                     }).dp
                 )
                     .aspectRatio(1f)
-                    .background(if (isGreen) Color.Green else Color.Blue, CircleShape)
+                    .background(if (isGreen) Color.White else Color.Black, CircleShape)
                     .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     color = if (!isGreen) {
-                        Color.Green
+                        Color.White
                     } else {
-                        Color.Blue
+                        Color.Black
                     },
                     text = if (!isGreen) {
                         pos.freeBluePieces.toString()

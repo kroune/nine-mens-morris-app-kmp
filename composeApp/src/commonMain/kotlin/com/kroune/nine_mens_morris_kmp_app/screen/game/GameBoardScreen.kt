@@ -2,16 +2,22 @@ package com.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -20,48 +26,46 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
+import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.redo_move
 import ninemensmorrisappkmp.composeapp.generated.resources.undo_move
 import org.jetbrains.compose.resources.painterResource
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * renders game board
  */
 @Composable
 fun RenderGameBoard(
+    modifier: Modifier = Modifier,
     pos: Position,
     selectedButton: Int?,
     moveHints: List<Int>,
     onClick: (Int) -> Unit
 ) {
+    val screen = getScreenDpSize()
+    val heightBigger = derivedStateOf { screen.height > screen.width }
     Box(
-        modifier = Modifier
-            .fillMaxWidth(), Alignment.TopCenter
+        modifier = modifier
+            .clip(RoundedCornerShape(15))
+            .aspectRatio(1f, !heightBigger.value)
+            .background(Color(0xFF8F8F8F))
+            .padding(15.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(15))
-                .size(GAME_BOARD_BUTTON_WIDTH * 8.25f)
-                .background(Color(0xFF8F8F8F)),
-            Alignment.Center,
-        ) {
-            DrawCircles(pos, selectedButton, moveHints, onClick)
-            DrawHorizontalShadows()
-            DrawVerticalShadows()
-        }
+        DrawHorizontalShadows()
+        DrawVerticalShadows()
+        DrawCircles(pos, selectedButton, moveHints, onClick)
     }
 }
 
@@ -70,37 +74,45 @@ fun RenderGameBoard(
  */
 @Composable
 fun RenderPieceCount(pos: Position) {
-    Box {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.TopEnd
+                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f)
+                .wrapContentSize(),
+            contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(GAME_BOARD_BUTTON_WIDTH * if (pos.pieceToMove) 1.5f else 1f)
-                    .background(Color.Green, CircleShape)
+                    .fillMaxSize(if (pos.pieceToMove) 0.6f else 1f)
+                    .background(Color.Black, CircleShape)
                     .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
                 Alignment.Center
             ) {
                 Text(
-                    color = Color.Blue,
+                    color = Color.White,
                     text = pos.freeGreenPieces.toString()
                 )
             }
         }
         Box(
-            modifier = Modifier, contentAlignment = Alignment.TopEnd
+            modifier = Modifier
+                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f)
+                .wrapContentSize(),
+            contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(GAME_BOARD_BUTTON_WIDTH * if (!pos.pieceToMove) 1.5f else 1f)
-                    .background(Color.Blue, CircleShape)
+                    .fillMaxSize(if (!pos.pieceToMove) 0.6f else 1f)
+                    .background(Color.White, CircleShape)
                     .alpha(if (pos.freeBluePieces == 0.toUByte()) 0f else 1f),
                 Alignment.Center
             ) {
                 Text(
-                    color = Color.Green,
+                    color = Color.Black,
                     text = pos.freeBluePieces.toString()
                 )
             }
@@ -112,21 +124,37 @@ fun RenderPieceCount(pos: Position) {
  * there are ways not to hard code this, but it looses a lot of readability
  */
 @Composable
-private fun DrawCircles(
+private fun BoxScope.DrawCircles(
     pos: Position,
     selectedButton: Int?,
     moveHints: List<Int>,
     onClick: (Int) -> Unit
 ) {
     Column(
-        modifier = Modifier.size(GAME_BOARD_BUTTON_WIDTH * 7, GAME_BOARD_BUTTON_WIDTH * 7)
+        modifier = Modifier
+            .matchParentSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RowOfCircles(0, 2, 0..2, pos, selectedButton, moveHints, onClick)
         RowOfCircles(1, 1, 3..5, pos, selectedButton, moveHints, onClick)
         RowOfCircles(2, 0, 6..8, pos, selectedButton, moveHints, onClick)
-        Box {
-            RowOfCircles(0, 0, 9..11, pos, selectedButton, moveHints, onClick)
-            RowOfCircles(4, 0, 12..14, pos, selectedButton, moveHints, onClick)
+        Row(
+            modifier = Modifier.weight(1f).fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            with(this@Column) {
+                RowOfCircles(0, 0, 9..11, pos, selectedButton, moveHints, onClick)
+                /**
+                 * default weight is 1
+                 * (1+x+1)/7=x
+                 * 2+x=7x
+                 * 2=6x
+                 * x = 1/3
+                 */
+                Spacer(modifier = Modifier.weight(1f / 3).fillMaxSize())
+                RowOfCircles(0, 0, 12..14, pos, selectedButton, moveHints, onClick)
+            }
         }
         RowOfCircles(2, 0, 15..17, pos, selectedButton, moveHints, onClick)
         RowOfCircles(1, 1, 18..20, pos, selectedButton, moveHints, onClick)
@@ -135,120 +163,120 @@ private fun DrawCircles(
 }
 
 @Composable
-private fun DrawVerticalShadows() {
+private fun BoxScope.DrawVerticalShadows() {
     Row(
-        modifier = Modifier.size(GAME_BOARD_BUTTON_WIDTH * 7, GAME_BOARD_BUTTON_WIDTH * 7)
+        modifier = Modifier
+            .matchParentSize()
     ) {
-        VerticalShadow(0.25f, 0.25f)
-        VerticalShadow(1.25f, 1.25f)
-        VerticalShadow(2.25f, 2.25f)
+        VerticalShadow(0, 7)
+        VerticalShadow(1, 5)
+        VerticalShadow(2, 3)
         Column(
-            modifier = Modifier
-                .padding(
-                    top = GAME_BOARD_BUTTON_WIDTH * 0.25f, bottom = GAME_BOARD_BUTTON_WIDTH * 0.25f
-                )
-                .height(GAME_BOARD_BUTTON_WIDTH * 7)
-                .width(GAME_BOARD_BUTTON_WIDTH),
-            verticalArrangement = Arrangement.spacedBy(
-                GAME_BOARD_BUTTON_WIDTH * 1.5f, Alignment.CenterVertically
-            )
+            modifier = Modifier.fillMaxSize().weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            VerticalShadow(0f, 0f, 2.5f, 2.5f)
-            VerticalShadow(0f, 0f, 2.5f, 2.5f)
+            with(this@Row) {
+                VerticalShadow(0, 3)
+                /**
+                 * default weight is 1
+                 * (1+x+1)/7=x
+                 * 2+x=7x
+                 * 2=6x
+                 * x = 1/3
+                 */
+                Spacer(modifier = Modifier.weight(1f / 3).fillMaxSize())
+                VerticalShadow(0, 3)
+            }
         }
-        VerticalShadow(2.25f, 2.25f)
-        VerticalShadow(1.25f, 1.25f)
-        VerticalShadow(0.25f, 0.25f)
+        VerticalShadow(2, 3)
+        VerticalShadow(1, 5)
+        VerticalShadow(0, 7)
     }
 }
 
 @Composable
-private fun DrawHorizontalShadows() {
+private fun BoxScope.DrawHorizontalShadows() {
     Column(
-        modifier = Modifier.size(GAME_BOARD_BUTTON_WIDTH * 7, GAME_BOARD_BUTTON_WIDTH * 7)
+        modifier = Modifier
+            .matchParentSize()
     ) {
-        HorizontalShadow(0.25f, 0.25f)
-        HorizontalShadow(1.25f, 1.25f)
-        HorizontalShadow(2.25f, 2.25f)
+        HorizontalShadow(0, 7)
+        HorizontalShadow(1, 5)
+        HorizontalShadow(2, 3)
         Row(
-            modifier = Modifier
-                .padding(
-                    start = GAME_BOARD_BUTTON_WIDTH * 0.25f, end = GAME_BOARD_BUTTON_WIDTH * 0.25f
-                )
-                .height(GAME_BOARD_BUTTON_WIDTH)
-                .width(GAME_BOARD_BUTTON_WIDTH * 7),
-            horizontalArrangement = Arrangement.spacedBy(
-                GAME_BOARD_BUTTON_WIDTH * 1.5f, Alignment.CenterHorizontally
-            )
+            modifier = Modifier.fillMaxSize().weight(1f),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            HorizontalShadow(0f, 0f, 2.5f, 2.5f)
-            HorizontalShadow(0f, 0f, 2.5f, 2.5f)
+            with(this@Column) {
+                HorizontalShadow(0, 3)
+                /**
+                 * default weight is 1
+                 * (1+x+1)/7=x
+                 * 2+x=7x
+                 * 2=6x
+                 * x = 1/3
+                 */
+                Spacer(modifier = Modifier.weight(1f / 3).fillMaxSize())
+                HorizontalShadow(0, 3)
+            }
         }
-        HorizontalShadow(2.25f, 2.25f)
-        HorizontalShadow(1.25f, 1.25f)
-        HorizontalShadow(0.25f, 0.25f)
+        HorizontalShadow(2, 3)
+        HorizontalShadow(1, 5)
+        HorizontalShadow(0, 7)
     }
 }
 
 @Composable
-private fun VerticalShadow(
-    paddingLeft: Float,
-    paddingRight: Float,
-    length1: Float = 7f,
-    length2: Float = (7 - (paddingLeft + paddingRight))
+private fun RowScope.VerticalShadow(
+    paddingWeight: Int,
+    contentWeight: Int
 ) {
-    Box(
-        modifier = Modifier
-            .height(GAME_BOARD_BUTTON_WIDTH * length1)
-            .width(GAME_BOARD_BUTTON_WIDTH * 1f)
-            .padding(
-                top = GAME_BOARD_BUTTON_WIDTH * paddingLeft,
-                start = GAME_BOARD_BUTTON_WIDTH * 0.25f,
-                end = GAME_BOARD_BUTTON_WIDTH * 0.25f,
-                bottom = GAME_BOARD_BUTTON_WIDTH * paddingRight
-            )
+    Column(
+        modifier = Modifier.fillMaxSize().weight(1f),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (paddingWeight > 0)
+            Spacer(modifier = Modifier.fillMaxSize().weight(paddingWeight.toFloat()))
+        Spacer(modifier = Modifier.fillMaxSize().weight(1f / 4))
         Box(
             modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.5f)
+                .weight(contentWeight.toFloat() - 0.5f)
                 .alpha(0.5f)
-                .height(GAME_BOARD_BUTTON_WIDTH * length2)
-                .width(GAME_BOARD_BUTTON_WIDTH * 0.5f)
-                .shadow(
-                    elevation = 10.dp, shape = RoundedCornerShape(8.dp)
-                )
+                .clip(RoundedCornerShape(10.dp))
                 .background(Color.DarkGray)
-        ) {}
+        )
+        Spacer(modifier = Modifier.fillMaxSize().weight(1f / 4))
+        if (paddingWeight > 0)
+            Spacer(modifier = Modifier.fillMaxSize().weight(paddingWeight.toFloat()))
     }
 }
 
 @Composable
-private fun HorizontalShadow(
-    paddingLeft: Float,
-    paddingRight: Float,
-    length1: Float = 7f,
-    length2: Float = (7 - (paddingLeft + paddingRight))
+private fun ColumnScope.HorizontalShadow(
+    paddingWeight: Int,
+    contentWeight: Int
 ) {
-    Box(
-        modifier = Modifier
-            .height(GAME_BOARD_BUTTON_WIDTH * 1f)
-            .width(GAME_BOARD_BUTTON_WIDTH * length1)
-            .padding(
-                top = GAME_BOARD_BUTTON_WIDTH * 0.25f,
-                start = GAME_BOARD_BUTTON_WIDTH * paddingLeft,
-                end = GAME_BOARD_BUTTON_WIDTH * paddingRight,
-                bottom = GAME_BOARD_BUTTON_WIDTH * 0.25f
-            )
+    Row(
+        modifier = Modifier.fillMaxSize().weight(1f),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        if (paddingWeight > 0)
+            Spacer(modifier = Modifier.fillMaxSize().weight(paddingWeight.toFloat()))
+        Spacer(modifier = Modifier.fillMaxSize().weight(1f / 4))
         Box(
             modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
+                .weight(contentWeight.toFloat() - 0.5f)
                 .alpha(0.5f)
-                .height(GAME_BOARD_BUTTON_WIDTH * 0.5f)
-                .width(GAME_BOARD_BUTTON_WIDTH * length2)
-                .shadow(
-                    elevation = 10.dp, shape = RoundedCornerShape(8.dp)
-                )
+                .clip(RoundedCornerShape(10.dp))
                 .background(Color.DarkGray)
-        ) {}
+        )
+        Spacer(modifier = Modifier.fillMaxSize().weight(1f / 4))
+        if (paddingWeight > 0)
+            Spacer(modifier = Modifier.fillMaxSize().weight(paddingWeight.toFloat()))
     }
 }
 
@@ -259,21 +287,28 @@ private fun HorizontalShadow(
  * @param range range of indexes
  */
 @Composable
-private fun RowOfCircles(
-    padding: Int, gap: Int, range: IntRange,
+private fun ColumnScope.RowOfCircles(
+    padding: Int,
+    gap: Int,
+    range: IntRange,
     pos: Position,
     selectedButton: Int?,
     moveHints: List<Int>,
     onClick: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier.padding(start = GAME_BOARD_BUTTON_WIDTH * padding),
-        horizontalArrangement = Arrangement.spacedBy(
-            GAME_BOARD_BUTTON_WIDTH * gap, Alignment.CenterHorizontally
-        ),
-        Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxSize()
+            .weight(1f),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        for (i in range) {
+        if (padding > 0)
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize().weight(padding.toFloat())
+            )
+        range.forEach { i ->
             CircledButton(
                 elementIndex = i,
                 pos = pos,
@@ -282,6 +317,17 @@ private fun RowOfCircles(
             ) {
                 onClick(i)
             }
+            if (gap > 0 && i != range.last)
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize().weight(gap.toFloat())
+                )
+        }
+        if (padding > 0) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize().weight(padding.toFloat())
+            )
         }
     }
 }
@@ -291,25 +337,30 @@ private fun RowOfCircles(
  * @param elementIndex index of this circle
  * @param onClick function we execute on click
  */
-@OptIn(ExperimentalEncodingApi::class)
 @Composable
-private fun CircledButton(
+fun RowScope.CircledButton(
     elementIndex: Int,
     pos: Position,
     selectedButton: Int?,
     moveHints: List<Int>,
     onClick: (Int) -> Unit
 ) {
-    Base64.decode("")
-    Box(
-        modifier = Modifier
-            .size(GAME_BOARD_BUTTON_WIDTH),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize().weight(1f).wrapContentSize()) {
         Button(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * if (selectedButton == elementIndex) 0.8f else 1f)
-                .background(Color.Transparent, CircleShape),
+                .clip(CircleShape)
+                .fillMaxSize(if (selectedButton == elementIndex) 0.7f else 0.9f)
+                .background(Color.Transparent)
+                .border(
+                    if (!moveHints.contains(elementIndex)) BorderStroke(
+                        0.dp,
+                        Color.Transparent
+                    ) else BorderStroke(
+                        5.dp,
+                        Color.DarkGray
+                    ), CircleShape
+                ),
+            elevation = null,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = when (pos.positions[elementIndex]) {
                     null -> {
@@ -317,22 +368,17 @@ private fun CircledButton(
                     }
 
                     true -> {
-                        Color.Green
+                        Color.Black
                     }
 
                     false -> {
-                        Color.Blue
+                        Color.White
                     }
                 }
             ),
-            shape = CircleShape,
             onClick = {
                 onClick(elementIndex)
-            },
-            border = if (!moveHints.contains(elementIndex)) null else BorderStroke(
-                GAME_BOARD_BUTTON_WIDTH * 0.1f,
-                Color.DarkGray
-            )
+            }
         ) {}
     }
 }
@@ -360,8 +406,9 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
                 painter = painterResource(Res.drawable.undo_move), "undo"
             )
         }
-        IconButton(modifier = Modifier
-            .size(GAME_BOARD_BUTTON_WIDTH * 2f),
+        IconButton(
+            modifier = Modifier
+                .size(GAME_BOARD_BUTTON_WIDTH * 2f),
             onClick = {
                 handleRedo()
             }) {

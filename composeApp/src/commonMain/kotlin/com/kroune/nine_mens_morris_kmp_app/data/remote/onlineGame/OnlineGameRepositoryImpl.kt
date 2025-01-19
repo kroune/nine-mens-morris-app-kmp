@@ -7,6 +7,8 @@ import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserialized
 import com.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
 import com.kroune.nine_mens_morris_kmp_app.common.sendSerializedCatching
 import com.kroune.nine_mens_morris_kmp_app.common.serverApi
+import com.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
+import com.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.http.URLProtocol
@@ -41,7 +43,8 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                 protocol = URLProtocol.WSS
                 appendPathSegments("game")
             }.toString()
-            network.wss(route,
+            network.wss(
+                route,
                 request = {
                     url {
                         parameters["jwtToken"] = jwtToken
@@ -65,16 +68,16 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                             break
                         }
                         val movement = movementResult.getOrThrow()
-                        println("sent move $movement")
+                        log("sent a move $movement", severity = Severity.DEBUG)
                         val sendResult = this@wss.sendSerializedCatching(movement)
                         if (sendResult != null && !channelClosedNormally) {
                             // something went wrong
-                            println("received exception when sending move ${sendResult.stackTraceToString()}")
+                            log("failed to send a move $movement", sendResult, Severity.ERROR)
                             throw sendResult
                         }
                         // this basically means we gave up
                         if (movement == Movement(null, null)) {
-                            println("we gave up")
+                            log("user gave up", severity = Severity.INFO)
                             gameEnded.complete(true)
                             channelToSendMoves.close()
                             channelToReceiveMoves.close()
@@ -87,18 +90,14 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
                 while (!gameEnded.isCompleted) {
                     val moveResult = this.receiveDeserializedCatching<Movement>()
                     // some error happened, cleaning up everything
-                    if (moveResult.exceptionOrNull() != null) {
-                        println(
-                            "move result exception ${
-                                moveResult.exceptionOrNull()!!.printStackTrace()
-                            }"
-                        )
+                    moveResult.onFailure {
+                        log("failed to send a receive a move", it, Severity.ERROR)
                         channelToSendMoves.close()
                         channelToReceiveMoves.close()
                         close()
                         if (!channelClosedNormally) {
-                            println("channel was closed ${moveResult.exceptionOrNull()}")
-                            moveResult.getOrThrow()
+                            log("channel was closed abnormally", it, Severity.ERROR)
+                            throw it
                         }
                         return@wss
                     }

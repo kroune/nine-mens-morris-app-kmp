@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.data.remote.UploadPictureApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
@@ -118,18 +119,23 @@ fun ViewAccountScreen(
                             !is UploadPictureApiResponses -> {
                                 getString(Res.string.unknown_error)
                             }
+
                             is UploadPictureApiResponses.ClientError -> {
                                 getString(Res.string.client_error)
                             }
+
                             is UploadPictureApiResponses.ServerError -> {
                                 getString(Res.string.server_error)
                             }
+
                             is UploadPictureApiResponses.NetworkError -> {
                                 getString(Res.string.network_error)
                             }
+
                             is UploadPictureApiResponses.CredentialsError -> {
                                 getString(Res.string.credentials_error)
                             }
+
                             is UploadPictureApiResponses.TooLargeImage -> {
                                 getString(Res.string.image_too_large, it.maxWidth, it.maxHeight)
                             }
@@ -142,10 +148,11 @@ fun ViewAccountScreen(
                     }
                 }
             }
-            Button({
-                launcher.launch()
-            }) {
-                Text(stringResource(Res.string.upload_picture))
+            Button(
+                { launcher.launch() },
+                colors = BlackGrayColors()
+            ) {
+                Text(stringResource(Res.string.upload_picture), color = Color.White)
             }
             if (isOwnAccount) {
                 Box(
@@ -172,8 +179,9 @@ fun DrawOwnAccountOptions(
     Button(
         onClick = {
             onEvent(ViewAccountScreenEvent.Logout)
-        }
+        },
+        colors = BlackGrayColors()
     ) {
-        Text(stringResource(Res.string.log_out))
+        Text(stringResource(Res.string.log_out), color = Color.White)
     }
 }

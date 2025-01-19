@@ -5,6 +5,8 @@ import com.kroune.nine_mens_morris_kmp_app.common.serverApi
 import com.kroune.nine_mens_morris_kmp_app.data.remote.CheckJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RegisterApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
+import com.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -59,9 +61,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
                 }
             }
             Json.decodeFromString<String>(request.bodyAsText())
-        }.recoverNetworkError(RegisterApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(RegisterApiResponses.NetworkError).logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun login(login: String, password: String): Result<String> {
@@ -108,9 +108,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
                 }
             }
             Json.decodeFromString<String>(request.bodyAsText())
-        }.recoverNetworkError(LoginApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(LoginApiResponses.NetworkError).logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun checkJwtToken(jwtToken: String): Result<Boolean> {
@@ -151,8 +149,6 @@ class AuthRepositoryImpl : AuthRepositoryI {
                 }
             }
             Json.decodeFromString<Boolean>(request.bodyAsText())
-        }.recoverNetworkError(CheckJwtTokenApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(CheckJwtTokenApiResponses.NetworkError).logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 }

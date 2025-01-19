@@ -67,6 +67,19 @@ class BlackGrayColors : ButtonColors {
     }
 }
 
+class LinkColors : ButtonColors {
+    @Composable
+    override fun backgroundColor(enabled: Boolean): State<Color> {
+        return mutableStateOf(Color.Transparent)
+    }
+
+    @Composable
+    override fun contentColor(enabled: Boolean): State<Color> {
+        return mutableStateOf(Color.Blue)
+    }
+
+}
+
 class TransparentColors : ButtonColors {
     @Composable
     override fun backgroundColor(enabled: Boolean): State<Color> {
@@ -141,6 +154,7 @@ fun LoadingCircle(
     )
     CircularProgressIndicator(
         progress = animatedProgress,
+        color = Color.Black,
         modifier = modifier
             .aspectRatio(1f)
     )

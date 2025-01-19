@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +24,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -53,6 +53,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error
+import ninemensmorrisappkmp.composeapp.generated.resources.close
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.data_is_loading_wait
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
@@ -216,7 +217,7 @@ fun WelcomeScreen(
             }
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .verticalScroll(
                         state = scrollState, flingBehavior = CustomFlingBehaviour()
                     )
@@ -228,19 +229,26 @@ fun WelcomeScreen(
                 Box(
                     modifier = Modifier
                         .requiredHeight(height)
-                        .requiredWidth(width),
-                    contentAlignment = Alignment.Center
+                        .requiredWidth(width)
                 ) {
+                    IconButton({
+                        component.onEvent(WelcomeScreenEvent.NavigateBack)
+                    }) {
+                        Icon(
+                            painterResource(Res.drawable.close),
+                            "close button"
+                        )
+                    }
                     RenderMainScreen(
                         component,
                         snackbarHostState
                     )
                 }
-                Spacer(Modifier.height(padding.calculateBottomPadding()))
                 Box(
                     modifier = Modifier
                         .requiredHeight(height)
-                        .requiredWidth(width)
+                        .requiredWidth(width),
+                    contentAlignment = Alignment.Center
                 ) {
                     TutorialScreen()
                 }
@@ -291,94 +299,99 @@ fun RenderMainScreen(
 ) {
     val screenSize = getScreenDpSize()
     val height = screenSize.height
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(IntrinsicSize.Max),
-        verticalArrangement = Arrangement.spacedBy(
-            height * 0.05f, Alignment.CenterVertically
-        ),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Button(
+        Column(
             modifier = Modifier
-                .height(height * 0.1f)
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            onClick = {
-                component.onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
-            },
-            shape = RoundedCornerShape(5.dp),
-            colors = BlackGrayColors()
+                .fillMaxHeight()
+                .width(IntrinsicSize.Max),
+            verticalArrangement = Arrangement.spacedBy(
+                height * 0.05f, Alignment.CenterVertically
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(Res.string.play_game_with_friends),
-                color = Color.White,
-                fontSize = 20.sp
-            )
-        }
-        Button(
-            modifier = Modifier
-                .height(height * 0.1f)
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            onClick = {
-                component.onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
-            },
-            shape = RoundedCornerShape(5.dp),
-            colors = BlackGrayColors()
-        ) {
-            Text(
-                text = stringResource(Res.string.play_game_with_bot),
-                color = Color.White,
-                fontSize = 20.sp
-            )
-        }
-        Button(
-            modifier = Modifier
-                .height(height * 0.1f)
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            onClick = {
-                if (component.isInAccount.value == null) {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                onClick = {
+                    component.onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
+                },
+                shape = RoundedCornerShape(5.dp),
+                colors = BlackGrayColors()
+            ) {
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(Res.string.play_game_with_friends),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                onClick = {
+                    component.onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
+                },
+                shape = RoundedCornerShape(5.dp),
+                colors = BlackGrayColors()
+            ) {
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(Res.string.play_game_with_bot),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                onClick = {
+                    if (component.isInAccount.value == null) {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                        }
+                        return@Button
                     }
-                    return@Button
-                }
-                component.onEvent(WelcomeScreenEvent.NavigateToOnlineGame)
-            },
-            shape = RoundedCornerShape(5.dp),
-            colors = BlackGrayColors()
-        ) {
-            Text(
-                text = stringResource(Res.string.play_online_game),
-                color = Color.White,
-                fontSize = 20.sp
-            )
-        }
-        Button(
-            modifier = Modifier
-                .height(height * 0.1f)
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            onClick = {
-                if (component.isInAccount.value == null) {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                    component.onEvent(WelcomeScreenEvent.NavigateToOnlineGame)
+                },
+                shape = RoundedCornerShape(5.dp),
+                colors = BlackGrayColors()
+            ) {
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(Res.string.play_online_game),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                onClick = {
+                    if (component.isInAccount.value == null) {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                        }
+                        return@Button
                     }
-                    return@Button
-                }
-                component.onEvent(WelcomeScreenEvent.NavigateToLeaderboard)
-            },
-            shape = RoundedCornerShape(5.dp),
-            colors = BlackGrayColors()
-        ) {
-            Text(
-                text = stringResource(Res.string.leaderboard),
-                color = Color.White,
-                fontSize = 20.sp
-            )
+                    component.onEvent(WelcomeScreenEvent.NavigateToLeaderboard)
+                },
+                shape = RoundedCornerShape(5.dp),
+                colors = BlackGrayColors()
+            ) {
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    text = stringResource(Res.string.leaderboard),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
         }
     }
 }

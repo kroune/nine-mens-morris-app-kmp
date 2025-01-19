@@ -9,6 +9,8 @@ import com.kroune.nine_mens_morris_kmp_app.data.remote.LeaderboardApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.LoginByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.RatingByIdApiResponses
 import com.kroune.nine_mens_morris_kmp_app.data.remote.UploadPictureApiResponses
+import com.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
+import com.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import com.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -72,9 +74,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             Json.decodeFromString<Long>(request.bodyAsText())
-        }.recoverNetworkError(RatingByIdApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(RatingByIdApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun getAccountCreationDateById(
@@ -131,9 +132,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             Json.decodeFromString<Triple<Int, Int, Int>>(request.bodyAsText())
-        }.recoverNetworkError(CreationDateByIdApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(CreationDateByIdApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun getAccountLoginById(id: Long, jwtToken: String): Result<String> {
@@ -187,9 +187,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             Json.decodeFromString<String>(request.bodyAsText())
-        }.recoverNetworkError(LoginByIdApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(LoginByIdApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun getAccountPictureById(id: Long, jwtToken: String): Result<ByteArray> {
@@ -244,9 +243,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             Json.decodeFromString<ByteArray>(request.bodyAsText())
-        }.recoverNetworkError(AccountPictureByIdApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(AccountPictureByIdApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun getAccountIdByJwtToken(jwtToken: String): Result<Long> {
@@ -287,9 +285,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             Json.decodeFromString<Long>(request.bodyAsText())
-        }.recoverNetworkError(AccountIdByJwtTokenApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(AccountIdByJwtTokenApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun getLeaderboard(jwtToken: String): Result<List<Long>> {
@@ -330,9 +327,8 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             Json.decodeFromString<List<Long>>(request.bodyAsText())
-        }.recoverNetworkError(LeaderboardApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(LeaderboardApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
     override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): Result<Unit> {
@@ -387,8 +383,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 }
             }
             require(request.status == HttpStatusCode.OK)
-        }.recoverNetworkError(UploadPictureApiResponses.NetworkError).onFailure {
-            println("exception in $route - ${it.printStackTrace()}")
-        }
+        }.recoverNetworkError(UploadPictureApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 }
