@@ -61,9 +61,9 @@ fun GameWithFriendScreen(
                     // FIXME: this is some garbage
                     .then(
                         if (!heightBigger.value)
-                            Modifier.fillMaxHeight(0.7f)
+                            Modifier.fillMaxHeight(0.6f)
                         else
-                            Modifier.fillMaxWidth(0.7f)
+                            Modifier.fillMaxWidth(0.6f)
                     ),
                 pos = component.position,
                 selectedButton = component.selectedButton,
@@ -75,10 +75,13 @@ fun GameWithFriendScreen(
         }
         Spacer(modifier = Modifier.height(5.dp))
         RenderGameAnalyzeScreen(
-            modifier = Modifier.padding(
-                start = GAME_BOARD_BUTTON_WIDTH,
-                end = GAME_BOARD_BUTTON_WIDTH
-            ).fillMaxSize(),
+            modifier = Modifier
+                .padding(
+                    start = GAME_BOARD_BUTTON_WIDTH,
+                    end = GAME_BOARD_BUTTON_WIDTH
+                )
+                .fillMaxHeight()
+                .fillMaxWidth(0.6f),
             positions = component.gameAnalyzePositions,
             depth = component.analyzeDepth,
             startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
