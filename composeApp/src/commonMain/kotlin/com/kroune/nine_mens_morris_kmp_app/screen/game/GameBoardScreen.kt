@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
-import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.redo_move
 import ninemensmorrisappkmp.composeapp.generated.resources.undo_move
@@ -53,19 +53,20 @@ fun RenderGameBoard(
     moveHints: List<Int>,
     onClick: (Int) -> Unit
 ) {
-    val screen = getScreenDpSize()
-    val heightBigger = derivedStateOf { screen.height > screen.width }
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(15))
-            .aspectRatio(1f, !heightBigger.value)
-            .background(Color(0xFF8F8F8F))
-            .padding(15.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        DrawHorizontalShadows()
-        DrawVerticalShadows()
-        DrawCircles(pos, selectedButton, moveHints, onClick)
+    BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
+        val heightBigger = derivedStateOf { maxHeight > maxWidth }
+        Box(
+            modifier = modifier
+                .aspectRatio(1f, !heightBigger.value)
+                .clip(RoundedCornerShape(15))
+                .background(Color(0xFF8F8F8F))
+                .padding(15.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            DrawHorizontalShadows()
+            DrawVerticalShadows()
+            DrawCircles(pos, selectedButton, moveHints, onClick)
+        }
     }
 }
 

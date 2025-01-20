@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
-import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderFlyingMovesTutorialScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderIndicatorsTutorialScreen
 import com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderLoseTutorialScreen
@@ -64,9 +63,6 @@ private val tutorialScreens: List<@Composable () -> Unit> = listOf(
 
 @Composable
 fun TutorialScreen() {
-    val screenSize = getScreenDpSize()
-    val width = screenSize.width
-    val height = screenSize.height
     val coroutine = rememberCoroutineScope()
     val currentScreenIndex = remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
@@ -94,7 +90,7 @@ fun TutorialScreen() {
     Row(
         modifier = Modifier
             .height(20.dp)
-            .width(width)
+            .fillMaxWidth()
             .zIndex(5f),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -123,31 +119,33 @@ fun TutorialScreen() {
             )
         }
     }
-    LazyRow(
-        modifier = Modifier
-            .fillMaxSize(),
-        state = listState,
-        flingBehavior = CustomFlingBehaviour(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        items(
-            count = tutorialScreens.size,
-            key = { it }
+    BoxWithConstraints {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxSize(),
+            state = listState,
+            flingBehavior = CustomFlingBehaviour(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .height(height)
-                    .width(width),
-                contentAlignment = Alignment.Center
+            items(
+                count = tutorialScreens.size,
+                key = { it }
             ) {
-                tutorialScreens[it]()
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(this@BoxWithConstraints.maxWidth),
+                    contentAlignment = Alignment.Center
+                ) {
+                    tutorialScreens[it]()
+                }
             }
         }
     }
     Row(
         modifier = Modifier
             .zIndex(5f)
-            .height(height)
+            .fillMaxHeight()
             .width(tutorialScreens.size * 3 * 7.dp)
             .padding(bottom = 50.dp),
         verticalAlignment = Alignment.Bottom,
@@ -158,11 +156,11 @@ fun TutorialScreen() {
                 modifier = Modifier
                     .size(7.dp)
                     .clip(CircleShape)
-                    .apply {
+                    .let {
                         if (currentScreenIndex.value == index) {
-                            background(Color.Blue)
+                            it.background(Color.Blue)
                         } else {
-                            background(Color.White)
+                            it.background(Color.White)
                         }
                     }
             )

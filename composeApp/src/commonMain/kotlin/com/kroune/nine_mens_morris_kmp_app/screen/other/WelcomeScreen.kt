@@ -224,7 +224,7 @@ fun WelcomeScreen(
             ) {
                 val screenSize = getScreenDpSize()
                 val height =
-                    screenSize.height - padding.calculateBottomPadding()
+                    screenSize.height - padding.calculateBottomPadding() - padding.calculateTopPadding()
                 val width = screenSize.width
                 Box(
                     modifier = Modifier

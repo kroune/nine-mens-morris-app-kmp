@@ -2,12 +2,14 @@ package com.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +19,7 @@ import androidx.compose.material.ButtonColors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
-import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.analyze
 import ninemensmorrisappkmp.composeapp.generated.resources.depth
@@ -119,24 +121,31 @@ fun RenderGameAnalyzeScreen(
         }
         Spacer(modifier = Modifier.height(5.dp))
         if (positions.isNotEmpty()) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .background(Color.DarkGray, RoundedCornerShape(5))
+                    .fillMaxSize()
+                    .background(Color.DarkGray, RoundedCornerShape(5)),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column {
-                    positions.forEach {
+                positions.forEach {
+                    BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
+                        val heightBigger = derivedStateOf { maxHeight > maxWidth }
                         RenderGameBoard(
-                            modifier = Modifier.padding(
-                                start = GAME_BOARD_BUTTON_WIDTH,
-                                end = GAME_BOARD_BUTTON_WIDTH
-                            ),
+                            modifier = Modifier
+                                // FIXME: this is some garbage
+                                .then(
+                                    if (!heightBigger.value)
+                                        Modifier.fillMaxHeight(0.7f)
+                                    else
+                                        Modifier.fillMaxWidth(0.7f)
+                                ),
                             pos = it,
                             selectedButton = null,
                             moveHints = mutableListOf(),
                             onClick = {}
                         )
-                        Spacer(modifier = Modifier.height(5.dp))
                     }
+                    Spacer(modifier = Modifier.height(5.dp))
                 }
             }
         }

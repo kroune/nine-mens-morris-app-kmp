@@ -1,14 +1,14 @@
 package com.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -16,8 +16,6 @@ import com.kroune.nineMensMorrisLib.BLUE_
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.GREEN
 import com.kroune.nineMensMorrisLib.Position
-import com.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
-import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import com.kroune.nine_mens_morris_kmp_app.screen.game.RenderGameBoard
 import com.kroune.nine_mens_morris_kmp_app.screen.game.RenderPieceCount
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -44,17 +42,25 @@ fun RenderIndicatorsTutorialScreen() {
         // @formatter:on
         1u, 2u, pieceToMove = false, removalCount = 0u
     )
-    val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier.verticalScroll(scrollState).size(getScreenDpSize()),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        Box(contentAlignment = Alignment.TopCenter) {
+        BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
             RenderPieceCount(
                 pos = position
             )
+            val heightBigger = derivedStateOf { maxHeight > maxWidth }
             RenderGameBoard(
-                modifier = Modifier.fillMaxSize(0.7f).padding(GAME_BOARD_BUTTON_WIDTH),
+                modifier = Modifier
+                    // FIXME: this is some garbage
+                    .then(
+                        if (!heightBigger.value)
+                            Modifier.fillMaxHeight(0.7f)
+                        else
+                            Modifier.fillMaxWidth(0.7f)
+                    ),
                 pos = position,
                 selectedButton = 3,
                 moveHints = listOf(),
@@ -62,6 +68,7 @@ fun RenderIndicatorsTutorialScreen() {
             )
         }
         Text(
+            modifier = Modifier,
             text = stringResource(Res.string.tutorial_indicator_piece_count),
             textAlign = TextAlign.Center
         )
