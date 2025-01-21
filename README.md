@@ -10,7 +10,6 @@
 <br>
 
 ## Preview
-* video - [android](https://github.com/kroune/nine-mens-morris-app-kmp/tree/v1.0.1/demo/video/android.mkv)
 * screenshots - [android](https://github.com/kroune/nine-mens-morris-app-kmp/tree/v1.0.1/demo/screenshots/android)
 <br>
 
@@ -27,12 +26,6 @@ There are several options to use it
 2. Use **apk** format for Android. It is really tiny (around 2 mb) and works well ([link](https://github.com/kroune/nine-mens-morris-app-kmp/releases))
 3. Use **native** distributions (available for Windows, Linux, Mac OS). It weights more that jar file ([link](https://github.com/kroune/nine-mens-morris-app-kmp/releases))
 4. Play on the **web**. You don't have to download/install anything, but there are a few disadvantages like a worse performance compared to other installations and state not being saved in the url (due to github pages limitations)) ([link](https://kroune.github.com/))
-
-## Used projects
-
-This app uses my own projects such as [backend](https://github.com/kroune/nine-mens-morris-server)
-written in kotlin, kmp [library](https://github.com/kroune/nine-mens-morris-lib-kmp) and ktor,
-coroutines, decompose, filekit, kotlin serialization, multiplatform settings and other.
 
 ## License
 
@@ -76,6 +69,8 @@ Our project is multiplatform, so make sure to use [android studio](https://devel
 4. Open the folder as a Gradle project in the IDE.
 
 ## App showcase
+
+Warning: some screenshots might look blurry (due to scaling), but they look perfectly fine on an actual machine
 ![collage](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/collage.png)
 ![app_start_animation_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/app_start_animation_screen.png)
 ![welcome_screen](https://raw.githubusercontent.com/kroune/nine-mens-morris-app-kmp/refs/heads/v1.0.1/demo/screenshots/android/welcome_screen.png)
