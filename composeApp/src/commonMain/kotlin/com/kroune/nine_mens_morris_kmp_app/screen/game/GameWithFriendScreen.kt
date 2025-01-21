@@ -1,5 +1,6 @@
 package com.kroune.nine_mens_morris_kmp_app.screen.game
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -74,29 +75,31 @@ fun GameWithFriendScreen(
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
-        RenderGameAnalyzeScreen(
-            modifier = Modifier
-                .padding(
-                    start = GAME_BOARD_BUTTON_WIDTH,
-                    end = GAME_BOARD_BUTTON_WIDTH
-                )
-                .fillMaxHeight()
-                .fillMaxWidth(0.6f),
-            positions = component.gameAnalyzePositions,
-            depth = component.analyzeDepth,
-            startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
-            increaseDepth = { onEvent(GameWithFriendEvent.IncreaseAnalyzeDepth) },
-            decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
-        )
-        RenderUndoRedo(
-            handleUndo = {
-                if (!component.gameEnded)
-                    onEvent(GameWithFriendEvent.Undo)
-            },
-            handleRedo = {
-                if (!component.gameEnded)
-                    onEvent(GameWithFriendEvent.Redo)
-            }
-        )
+        Box(contentAlignment = Alignment.TopCenter) {
+            RenderGameAnalyzeScreen(
+                modifier = Modifier
+                    .padding(
+                        start = GAME_BOARD_BUTTON_WIDTH,
+                        end = GAME_BOARD_BUTTON_WIDTH
+                    )
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.6f),
+                positions = component.gameAnalyzePositions,
+                depth = component.analyzeDepth,
+                startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
+                increaseDepth = { onEvent(GameWithFriendEvent.IncreaseAnalyzeDepth) },
+                decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
+            )
+            RenderUndoRedo(
+                handleUndo = {
+                    if (!component.gameEnded)
+                        onEvent(GameWithFriendEvent.Undo)
+                },
+                handleRedo = {
+                    if (!component.gameEnded)
+                        onEvent(GameWithFriendEvent.Redo)
+                }
+            )
+        }
     }
 }

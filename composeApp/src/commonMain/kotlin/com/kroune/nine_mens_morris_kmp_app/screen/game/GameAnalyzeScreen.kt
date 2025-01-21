@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -66,14 +65,15 @@ fun RenderGameAnalyzeScreen(
             }) {
             Column(
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(stringResource(Res.string.analyze))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
+                        modifier = Modifier.weight(1f),
                         onClick = {
                             decreaseDepth()
                         },
@@ -93,10 +93,9 @@ fun RenderGameAnalyzeScreen(
                         // but I will leave it like this for now
                         Text("-", fontSize = 30.sp)
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
                     Text("${stringResource(Res.string.depth)} - $depth", fontSize = 13.sp)
-                    Spacer(modifier = Modifier.width(10.dp))
                     Button(
+                        modifier = Modifier.weight(1f),
                         onClick = {
                             increaseDepth()
                         },
@@ -135,9 +134,9 @@ fun RenderGameAnalyzeScreen(
                                 // FIXME: this is some garbage
                                 .then(
                                     if (!heightBigger.value)
-                                        Modifier.fillMaxHeight(0.7f)
+                                        Modifier.fillMaxHeight(0.8f)
                                     else
-                                        Modifier.fillMaxWidth(0.7f)
+                                        Modifier.fillMaxWidth(0.8f)
                                 ),
                             pos = it,
                             selectedButton = null,

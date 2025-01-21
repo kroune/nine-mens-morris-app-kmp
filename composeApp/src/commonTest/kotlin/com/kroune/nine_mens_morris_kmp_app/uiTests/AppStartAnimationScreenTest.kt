@@ -1,4 +1,4 @@
-package com.kroune.nine_mens_morris_kmp_app
+package com.kroune.nine_mens_morris_kmp_app.uiTests
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertHeightIsAtLeast
