@@ -3,15 +3,19 @@ package com.kroune.nine_mens_morris_kmp_app.interactors.jwtToken
 import com.kroune.nine_mens_morris_kmp_app.data.accountIdDataSource
 import com.kroune.nine_mens_morris_kmp_app.data.authRepository
 import com.kroune.nine_mens_morris_kmp_app.data.jwtTokenDataSource
+import com.kroune.nine_mens_morris_kmp_app.data.local.accountId.AccountIdDataSourceI
+import com.kroune.nine_mens_morris_kmp_app.data.local.jwtToken.JwtTokenDataSourceI
+import com.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRepositoryI
 
-class JwtTokenInteractorImpl : JwtTokenInteractorI {
-    private val local = jwtTokenDataSource
-    private val localAccountIdDataSource = accountIdDataSource
-    private val remote = authRepository
+class JwtTokenInteractorImpl(
+    private val local: JwtTokenDataSourceI = jwtTokenDataSource,
+    private val remote: AuthRepositoryI = authRepository,
+    private val localAccountId: AccountIdDataSourceI = accountIdDataSource
+) : JwtTokenInteractorI {
 
     override fun logout() {
         local.deleteJwtToken()
-        localAccountIdDataSource.deleteAccountId()
+        localAccountId.deleteAccountId()
     }
 
     override fun getJwtToken(): String? {

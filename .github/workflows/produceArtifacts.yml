@@ -9,26 +9,26 @@ permissions:
   contents: write
 
 jobs:
-#  basicTest:
-#    runs-on: ubuntu-latest
-#    env:
-#      KEYSTORE: ${{ secrets.KEYSTORE }}
-#      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-#      repository_name: NineMensMorris
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Set up JDK 21
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: 21
-#          distribution: 'zulu'
-#
-#      - name: Setup gradle
-#        uses: gradle/actions/setup-gradle@v4
-#
-#      - name: Run basic tests with Gradle
-#        run: ./gradlew test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+  basicTest:
+    runs-on: ubuntu-latest
+    env:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      repository_name: NineMensMorris
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run basic tests with Gradle
+        run: ./gradlew testReleaseUnitTest
 
   uiTest:
     strategy:
@@ -55,6 +55,9 @@ jobs:
           # desktop
           - target: desktopTest -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
             before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
@@ -80,7 +83,7 @@ jobs:
         run: ./gradlew ${{ matrix.target }}
 
   produceArtifacts:
-    needs: [ uiTest ]
+    needs: [ basicTest, uiTest ]
     strategy:
       matrix:
         include:
@@ -108,24 +111,36 @@ jobs:
           # web
           - target: wasmJsBrowserDistribution
             before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             tag: Web
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # jar
           - target: packageReleaseUberJarForCurrentOS
             before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             tag: Jar
             directory: composeApp/build/compose/jars/
             os: ubuntu-latest
           # linux rpm
           - target: packageReleaseRpm
             before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             tag: LinuxRpm
             directory: composeApp/build/compose/binaries/main-release/rpm/
             os: ubuntu-latest
           # linux deb
           - target: packageReleaseDeb
             before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             tag: LinuxDeb
             directory: composeApp/build/compose/binaries/main-release/deb/
             os: ubuntu-latest

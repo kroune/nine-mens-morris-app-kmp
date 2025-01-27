@@ -12,12 +12,14 @@ import androidx.compose.ui.unit.dp
 import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponentI
 import com.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
+import io.github.kroune.UiTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AppStartAnimationScreenTest {
     @OptIn(ExperimentalTestApi::class)
+    @UiTest
     @Test
     fun test() {
         runComposeUiTest {
