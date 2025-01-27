@@ -18,6 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('*.versions.toml') }}
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -28,36 +35,26 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run basic tests with Gradle
-        run: ./gradlew testReleaseUnitTest
+        run: ./gradlew testReleaseUnitTest --rerun-tasks
 
   uiTest:
     strategy:
       matrix:
         include:
           # android
-          - target: allDevicesDebugAndroidTest -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
+          - target: allDevicesDebugAndroidTest --rerun-tasks -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
             os: ubuntu-latest
 
           # ios
-          - target: iosSimulatorArm64Test -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
-            before: |
+          - target: iosSimulatorArm64Test --rerun-tasks -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
             os: macos-13
 
 #          # web
-#          - target: wasmJsBrowserTest -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
-#            before: |
+#          - target: wasmJsBrowserTest --rerun-tasks -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
 #            os: ubuntu-latest
 
           # desktop
-          - target: desktopTest -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
+          - target: desktopTest --rerun-tasks -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
             os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
@@ -67,6 +64,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-ui-tests-${{ hashFiles('*.versions.toml') }}
+
+      - name: enable KVM
+        if: runner.os == 'Linux'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -75,9 +86,6 @@ jobs:
 
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Execute before action
-        run: ${{ matrix.before }}
 
       - name: Run tests
         run: ./gradlew ${{ matrix.target }}
@@ -89,64 +97,41 @@ jobs:
         include:
           # android
           - target: assembleRelease
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
             tag: Android
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
             os: ubuntu-latest
           # macos
           - target: packageReleaseDmg
-            before: |
             tag: MacosDmg
             directory: composeApp/build/compose/binaries/main-release/dmg/
             os: macos-13
           # ios
           - target: iosSimulatorArm64Binaries
-            before: |
             tag: Ios
             directory: composeApp/build/libs/composeApp-desktop.jar
             os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
             tag: Web
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
           # jar
           - target: packageReleaseUberJarForCurrentOS
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
             tag: Jar
             directory: composeApp/build/compose/jars/
             os: ubuntu-latest
           # linux rpm
           - target: packageReleaseRpm
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
             tag: LinuxRpm
             directory: composeApp/build/compose/binaries/main-release/rpm/
             os: ubuntu-latest
           # linux deb
           - target: packageReleaseDeb
-            before: |
-              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-              sudo udevadm control --reload-rules
-              sudo udevadm trigger --name-match=kvm
             tag: LinuxDeb
             directory: composeApp/build/compose/binaries/main-release/deb/
             os: ubuntu-latest
           # windows
           - target: packageReleaseExe
-            before: |
             tag: WindowsExe
             directory: composeApp/build/compose/binaries/main-release/exe/
             os: windows-latest
@@ -169,7 +154,9 @@ jobs:
       - name: enable KVM
         if: runner.os == 'Linux'
         run: |
-          echo 'this is linux'
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -179,9 +166,6 @@ jobs:
 
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Execute before action
-        run: ${{ matrix.before }}
 
       - name: Produce artifacts
         run: ./gradlew ${{ matrix.target }} -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
