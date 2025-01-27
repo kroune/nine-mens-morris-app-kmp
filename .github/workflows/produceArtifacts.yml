@@ -34,9 +34,9 @@ jobs:
     strategy:
       matrix:
         include:
-#          # android
-#          - target: connectedAndroidTest -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
-#            os: ubuntu-latest
+          # android
+          - target: allDevicesDebugAndroidTest -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
+            os: ubuntu-latest
 
           # ios
           - target: iosSimulatorArm64Test -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest

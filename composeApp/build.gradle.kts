@@ -107,9 +107,6 @@ kotlin {
 //            implementation(compose.uiTooling)
 //            implementation(compose.preview)
         }
-        androidInstrumentedTest.dependencies {
-            implementation(libs.androidx.ui.test.manifest)
-        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
@@ -180,7 +177,10 @@ android {
     buildFeatures {
         compose = true
     }
+    //https://developer.android.com/develop/ui/compose/testing#setup
     dependencies {
+        debugImplementation(libs.androidx.ui.test.manifest)
+        androidTestImplementation(libs.androidx.ui.test.junit4.android)
         "baselineProfile"(project(":baselineprofile"))
     }
     baselineProfile {
