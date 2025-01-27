@@ -30,6 +30,45 @@ jobs:
       - name: Run basic tests with Gradle
         run: ./gradlew testReleaseUnitTest
 
+  buildIosApp:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Xcode version
+        run: |
+          /usr/bin/xcodebuild -version   
+
+      - name: build archive
+        run: |
+          cd iosApp
+          
+          xcrun xcodebuild \
+            -scheme "iosApp" \
+            -configuration "Release" \
+            -sdk "iphoneos" \
+            -parallelizeTargets \
+            -showBuildTimingSummary \
+            -disableAutomaticPackageResolution \
+            -derivedDataPath "${RUNNER_TEMP}/Build/DerivedData" \
+            -archivePath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive" \
+            -resultBundlePath "${RUNNER_TEMP}/Build/Artifacts/iosApp.xcresult" \
+            -destination "generic/platform=iOS" \
+#            DEVELOPMENT_TEAM="${{ secrets.APPSTORE_TEAM_ID }}" \
+#            PRODUCT_BUNDLE_IDENTIFIER="${{ secrets.BUNDLE_ID }}" \
+#            CODE_SIGN_STYLE="Manual" \
+#            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.DEV_PROVISIONING_PROFILE_NAME }}" \
+            archive | xcbeautify --renderer github-actions
+
   uiTest:
     strategy:
       matrix:
