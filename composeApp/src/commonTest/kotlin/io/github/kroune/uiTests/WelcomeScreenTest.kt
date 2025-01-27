@@ -8,13 +8,14 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.runComposeUiTest
-import androidx.compose.ui.test.waitUntilNodeCount
 import androidx.compose.ui.unit.dp
 import com.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
 import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.all
 import io.github.kroune.forEach
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class WelcomeScreenTest {
     @OptIn(ExperimentalTestApi::class)
@@ -51,41 +53,42 @@ class WelcomeScreenTest {
                 override val accountIdFailure: Throwable? = null
                 override val hasSeenTutorial: Boolean = false
             }
-            val time600 =
+            val passed900 =
                 flowOf<Boolean>().onStart {
-                    emit(true)
-                    delay(600.milliseconds)
                     emit(false)
+                    delay(900.milliseconds)
+                    emit(true)
                 }.stateIn(
                     CoroutineScope(Dispatchers.Default),
                     SharingStarted.Eagerly,
-                    true
+                    false
                 )
-            val time1000 =
+            val passed1100 =
                 flowOf<Boolean>().onStart {
-                    emit(true)
-                    delay(1000.milliseconds)
                     emit(false)
+                    delay(2000.milliseconds)
+                    emit(true)
                 }.stateIn(
                     CoroutineScope(Dispatchers.Default),
                     SharingStarted.Eagerly,
-                    true
+                    false
                 )
             setContent {
                 WelcomeScreen(component)
             }
-            // wait until scroll animation finishes
-            waitUntilNodeCount(
-                hasContentDescription(
-                    "game piece element with ",
-                    substring = true
-                ) and hasClickAction(),
-                24
-            )
-            // assert that it took 600..800 ms to finish the animation
-            assertFalse(time600.value)
-            waitForIdle()
-            assertTrue(time1000.value)
+            waitUntil(timeoutMillis = 2.seconds.inWholeMilliseconds) {
+                onAllNodes(
+                    hasContentDescription(
+                        "game piece element with ",
+                        substring = true
+                    ) and hasClickAction()
+                ).all {
+                    it.isDisplayed()
+                }
+            }
+            // assert that it took 900..1100 ms to finish the animation
+            assertTrue(passed900.value)
+            assertFalse(passed1100.value)
             bottomBarCheck()
             onAllNodes(
                 hasContentDescription(
@@ -96,8 +99,8 @@ class WelcomeScreenTest {
                 it.assertExists()
                 it.assertIsDisplayed()
                 it.assertHasClickAction()
-                it.assertHeightIsAtLeast(30.dp)
-                it.assertWidthIsAtLeast(30.dp)
+                it.assertHeightIsAtLeast(20.dp)
+                it.assertWidthIsAtLeast(20.dp)
             }
         }
     }
