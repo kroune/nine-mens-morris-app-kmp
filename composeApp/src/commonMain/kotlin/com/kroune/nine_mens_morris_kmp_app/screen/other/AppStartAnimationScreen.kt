@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.kroune.nine_mens_morris_kmp_app.common.TransparentColors
@@ -116,7 +115,6 @@ private fun StartButton(
             Text(
                 text = stringResource(Res.string.press_to_start),
                 modifier = Modifier
-                    .testTag("pressToStart")
                     .alpha(animatedProgress),
                 color = Color.White,
                 fontSize = 22.sp

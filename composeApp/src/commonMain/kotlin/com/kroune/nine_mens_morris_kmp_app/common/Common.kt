@@ -15,6 +15,7 @@ import androidx.compose.material.ButtonColors
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
@@ -25,10 +26,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
@@ -298,13 +295,8 @@ suspend inline fun <reified T> DefaultClientWebSocketSession.sendSerializedCatch
 
 @Composable
 @Suppress("StateFlowValueCalledInComposition")
-fun <T> StateFlow<T>.valueWithLifecycle(
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+fun <T> StateFlow<T>.collectValue(
     context: CoroutineContext = EmptyCoroutineContext
-): T = collectAsStateWithLifecycle(
-    initialValue = this.value,
-    lifecycle = lifecycleOwner.lifecycle,
-    minActiveState = minActiveState,
+): T = collectAsState(
     context = context
 ).value

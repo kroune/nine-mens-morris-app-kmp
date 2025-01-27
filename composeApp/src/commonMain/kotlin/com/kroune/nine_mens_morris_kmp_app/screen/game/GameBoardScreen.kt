@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
@@ -352,6 +354,9 @@ fun RowScope.CircledButton(
                 .clip(CircleShape)
                 .fillMaxSize(if (selectedButton == elementIndex) 0.7f else 0.9f)
                 .background(Color.Transparent)
+                .semantics {
+                    contentDescription = "game piece element with ${pos.positions[elementIndex]} value"
+                }
                 .border(
                     if (!moveHints.contains(elementIndex)) BorderStroke(
                         0.dp,

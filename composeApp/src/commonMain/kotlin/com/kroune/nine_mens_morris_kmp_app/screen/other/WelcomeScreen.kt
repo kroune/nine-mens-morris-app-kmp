@@ -37,12 +37,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import com.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
-import com.kroune.nine_mens_morris_kmp_app.common.valueWithLifecycle
-import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.common.collectValue
+import com.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
 import com.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import com.kroune.nine_mens_morris_kmp_app.getScreenDpSize
@@ -73,7 +75,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WelcomeScreen(
-    component: WelcomeScreenComponent
+    component: WelcomeScreenComponentI
 ) {
     val scrollState = rememberScrollState(0)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -84,7 +86,11 @@ fun WelcomeScreen(
         bottomBar = {
             BottomNavigation(
                 backgroundColor = Color.DarkGray,
-                modifier = Modifier.height(50.dp)
+                modifier = Modifier
+                    .height(50.dp)
+                    .semantics {
+                        contentDescription = "bottom navigation bar"
+                    }
             ) {
                 BottomNavigationItem(
                     false, onClick = {
@@ -98,11 +104,11 @@ fun WelcomeScreen(
                     }, icon = {
                         // TODO: better error handling
                         when (
-                            component.isInAccount.valueWithLifecycle()?.getOrDefault(false)) {
+                            component.isInAccount.collectValue()?.getOrDefault(false)) {
                             true -> {
                                 Icon(
                                     painterResource(Res.drawable.logged_in),
-                                    "logged in",
+                                    "account information was loaded",
                                     modifier = Modifier
                                         .fillMaxHeight()
                                 )
@@ -111,7 +117,7 @@ fun WelcomeScreen(
                             false -> {
                                 Icon(
                                     painterResource(Res.drawable.no_account),
-                                    "no account found",
+                                    "account information wasn't found",
                                     modifier = Modifier
                                         .fillMaxHeight()
                                 )
@@ -120,6 +126,9 @@ fun WelcomeScreen(
                             null -> {
                                 LoadingCircle(
                                     modifier = Modifier
+                                        .semantics {
+                                            contentDescription = "loading account information"
+                                        }
                                         .fillMaxHeight()
                                 )
                             }
@@ -148,7 +157,7 @@ fun WelcomeScreen(
                     icon = {
                         Icon(
                             painterResource(Res.drawable.main_component),
-                            "main component",
+                            "scroll up or down",
                             modifier = Modifier
                                 .fillMaxHeight()
                         )
@@ -164,7 +173,7 @@ fun WelcomeScreen(
                     icon = {
                         Icon(
                             painterResource(Res.drawable.settings),
-                            "settings",
+                            "go to settings button",
                             modifier = Modifier
                                 .fillMaxHeight()
                         )
@@ -294,7 +303,7 @@ fun WelcomeScreen(
  */
 @Composable
 fun RenderMainScreen(
-    component: WelcomeScreenComponent,
+    component: WelcomeScreenComponentI,
     snackbarHostState: SnackbarHostState
 ) {
     val screenSize = getScreenDpSize()

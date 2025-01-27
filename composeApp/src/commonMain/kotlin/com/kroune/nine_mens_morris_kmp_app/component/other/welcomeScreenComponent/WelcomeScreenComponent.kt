@@ -1,8 +1,7 @@
-package com.kroune.nine_mens_morris_kmp_app.component.other
+package com.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
@@ -27,12 +26,12 @@ class WelcomeScreenComponent(
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
     private val onNavigationToAuthScreen: () -> Unit,
     private val onNavigationBack: () -> Unit
-) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle, WelcomeScreenComponentI {
 
     private val _accountIdFailure = mutableStateOf<Throwable?>(null)
-    val accountIdFailure by _accountIdFailure
+    override val accountIdFailure by _accountIdFailure
 
-    val isInAccount = flowOf<Result<Boolean>?>().onStart {
+    override val isInAccount = flowOf<Result<Boolean>?>().onStart {
         emit(null)
         emit(jwtTokenInteractor.checkJwtToken())
     }.stateIn(
@@ -41,9 +40,12 @@ class WelcomeScreenComponent(
         null
     )
 
-    var hasSeenTutorial by mutableStateOf(Settings().getBoolean("hasSeenTutorial", false))
+    private var _hasSeenTutorial = mutableStateOf(
+        Settings().getBoolean("hasSeenTutorial", false)
+    )
+    override val hasSeenTutorial by _hasSeenTutorial
 
-    fun onEvent(event: WelcomeScreenEvent) {
+    override fun onEvent(event: WelcomeScreenEvent) {
         when (event) {
             WelcomeScreenEvent.NavigateToGameWithFriend -> {
                 onNavigationToGameWithFriendScreen()
@@ -83,7 +85,7 @@ class WelcomeScreenComponent(
             }
 
             WelcomeScreenEvent.CloseTutorial -> {
-                hasSeenTutorial = true
+                _hasSeenTutorial.value = true
                 Settings().putBoolean("hasSeenTutorial", true)
             }
 

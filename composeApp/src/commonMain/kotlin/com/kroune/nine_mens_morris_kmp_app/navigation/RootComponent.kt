@@ -24,7 +24,7 @@ import com.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import com.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
 import com.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
 import com.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
-import com.kroune.nine_mens_morris_kmp_app.component.other.WelcomeScreenComponent
+import com.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponent
 import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.AppStartAnimationScreenChild
 import com.kroune.nine_mens_morris_kmp_app.navigation.RootComponent.Child.GameWithBotChild
