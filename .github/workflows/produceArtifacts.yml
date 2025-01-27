@@ -159,6 +159,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-artifacts-${{ hashFiles('*.versions.toml') }}
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
