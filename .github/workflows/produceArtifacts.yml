@@ -36,18 +36,25 @@ jobs:
         include:
           # android
           - target: allDevicesDebugAndroidTest -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
+            before: |
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
             os: ubuntu-latest
 
           # ios
           - target: iosSimulatorArm64Test -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+            before: |
             os: macos-13
 
 #          # web
 #          - target: wasmJsBrowserTest -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+#            before: |
 #            os: ubuntu-latest
 
           # desktop
           - target: desktopTest -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
+            before: |
             os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
@@ -65,6 +72,9 @@ jobs:
 
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Execute before action
+        run: ${{ matrix.before }}
 
       - name: Run tests
         run: ./gradlew ${{ matrix.target }}
@@ -145,6 +155,7 @@ jobs:
 
       - name: Execute before action
         run: ${{ matrix.before }}
+
       - name: Produce artifacts
         run: ./gradlew ${{ matrix.target }} -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
 
