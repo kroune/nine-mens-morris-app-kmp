@@ -17,7 +17,7 @@ jobs:
           repository: 'kroune/kroune-img-hosting'
       - name: Upload artifacts to artifacts github images repository
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
         run: |
           cp -rf ~/plot-artifacts .
           ls -hlas
