@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 'kroune/kroune-img-hosting'
-          ref: 'github-pages'
       - name: Upload artifacts to artifacts github images repository
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
