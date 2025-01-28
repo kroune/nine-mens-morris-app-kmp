@@ -21,7 +21,7 @@ jobs:
         run: |
           cp -rf ~/plot-artifacts .
           ls -hlas
-          git config user.name "GitHub Actions Bot"
+          git config user.name "kroune"
           git config user.email "123553746+kroune@users.noreply.github.com"
           git add .
           git diff-index --quiet HEAD || git commit . -m "update imgs"
