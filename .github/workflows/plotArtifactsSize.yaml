@@ -8,7 +8,7 @@ jobs:
       - name: Plot artifacts size
         uses: kroune/artifacts-size-plot@v0.0.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
           repository-owner: "kroune"
           repository-name: "nine-mens-morris-app-kmp"
 
