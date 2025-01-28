@@ -35,26 +35,26 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run basic tests with Gradle
-        run: ./gradlew testReleaseUnitTest --rerun-tasks
+        run: ./gradlew testReleaseUnitTest --rerun
 
   uiTest:
     strategy:
       matrix:
         include:
           # android
-          - target: allDevicesDebugAndroidTest --rerun-tasks -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
+          - target: allDevicesDebugAndroidTest --rerun -x test -x iosSimulatorArm64Test -x desktopTest -x wasmJsTest
             os: ubuntu-latest
 
           # ios
-          - target: iosSimulatorArm64Test --rerun-tasks -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+          - target: iosSimulatorArm64Test --rerun -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
             os: macos-13
 
 #          # web
-#          - target: wasmJsBrowserTest --rerun-tasks -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+#          - target: wasmJsBrowserTest --rerun -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
 #            os: ubuntu-latest
 
           # desktop
-          - target: desktopTest --rerun-tasks -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
+          - target: desktopTest --rerun -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
             os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
