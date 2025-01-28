@@ -11,3 +11,19 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository-owner: "kroune"
           repository-name: "nine-mens-morris-app-kmp"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: 'kroune/kroune-img-hosting'
+          ref: 'github-pages'
+      - name: Upload artifacts to artifacts github images repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp -r plot-artifacts/* .
+          ls -hlas
+          git config user.name "GitHub Actions Bot"
+          git config user.email "123553746+kroune@users.noreply.github.com"
+          git add .
+          git diff-index --quiet HEAD || git commit . -m "update imgs"
+          git push
