@@ -15,13 +15,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 'kroune/kroune-img-hosting'
+          token: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
       - name: Upload artifacts to artifacts github images repository
         env:
           GH_TOKEN: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
         run: |
           cp -rf ~/plot-artifacts .
           ls -hlas
-          git config user.name "kroune"
+          git config user.name "GitHub Actions Bot"
           git config user.email "123553746+kroune@users.noreply.github.com"
           git add .
           git diff-index --quiet HEAD || git commit . -m "update imgs"
