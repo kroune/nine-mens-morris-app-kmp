@@ -1,5 +1,8 @@
+name: Update artifacts size plots in the README.md
+
 on:
   workflow_dispatch:
+  page_build:
 
 jobs:
   producePlots:
