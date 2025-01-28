@@ -1,0 +1,13 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  producePlots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Plot artifacts size
+        uses: kroune/artifacts-size-plot@v0.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository-owner: "kroune"
+          repository-name: "nine-mens-morris-app-kmp"
