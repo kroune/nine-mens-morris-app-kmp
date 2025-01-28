@@ -19,7 +19,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp -r plot-artifacts/* .
+          cp -rf ~/plot-artifacts .
           ls -hlas
           git config user.name "GitHub Actions Bot"
           git config user.email "123553746+kroune@users.noreply.github.com"
