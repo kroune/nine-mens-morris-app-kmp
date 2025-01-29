@@ -19,11 +19,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache KMP tooling
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('*.versions.toml') }}
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+            build
+            composeApp/build
+            composeApp/.gradle
+            baselineprofile/build
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -36,6 +43,20 @@ jobs:
 
       - name: Run basic tests with Gradle
         run: ./gradlew testReleaseUnitTest --rerun
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+            build
+            composeApp/build
+            composeApp/.gradle
+            baselineprofile/build
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
   uiTest:
     strategy:
