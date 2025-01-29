@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   push:
 
-
 permissions:
   contents: write
 
@@ -12,6 +11,8 @@ jobs:
   basicTest:
     runs-on: ubuntu-latest
     env:
+      CACHE_UNIQUE_KEY: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
+      CACHE_KEY: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
       KEYSTORE: ${{ secrets.KEYSTORE }}
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       repository_name: NineMensMorris
@@ -30,7 +31,9 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
+          key: ${{ env.CACHE_UNIQUE_KEY }}
+          restore-keys: |
+            ${{ env.CACHE_KEY }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -56,7 +59,7 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
+          key: ${{ env.CACHE_UNIQUE_KEY }}
 
   uiTest:
     strategy:
@@ -80,6 +83,8 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     env:
+      CACHE_UNIQUE_KEY: ${{ runner.os }}-ui-tests-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
+      CACHE_KEY: ${{ runner.os }}-ui-tests-${{ hashFiles('**/libs.versions.toml') }}
       KEYSTORE: ${{ secrets.KEYSTORE }}
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
     steps:
@@ -97,7 +102,9 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
+          key: ${{ env.CACHE_UNIQUE_KEY }}
+          restore-keys: |
+            ${{ env.CACHE_KEY }}
 
       - name: enable KVM
         if: runner.os == 'Linux'
@@ -130,7 +137,7 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
+          key: ${{ env.CACHE_UNIQUE_KEY }}
 
   produceArtifacts:
     needs: [ basicTest, uiTest ]
@@ -180,6 +187,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      CACHE_UNIQUE_KEY: ${{ runner.os }}-produce-artifacts-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
+      CACHE_KEY: ${{ runner.os }}-produce-artifacts-${{ hashFiles('**/libs.versions.toml') }}
       KEYSTORE: ${{ secrets.KEYSTORE }}
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       repository_name: NineMensMorris
@@ -198,7 +207,9 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
+          key: ${{ env.CACHE_UNIQUE_KEY }}
+          restore-keys: |
+            ${{ env.CACHE_KEY }}
 
       - name: enable KVM
         if: runner.os == 'Linux'
@@ -231,7 +242,7 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
+          key: ${{ env.CACHE_UNIQUE_KEY }}
 
       - name: Upload artifacts to github
         uses: actions/upload-artifact@v4
