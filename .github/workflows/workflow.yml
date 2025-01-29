@@ -217,3 +217,31 @@ jobs:
             7z a -mx=9 ../$FILE.7z $FILE
             curl -v --connect-timeout 30 -m 300 -X POST -T ../$FILE.7z https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
           done
+
+
+  producePlots:
+    needs: [ produceArtifacts ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Plot artifacts size
+        uses: kroune/artifacts-size-plot@v0.0.1
+        with:
+          github-token: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
+          repository-owner: "kroune"
+          repository-name: "nine-mens-morris-app-kmp"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: 'kroune/kroune-img-hosting'
+          token: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
+      - name: Upload artifacts to artifacts github images repository
+        env:
+          GH_TOKEN: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
+        run: |
+          cp -rf ~/plot-artifacts .
+          ls -hlas
+          git config user.name "GitHub Actions Bot"
+          git config user.email "123553746+kroune@users.noreply.github.com"
+          git add .
+          git diff-index --quiet HEAD || git commit . -m "update imgs"
+          git push
