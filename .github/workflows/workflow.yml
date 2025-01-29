@@ -86,11 +86,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache KMP tooling
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-ui-tests-${{ hashFiles('*.versions.toml') }}
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+            build
+            composeApp/build
+            composeApp/.gradle
+            baselineprofile/build
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
       - name: enable KVM
         if: runner.os == 'Linux'
@@ -110,6 +117,20 @@ jobs:
 
       - name: Run tests
         run: ./gradlew ${{ matrix.target }}
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+            build
+            composeApp/build
+            composeApp/.gradle
+            baselineprofile/build
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
   produceArtifacts:
     needs: [ basicTest, uiTest ]
@@ -166,11 +187,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache KMP tooling
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.konan
-          key: ${{ runner.os }}-artifacts-${{ hashFiles('*.versions.toml') }}
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+            build
+            composeApp/build
+            composeApp/.gradle
+            baselineprofile/build
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
       - name: enable KVM
         if: runner.os == 'Linux'
@@ -190,6 +218,20 @@ jobs:
 
       - name: Produce artifacts
         run: ./gradlew ${{ matrix.target }} -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+            build
+            composeApp/build
+            composeApp/.gradle
+            baselineprofile/build
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
       - name: Upload artifacts to github
         uses: actions/upload-artifact@v4
