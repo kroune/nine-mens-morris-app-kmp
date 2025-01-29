@@ -20,37 +20,37 @@ class JwtTokenInteractorTest {
             }
 
             override fun deleteJwtToken() {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
 
             override fun updateJwtToken(newJwtToken: String) {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
         }
         val remote = object: AuthRepositoryI {
             override suspend fun checkJwtToken(jwtToken: String): Result<Boolean> {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
 
             override suspend fun login(login: String, password: String): Result<String> {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
 
             override suspend fun register(login: String, password: String): Result<String> {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
         }
         val localId = object: AccountIdDataSourceI {
             override fun deleteAccountId() {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
 
             override fun getAccountId(): Long? {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
 
             override fun updateAccountId(newAccountId: Long) {
-                TODO("Not yet implemented")
+                error("Not needed for test")
             }
 
         }

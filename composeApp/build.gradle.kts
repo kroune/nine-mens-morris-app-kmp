@@ -85,7 +85,6 @@ kotlin {
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.decompose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.decompose.jetbrains)
@@ -180,7 +179,7 @@ android {
     //https://developer.android.com/develop/ui/compose/testing#setup
     dependencies {
         debugImplementation(libs.androidx.ui.test.manifest)
-        androidTestImplementation(libs.androidx.ui.test.junit4.android)
+        androidTestImplementation(libs.androidx.ui.test)
         "baselineProfile"(project(":baselineprofile"))
     }
     baselineProfile {

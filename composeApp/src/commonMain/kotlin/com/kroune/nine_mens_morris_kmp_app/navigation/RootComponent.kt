@@ -108,9 +108,6 @@ class RootComponent(
         config: Configuration,
         context: ComponentContext
     ): Child {
-        BackHandler.setCallbackAction {
-            childStack.active.instance.component.onBackPressed()
-        }
         return when (config) {
             is AppStartAnimation -> {
                 AppStartAnimationScreenChild(

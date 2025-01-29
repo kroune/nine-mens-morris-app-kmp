@@ -49,7 +49,7 @@ class WelcomeScreenTest {
                     )
 
                 override fun onEvent(event: WelcomeScreenEvent) {
-                    TODO("Not yet implemented")
+                    error("Not needed for test")
                 }
 
                 override val accountIdFailure: Throwable? = null
