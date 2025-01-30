@@ -154,9 +154,9 @@ jobs:
             directory: composeApp/build/compose/binaries/main-release/dmg/
             os: macos-13
           # ios
-          - target: iosSimulatorArm64Binaries
+          - target: mkdir iosOut & iosArm64Binaries & xcodebuild build -workspace iosApp/iosApp.xcodeproj/project.xcworkspace/ -configuration Release -scheme iosApp -sdk iphoneos -verbose -archivePath iosOut/NineMensMorris.xcarchive archive CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="
             tag: Ios
-            directory: composeApp/build/libs/composeApp-desktop.jar
+            directory: iosOut/
             os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
