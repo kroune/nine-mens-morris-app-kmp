@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -244,4 +245,8 @@ compose.desktop {
             licenseFile = project.file("LICENSE")
         }
     }
+}
+
+rootProject.configure<BinaryenRootExtension> {
+    version = "121"
 }
