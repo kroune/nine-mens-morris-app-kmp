@@ -245,3 +245,7 @@ compose.desktop {
         }
     }
 }
+
+rootProject.configure<BinaryenRootExtension> {
+    version = "121"
+}
