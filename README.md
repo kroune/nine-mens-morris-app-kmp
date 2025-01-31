@@ -9,6 +9,15 @@
 ## This is a Kotlin Multiplatform project targeting Android, Web, Linux, MacOS, Windows of a game called "Nine men's morris"
 <br>
 
+## README navigation
+* **[app showcase](#app-showcase)**
+* **[artifacts size plot](#artifacts-size-change)**
+* **[preview](#preview)**
+* **[how to run the app](#run-app)**
+* **[project history](#history)**
+* **[how to contribute](#setting-up-a-workspace)**
+* **[license](#license)**
+
 ## Preview
 * screenshots - [android](https://github.com/kroune/nine-mens-morris-app-kmp/tree/v1.0.1/demo/screenshots/android)
 <br>
@@ -28,7 +37,6 @@ There are several options to use it
 4. Play on the **web**. You don't have to download/install anything, but there are a few disadvantages like a worse performance compared to other installations and state not being saved in the url (due to github pages limitations)) ([link](https://kroune.github.com/))
 
 ## License
-
 This project is subject to the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). This
 does only apply for source code located directly in this clean repository. During the development and compilation
 process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL
