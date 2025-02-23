@@ -9,9 +9,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponentI
-import com.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
-import com.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponentI
+import io.github.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
 import io.github.kroune.UiTest
 import kotlin.test.Test
 import kotlin.test.assertFalse

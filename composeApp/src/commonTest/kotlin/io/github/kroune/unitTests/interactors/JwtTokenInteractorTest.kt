@@ -1,9 +1,9 @@
 package io.github.kroune.unitTests.interactors
 
-import com.kroune.nine_mens_morris_kmp_app.data.local.accountId.AccountIdDataSourceI
-import com.kroune.nine_mens_morris_kmp_app.data.local.jwtToken.JwtTokenDataSourceI
-import com.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRepositoryI
-import com.kroune.nine_mens_morris_kmp_app.interactors.jwtToken.JwtTokenInteractorImpl
+import io.github.kroune.nine_mens_morris_kmp_app.data.local.accountId.AccountIdDataSourceI
+import io.github.kroune.nine_mens_morris_kmp_app.data.local.jwtToken.JwtTokenDataSourceI
+import io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtToken.JwtTokenInteractorImpl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi

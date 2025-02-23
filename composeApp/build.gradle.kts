@@ -10,6 +10,8 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 
+val appVersion: String = "1.0.1"
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -87,8 +89,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.decompose)
-            implementation(libs.kotlinx.serialization.json)
             implementation(libs.decompose.jetbrains)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.coroutines.core)
@@ -126,7 +128,7 @@ kotlin {
 
 @OptIn(ExperimentalEncodingApi::class)
 android {
-    namespace = "com.kroune.nine_mens_morris_kmp_app"
+    namespace = "io.github.kroune.nine_mens_morris_kmp_app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -134,11 +136,11 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.kroune.nine_mens_morris"
+        applicationId = "io.github.kroune.nine_mens_morris"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0.1"
+        versionName = appVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
@@ -209,10 +211,11 @@ compose.desktop {
         buildTypes.release.proguard {
             configurationFiles.setFrom("proguard-rules.pro")
             version.set("7.6.1")
+            isEnabled = true
             obfuscate.set(true)
             optimize.set(true)
         }
-        mainClass = "com.kroune.nine_mens_morris_kmp_app.MainKt"
+        mainClass = "io.github.kroune.nine_mens_morris_kmp_app.MainKt"
 
         nativeDistributions {
             macOS {
@@ -238,7 +241,7 @@ compose.desktop {
                 TargetFormat.Msi, TargetFormat.Exe
             )
             packageName = "NineMensMorris"
-            packageVersion = "1.0.1"
+            packageVersion = appVersion
             description = "Implementation of a table game called <Nine mens morris>"
             vendor = "kroune"
             copyright = "© 2024 Kroune. All rights reserved."

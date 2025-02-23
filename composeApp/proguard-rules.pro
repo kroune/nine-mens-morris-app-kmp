@@ -10,7 +10,7 @@
 # ktor
 -keep class io.ktor.** { *; }
 
--keep class com.kroune.nine_mens_morris_kmp_app.navigation.** { *; }
+-keep class io.github.kroune.nine_mens_morris_kmp_app.navigation.** { *; }
 -keep class androidx.compose.runtime.** { *; }
 -keep class kotlinx.coroutines.flow.** { *; }
 -keep class kotlinx.coroutines.swing.** { *; }

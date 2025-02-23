@@ -12,9 +12,9 @@ import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
-import com.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
-import com.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
-import com.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
+import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
 import io.github.kroune.UiTest
 import io.github.kroune.all
 import io.github.kroune.forEach
