@@ -2,7 +2,7 @@ name: Builds app on all targets + upload to github pages + upload to artifacts m
 
 on:
   workflow_dispatch:
-  push:
+#  push:
 
 permissions:
   contents: write

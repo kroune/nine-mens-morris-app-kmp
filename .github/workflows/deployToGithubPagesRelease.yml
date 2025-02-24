@@ -229,6 +229,7 @@ jobs:
           path: ../artifacts
       - uses: actions/checkout@v4
         with:
+          token: ${{ secrets.WEB_ARTIFACTS_GITHUB_TOKEN }}
           repository: 'kroune/kroune.github.io'
       - name: Upload artifacts to artifacts github pages
         env:
