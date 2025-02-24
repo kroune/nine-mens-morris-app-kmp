@@ -1,4 +1,4 @@
-name: Builds app on all targets + upload to github pages + upload to artifacts microservice
+name: Test, build, deploy web artifacts to github pages
 
 on:
   workflow_dispatch:
@@ -76,10 +76,10 @@ jobs:
             tag: ios
             os: macos-13
 
-#          # web
-#          - target: wasmJsBrowserTest --rerun -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
-#            tag: wasm
-#            os: ubuntu-latest
+          #          # web
+          #          - target: wasmJsBrowserTest --rerun -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
+          #            tag: wasm
+          #            os: ubuntu-latest
 
           # desktop
           - target: desktopTest --rerun -x test -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x wasmJsTest
@@ -147,56 +147,12 @@ jobs:
     strategy:
       matrix:
         include:
-          # android
-          - target: assembleRelease
-            tag: Android
-            after: |
-            directory: composeApp/build/outputs/apk/release/composeApp-release.apk
-            os: ubuntu-latest
-          # macos
-          - target: packageReleaseDmg
-            tag: MacosDmg
-            after: |
-            directory: composeApp/build/compose/binaries/main-release/dmg/
-            os: macos-13
-          # ios
-          - target: iosArm64Binaries
-            after: |
-              mkdir iosOut
-              xcodebuild build -workspace iosApp/iosApp.xcodeproj/project.xcworkspace/ -configuration Release -scheme iosApp -sdk iphoneos -verbose -archivePath iosOut/NineMensMorris.xcarchive archive CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
-            tag: Ios
-            directory: iosOut/
-            os: macos-latest
           # web
           - target: wasmJsBrowserDistribution
             tag: Web
             after: |
             directory: composeApp/build/dist/wasmJs/productionExecutable/
             os: ubuntu-latest
-          # jar
-          - target: packageReleaseUberJarForCurrentOS
-            tag: Jar
-            after: |
-            directory: composeApp/build/compose/jars/
-            os: ubuntu-latest
-          # linux rpm
-          - target: packageReleaseRpm
-            tag: LinuxRpm
-            after: |
-            directory: composeApp/build/compose/binaries/main-release/rpm/
-            os: ubuntu-latest
-          # linux deb
-          - target: packageReleaseDeb
-            tag: LinuxDeb
-            after: |
-            directory: composeApp/build/compose/binaries/main-release/deb/
-            os: ubuntu-latest
-          # windows
-          - target: packageReleaseExe
-            tag: WindowsExe
-            after: |
-            directory: composeApp/build/compose/binaries/main-release/exe/
-            os: windows-latest
     runs-on: ${{ matrix.os }}
 
     env:
@@ -273,10 +229,10 @@ jobs:
           path: ../artifacts
       - uses: actions/checkout@v4
         with:
-          ref: 'github-pages'
+          repository: 'kroune/kroune.github.io'
       - name: Upload artifacts to artifacts github pages
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.WEB_ARTIFACTS_GITHUB_TOKEN }}
         run: |
           mv LICENSE ../
           rm -rf *
@@ -288,7 +244,7 @@ jobs:
           git add .
           git diff-index --quiet HEAD || git commit . -m "update web artifacts"
           git push
-
+#
 #  uploadArtifactsToMicroservice:
 #    needs: [ produceArtifacts ]
 #    runs-on: ubuntu-latest
@@ -304,31 +260,3 @@ jobs:
 #            7z a -mx=9 ../$FILE.7z $FILE
 #            curl -v --connect-timeout 30 -m 300 -X POST -T ../$FILE.7z https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
 #          done
-#
-
-  producePlots:
-    needs: [ produceArtifacts ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Plot artifacts size
-        uses: kroune/artifacts-size-plot@v0.0.2
-        with:
-          github-token: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
-          repository-owner: "kroune"
-          repository-name: "nine-mens-morris-app-kmp"
-
-      - uses: actions/checkout@v4
-        with:
-          repository: 'kroune/kroune-img-hosting'
-          token: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
-      - name: Upload artifacts to artifacts github images repository
-        env:
-          GH_TOKEN: ${{ secrets.IMG_REPO_GITHUB_TOKEN }}
-        run: |
-          cp -rf ~/plot-artifacts .
-          ls -hlas
-          git config user.name "GitHub Actions Bot"
-          git config user.email "123553746+kroune@users.noreply.github.com"
-          git add .
-          git diff-index --quiet HEAD || git commit . -m "update imgs"
-          git push
