@@ -2,13 +2,10 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +15,6 @@ import androidx.compose.material.ButtonColors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -127,23 +123,13 @@ fun RenderGameAnalyzeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 positions.forEach {
-                    BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
-                        val heightBigger = derivedStateOf { maxHeight > maxWidth }
-                        RenderGameBoard(
-                            modifier = Modifier
-                                // FIXME: this is some garbage
-                                .then(
-                                    if (!heightBigger.value)
-                                        Modifier.fillMaxHeight(0.8f)
-                                    else
-                                        Modifier.fillMaxWidth(0.8f)
-                                ),
-                            pos = it,
-                            selectedButton = null,
-                            moveHints = mutableListOf(),
-                            onClick = {}
-                        )
-                    }
+                    RenderGameBoard(
+                        modifier = Modifier,
+                        pos = it,
+                        selectedButton = null,
+                        moveHints = mutableListOf(),
+                        onClick = {}
+                    )
                     Spacer(modifier = Modifier.height(5.dp))
                 }
             }

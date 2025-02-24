@@ -1,7 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 
 /**
@@ -52,20 +51,12 @@ fun GameWithFriendScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BoxWithConstraints(
-            contentAlignment = Alignment.TopCenter
+        RenderPieceCount(pos = component.position)
+        LimitSize(
+            0.8f
         ) {
-            RenderPieceCount(pos = component.position)
-            val heightBigger = derivedStateOf { maxHeight > maxWidth }
             RenderGameBoard(
-                modifier = Modifier
-                    // FIXME: this is some garbage
-                    .then(
-                        if (!heightBigger.value)
-                            Modifier.fillMaxHeight(0.6f)
-                        else
-                            Modifier.fillMaxWidth(0.6f)
-                    ),
+                modifier = Modifier,
                 pos = component.position,
                 selectedButton = component.selectedButton,
                 moveHints = component.moveHints,
@@ -83,7 +74,7 @@ fun GameWithFriendScreen(
                         end = GAME_BOARD_BUTTON_WIDTH
                     )
                     .fillMaxHeight()
-                    .fillMaxWidth(0.6f),
+                    .fillMaxWidth(0.8f),
                 positions = component.gameAnalyzePositions,
                 depth = component.analyzeDepth,
                 startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },

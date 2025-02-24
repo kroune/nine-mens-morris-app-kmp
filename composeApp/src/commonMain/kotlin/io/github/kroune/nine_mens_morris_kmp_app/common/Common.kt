@@ -19,13 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
@@ -89,13 +83,13 @@ class TransparentColors : ButtonColors {
     }
 }
 
-val network = HttpClient() {
+val network = HttpClient {
     install(HttpRequestRetry) {
         // retry on timeout
-        retryIf(maxRetries = 5) { request, response ->
+        retryIf(maxRetries = 5) { _, response ->
             response.status.value == 408
         }
-        retryOnExceptionIf(maxRetries = 5) { request, exception ->
+        retryOnExceptionIf(maxRetries = 5) { _, exception ->
             exception is HttpRequestTimeoutException
         }
         exponentialDelay()
@@ -155,60 +149,6 @@ fun LoadingCircle(
         modifier = modifier
             .aspectRatio(1f)
     )
-}
-
-val triangleShape: TriangleShape = TriangleShape()
-
-/**
- * triangle shape
- * looks like this
- * -------
- *   -----
- *     ---
- *       -
- */
-class TriangleShape : Shape {
-    override fun createOutline(
-        size: Size, layoutDirection: LayoutDirection, density: Density
-    ): Outline {
-        return Outline.Generic(
-            Path().apply {
-                val x = size.width
-                val y = size.height
-
-                moveTo(0f, 0f)
-                lineTo(x, 0f)
-                lineTo(x, y)
-            }
-        )
-    }
-}
-
-/**
- * parallelogram shape
- */
-class ParallelogramShape(
-    private val bottomLineLeftOffset: Float = 0f
-) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline {
-        return Outline.Generic(
-            Path().apply {
-                val x = size.width
-                val y = size.height
-
-                // top line
-                moveTo(0f, 0f)
-                lineTo(x, 0f)
-                // bottom line
-                lineTo(x, y)
-                lineTo(x - bottomLineLeftOffset, y)
-            }
-        )
-    }
 }
 
 @Composable

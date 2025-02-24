@@ -82,7 +82,8 @@ fun WelcomeScreen(
     val topScreen = remember { mutableStateOf(true) }
     val coroutine = rememberCoroutineScope()
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         bottomBar = {
             BottomNavigation(
                 backgroundColor = Color.DarkGray,

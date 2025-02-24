@@ -4,12 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +24,6 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +45,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEven
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 import kotlinx.coroutines.CoroutineScope
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -111,17 +109,6 @@ fun OnlineGameScreen(
                 }
             }
             TurnTimerUI(component.timeLeft)
-
-            if (component.displayGiveUpConfirmation.value && !component.gameEnded) {
-                GiveUpConfirm(
-                    onGiveUpDiscarded = {
-                        component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
-                    },
-                    onGiveUp = {
-                        component.onEvent(OnlineGameScreenEvent.GiveUp)
-                    }
-                )
-            }
             var showGameEndDialog by remember { mutableStateOf(true) }
             if (!component.gameEnded) {
                 // reset showing status to default
@@ -141,23 +128,25 @@ fun OnlineGameScreen(
                     )
                 }
             }
-            BoxWithConstraints(
-                contentAlignment = Alignment.TopCenter
+            LimitSize(
+                0.8f
             ) {
-                val heightBigger = derivedStateOf { maxHeight > maxWidth }
                 RenderGameBoard(
-                    modifier = Modifier
-                        // FIXME: this is some garbage
-                        .then(
-                            if (!heightBigger.value)
-                                Modifier.fillMaxHeight(0.7f)
-                            else
-                                Modifier.fillMaxWidth(0.7f)
-                        ),
+                    modifier = Modifier,
                     pos = component.position,
                     selectedButton = component.selectedButton,
                     moveHints = component.moveHints,
                     onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
+                )
+            }
+            if (component.displayGiveUpConfirmation.value && !component.gameEnded) {
+                GiveUpConfirm(
+                    onGiveUpDiscarded = {
+                        component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
+                    },
+                    onGiveUp = {
+                        component.onEvent(OnlineGameScreenEvent.GiveUp)
+                    }
                 )
             }
         }

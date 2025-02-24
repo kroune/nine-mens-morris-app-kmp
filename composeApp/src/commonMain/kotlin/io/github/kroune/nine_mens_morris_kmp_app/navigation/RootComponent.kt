@@ -75,7 +75,9 @@ class RootComponent(
             navigator = navigation,
             stack = childStack,
             serializer = Configuration.serializer(),
-            pathMapper = { it.configuration.urlName() }
+            pathMapper = {
+                it.configuration.urlName
+            }
         )
 
     private fun popOrFallbackScreen(
@@ -327,6 +329,7 @@ class RootComponent(
 
     @Serializable
     sealed class Configuration(
+        val urlName: String,
         @Transient
         var animation: StackAnimator = slide()
     ) {
@@ -334,13 +337,13 @@ class RootComponent(
         data class AppStartAnimation(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(scale())
+        ) : Configuration("", scale())
 
         @Serializable
         data class WelcomeScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("welcome", customAnimation)
 
         @Serializable
         data class ViewAccountScreen(
@@ -348,7 +351,7 @@ class RootComponent(
             val accountId: Long,
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("account$accountId", customAnimation)
 
         /**
          * We don't pass lambda for navigation to the next destination
@@ -358,7 +361,7 @@ class RootComponent(
         data class SignUpScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("signup", customAnimation)
 
         /**
          * We don't pass lambda for navigation to the next destination
@@ -368,37 +371,37 @@ class RootComponent(
         data class SignInScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("signin", customAnimation)
 
         @Serializable
         data class GameWithFriendScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("game-with-friend", customAnimation)
 
         @Serializable
         data class GameWithBotScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("game-with-bot", customAnimation)
 
         @Serializable
         data class SearchingForGameScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("searching-for-game", customAnimation)
 
         @Serializable
         data class OnlineGameScreen(
             val gameId: Long,
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("online-game", customAnimation)
 
         @Serializable
         data class LeaderboardScreen(
             @Transient
             val customAnimation: StackAnimator = slide()
-        ) : Configuration(customAnimation)
+        ) : Configuration("leaderboard", customAnimation)
     }
 }

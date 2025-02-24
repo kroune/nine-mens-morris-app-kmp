@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -127,17 +128,16 @@ fun TutorialScreen() {
             flingBehavior = CustomFlingBehaviour(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items(
-                count = tutorialScreens.size,
-                key = { it }
-            ) {
+            itemsIndexed(
+                items = tutorialScreens,
+            ) { _, screen ->
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(this@BoxWithConstraints.maxWidth),
                     contentAlignment = Alignment.Center
                 ) {
-                    tutorialScreens[it]()
+                    screen()
                 }
             }
         }

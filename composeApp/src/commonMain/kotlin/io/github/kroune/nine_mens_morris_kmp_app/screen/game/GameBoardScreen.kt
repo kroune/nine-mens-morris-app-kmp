@@ -53,12 +53,18 @@ fun RenderGameBoard(
     pos: Position,
     selectedButton: Int?,
     moveHints: List<Int>,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
 ) {
     BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
         val heightBigger = derivedStateOf { maxHeight > maxWidth }
         Box(
             modifier = modifier
+                .then(
+                    if (!heightBigger.value)
+                        Modifier.fillMaxHeight()
+                    else
+                        Modifier.fillMaxWidth()
+                )
                 .aspectRatio(1f, !heightBigger.value)
                 .clip(RoundedCornerShape(15))
                 .background(Color(0xFF8F8F8F))
@@ -84,41 +90,27 @@ fun RenderPieceCount(pos: Position) {
     ) {
         Box(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f)
-                .wrapContentSize(),
-            contentAlignment = Alignment.Center
+                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (pos.pieceToMove) 0.6f else 1f)
+                .background(Color.Black, CircleShape)
+                .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
+            Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(if (pos.pieceToMove) 0.6f else 1f)
-                    .background(Color.Black, CircleShape)
-                    .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
-                Alignment.Center
-            ) {
-                Text(
-                    color = Color.White,
-                    text = pos.freeGreenPieces.toString()
-                )
-            }
+            Text(
+                color = Color.White,
+                text = pos.freeGreenPieces.toString()
+            )
         }
         Box(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f)
-                .wrapContentSize(),
-            contentAlignment = Alignment.Center
+                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (!pos.pieceToMove) 0.6f else 1f)
+                .background(Color.White, CircleShape)
+                .alpha(if (pos.freeBluePieces == 0.toUByte()) 0f else 1f),
+            Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(if (!pos.pieceToMove) 0.6f else 1f)
-                    .background(Color.White, CircleShape)
-                    .alpha(if (pos.freeBluePieces == 0.toUByte()) 0f else 1f),
-                Alignment.Center
-            ) {
-                Text(
-                    color = Color.Black,
-                    text = pos.freeBluePieces.toString()
-                )
-            }
+            Text(
+                color = Color.Black,
+                text = pos.freeBluePieces.toString()
+            )
         }
     }
 }
@@ -355,7 +347,8 @@ fun RowScope.CircledButton(
                 .fillMaxSize(if (selectedButton == elementIndex) 0.7f else 0.9f)
                 .background(Color.Transparent)
                 .semantics {
-                    contentDescription = "game piece element with ${pos.positions[elementIndex]} value"
+                    contentDescription =
+                        "game piece element with ${pos.positions[elementIndex]} value"
                 }
                 .border(
                     if (!moveHints.contains(elementIndex)) BorderStroke(

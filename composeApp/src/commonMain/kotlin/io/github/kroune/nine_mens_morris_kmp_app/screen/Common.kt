@@ -7,9 +7,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -434,5 +436,23 @@ fun BackHandler(backHandler: BackHandler, isEnabled: Boolean = true, onBack: () 
     DisposableEffect(backHandler) {
         backHandler.register(callback)
         onDispose { backHandler.unregister(callback) }
+    }
+}
+
+@Composable
+inline fun LimitSize(
+    percentage: Float,
+    crossinline content: @Composable () -> Unit
+) {
+    BoxWithConstraints {
+        Box(
+            Modifier
+                .sizeIn(
+                    maxHeight = maxHeight * percentage,
+                    maxWidth = maxWidth * percentage
+                )
+        ) {
+            content()
+        }
     }
 }

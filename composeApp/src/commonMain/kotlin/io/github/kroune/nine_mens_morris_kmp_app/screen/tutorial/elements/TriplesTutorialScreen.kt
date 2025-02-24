@@ -1,14 +1,10 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -16,6 +12,7 @@ import com.kroune.nineMensMorrisLib.BLUE_
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.GREEN
 import com.kroune.nineMensMorrisLib.Position
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.RenderPieceCount
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -47,20 +44,14 @@ fun RenderTriplesTutorialScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
-            RenderPieceCount(
-                pos = position
-            )
-            val heightBigger = derivedStateOf { maxHeight > maxWidth }
+        RenderPieceCount(
+            pos = position
+        )
+        LimitSize(
+            0.8f
+        ) {
             RenderGameBoard(
-                modifier = Modifier
-                    // FIXME: this is some garbage
-                    .then(
-                        if (!heightBigger.value)
-                            Modifier.fillMaxHeight(0.7f)
-                        else
-                            Modifier.fillMaxWidth(0.7f)
-                    ),
+                modifier = Modifier,
                 pos = position,
                 selectedButton = 3,
                 moveHints = listOf(),
