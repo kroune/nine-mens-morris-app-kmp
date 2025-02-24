@@ -2,7 +2,7 @@ name: Test, build, deploy web artifacts to github pages
 
 on:
   workflow_dispatch:
-  push:
+  release:
 
 permissions:
   contents: write
