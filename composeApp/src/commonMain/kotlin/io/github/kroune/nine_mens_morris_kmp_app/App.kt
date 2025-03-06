@@ -5,10 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.FaultyDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.Direction
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.kroune.nine_mens_morris_kmp_app.common.AppTheme
+import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
+import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
@@ -26,26 +27,9 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
 @OptIn(FaultyDecomposeApi::class)
 @Composable
 fun App(component: RootComponent) {
-    val stackAnimation =
-        stackAnimation<RootComponent.Configuration, RootComponent.Child> { child, otherChild, direction ->
-            when (direction) {
-                Direction.EXIT_BACK -> {
-                    otherChild.configuration.animation
-                }
-
-                Direction.ENTER_FRONT -> {
-                    child.configuration.animation
-                }
-
-                Direction.EXIT_FRONT -> {
-                    otherChild.configuration.animation
-                }
-
-                Direction.ENTER_BACK -> {
-                    child.configuration.animation
-                }
-            }
-        }
+    val stackAnimation = stackAnimation<Configuration, Child> { it ->
+        it.configuration.animation
+    }
     MaterialTheme {
         val childStack by component.childStack.subscribeAsState()
         Children(
@@ -55,43 +39,43 @@ fun App(component: RootComponent) {
             AppTheme {
                 val instance = child.instance
                 when (instance) {
-                    is RootComponent.Child.AppStartAnimationScreenChild -> {
+                    is Child.AppStartAnimationScreenChild -> {
                         AppStartAnimationScreen(instance.component)
                     }
 
-                    is RootComponent.Child.WelcomeScreenChild -> {
+                    is Child.WelcomeScreenChild -> {
                         WelcomeScreen(instance.component)
                     }
 
-                    is RootComponent.Child.ViewAccountScreenChild -> {
+                    is Child.ViewAccountScreenChild -> {
                         ViewAccountScreen(instance.component)
                     }
 
-                    is RootComponent.Child.SignUpScreenChild -> {
+                    is Child.SignUpScreenChild -> {
                         SignUpScreen(instance.component)
                     }
 
-                    is RootComponent.Child.SignInScreenChild -> {
+                    is Child.SignInScreenChild -> {
                         SignInScreen(instance.component)
                     }
 
-                    is RootComponent.Child.GameWithFriendChild -> {
+                    is Child.GameWithFriendChild -> {
                         GameWithFriendScreen(instance.component)
                     }
 
-                    is RootComponent.Child.GameWithBotChild -> {
+                    is Child.GameWithBotChild -> {
                         GameWithBotScreen(instance.component)
                     }
 
-                    is RootComponent.Child.SearchingForGameChild -> {
+                    is Child.SearchingForGameChild -> {
                         SearchingForGameScreen(instance.component)
                     }
 
-                    is RootComponent.Child.OnlineGameChild -> {
+                    is Child.OnlineGameChild -> {
                         OnlineGameScreen(instance.component)
                     }
 
-                    is RootComponent.Child.LeaderboardChild -> {
+                    is Child.LeaderboardChild -> {
                         LeaderboardScreen(instance.component)
                     }
                 }

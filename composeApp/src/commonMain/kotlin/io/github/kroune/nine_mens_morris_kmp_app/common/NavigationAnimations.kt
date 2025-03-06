@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.layout
 import com.arkivanov.decompose.extensions.compose.stack.animation.Direction
 import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimator
 import com.arkivanov.decompose.router.stack.StackNavigator
-import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
+import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
 
 class CustomStackAnimator(
     private val animationSpec: FiniteAnimationSpec<Float> = tween(),
@@ -95,7 +95,7 @@ private fun Modifier.offsetYFactor(factor: Float): Modifier =
         }
     }
 
-inline fun StackNavigator<RootComponent.Configuration>.pop(
+inline fun StackNavigator<Configuration>.pop(
     animation: StackAnimator,
     crossinline onComplete: (isSuccess: Boolean) -> Unit = {}
 ) {

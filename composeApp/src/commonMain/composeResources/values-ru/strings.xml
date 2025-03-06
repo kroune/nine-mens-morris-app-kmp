@@ -11,9 +11,9 @@
     <string name="play_online_game">Играть онлайн</string>
     <string name="leaderboard">Таблица лидеров</string>
     <string name="login">Логин</string>
+    <string name="invalid_login">Ваш логин не корректен</string>
     <string name="password">Пароль</string>
     <string name="invalid_password">Ваш пароль не корректен</string>
-    <string name="invalid_login">Ваш логин не корректен</string>
     <string name="sign_in">Войдите в аккаунт</string>
     <string name="no_account_question_mark">Нет аккаунта?</string>
     <string name="repeat_pass">повторите ваш пароль</string>
