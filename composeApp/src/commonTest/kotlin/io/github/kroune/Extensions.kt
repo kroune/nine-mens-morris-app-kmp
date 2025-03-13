@@ -41,6 +41,14 @@ inline fun SemanticsNodeInteractionCollection.all(lambda: (SemanticsNodeInteract
     return allMatch
 }
 
+inline fun SemanticsNodeInteractionCollection.toCollection(): MutableList<SemanticsNodeInteraction> {
+    val destination = mutableListOf<SemanticsNodeInteraction>()
+    forEach { element ->
+        destination.add(element)
+    }
+    return destination
+}
+
 inline fun SemanticsNodeInteractionCollection.none(lambda: (SemanticsNodeInteraction) -> Boolean): Boolean {
     var allDoNotMatch = true
     forEach {

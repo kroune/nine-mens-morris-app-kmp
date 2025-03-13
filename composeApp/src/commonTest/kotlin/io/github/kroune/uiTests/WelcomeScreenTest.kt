@@ -12,12 +12,13 @@ import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
 import io.github.kroune.UiTest
 import io.github.kroune.all
 import io.github.kroune.forEach
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
+import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.toCollection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -55,42 +56,19 @@ class WelcomeScreenTest {
                 override val accountIdFailure: Throwable? = null
                 override val hasSeenTutorial: Boolean = false
             }
-            val passed900 =
-                flowOf<Boolean>().onStart {
-                    emit(false)
-                    delay(900.milliseconds)
-                    emit(true)
-                }.stateIn(
-                    CoroutineScope(Dispatchers.Default),
-                    SharingStarted.Eagerly,
-                    false
-                )
-            val passed1100 =
-                flowOf<Boolean>().onStart {
-                    emit(false)
-                    delay(2000.milliseconds)
-                    emit(true)
-                }.stateIn(
-                    CoroutineScope(Dispatchers.Default),
-                    SharingStarted.Eagerly,
-                    false
-                )
             setContent {
                 WelcomeScreen(component)
             }
-            waitUntil(timeoutMillis = 2.seconds.inWholeMilliseconds) {
-                onAllNodes(
-                    hasContentDescription(
-                        "game piece element with ",
-                        substring = true
-                    ) and hasClickAction()
-                ).all {
-                    it.isDisplayed()
-                }
+            mainClock.advanceTimeBy(1100)
+            onAllNodes(
+                hasContentDescription(
+                    "game piece element with ",
+                    substring = true
+                ) and hasClickAction()
+            ).toCollection().filter { it.isDisplayed() }.let {
+                assertTrue { it.size == 24 }
             }
-            // assert that it took 900..1100 ms to finish the animation
-            assertTrue(passed900.value)
-            assertFalse(passed1100.value)
+            // assert that it took less than 1100 ms to finish the animation
             bottomBarCheck()
             onAllNodes(
                 hasContentDescription(
