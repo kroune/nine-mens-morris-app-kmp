@@ -1,13 +1,14 @@
 package io.github.kroune.nine_mens_morris_kmp_app
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.arkivanov.decompose.FaultyDecomposeApi
+import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import io.github.kroune.nine_mens_morris_kmp_app.common.AppTheme
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
@@ -22,21 +23,22 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationS
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.AppTheme
 
-
-@OptIn(FaultyDecomposeApi::class)
 @Composable
 fun App(component: RootComponent) {
     val stackAnimation = stackAnimation<Configuration, Child> { it ->
         it.configuration.animation
     }
-    MaterialTheme {
-        val childStack by component.childStack.subscribeAsState()
-        Children(
-            stack = childStack,
-            animation = stackAnimation
-        ) { child ->
-            AppTheme {
+    AppTheme {
+        Box(
+            Modifier.background(MaterialTheme.colorScheme.background)
+        ) {
+            val childStack by component.childStack.subscribeAsState()
+            Children(
+                stack = childStack,
+                animation = stackAnimation
+            ) { child ->
                 val instance = child.instance
                 when (instance) {
                     is Child.AppStartAnimationScreenChild -> {

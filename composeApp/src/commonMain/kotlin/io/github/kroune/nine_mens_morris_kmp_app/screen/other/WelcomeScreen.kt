@@ -20,15 +20,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +42,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
@@ -85,24 +85,24 @@ fun WelcomeScreen(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-            BottomNavigation(
-                backgroundColor = Color.DarkGray,
+            NavigationBar(
                 modifier = Modifier
                     .height(50.dp)
                     .semantics {
                         contentDescription = "bottom navigation bar"
                     }
             ) {
-                BottomNavigationItem(
+                NavigationBarItem(
                     false, onClick = {
                         if (component.isInAccount.value == null) {
                             CoroutineScope(Dispatchers.Default).launch {
                                 snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
                             }
-                            return@BottomNavigationItem
+                            return@NavigationBarItem
                         }
                         component.onEvent(WelcomeScreenEvent.NavigateToAccountView)
-                    }, icon = {
+                    },
+                    icon = {
                         val isInAccount = component.isInAccount.collectValue()
                         when (isInAccount?.getOrDefault(false)) {
                             true -> {
@@ -135,7 +135,7 @@ fun WelcomeScreen(
                         }
                     }
                 )
-                BottomNavigationItem(
+                NavigationBarItem(
                     true,
                     onClick = {
                         val progress = scrollState.value.toFloat() / scrollState.maxValue
@@ -163,7 +163,7 @@ fun WelcomeScreen(
                         )
                     },
                 )
-                BottomNavigationItem(
+                NavigationBarItem(
                     false,
                     onClick = {
                         CoroutineScope(Dispatchers.Default).launch {
@@ -175,7 +175,7 @@ fun WelcomeScreen(
                             painterResource(Res.drawable.settings),
                             "go to settings button",
                             modifier = Modifier
-                                .fillMaxHeight()
+                                .fillMaxHeight(),
                         )
                     }
                 )
@@ -184,7 +184,7 @@ fun WelcomeScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
-        backgroundColor = Color.Transparent
+        containerColor = Color.Transparent
     ) { padding ->
         Box(
             modifier = Modifier
@@ -245,7 +245,8 @@ fun WelcomeScreen(
                     }) {
                         Icon(
                             painterResource(Res.drawable.close),
-                            "close button"
+                            "close button",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     RenderMainScreen(
@@ -329,12 +330,10 @@ fun RenderMainScreen(
                     component.onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
                 },
                 shape = RoundedCornerShape(5.dp),
-                colors = BlackGrayColors()
             ) {
                 Text(
                     modifier = Modifier.padding(10.dp),
                     text = stringResource(Res.string.play_game_with_friends),
-                    color = Color.White,
                     fontSize = 20.sp
                 )
             }
@@ -346,12 +345,10 @@ fun RenderMainScreen(
                     component.onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
                 },
                 shape = RoundedCornerShape(5.dp),
-                colors = BlackGrayColors()
             ) {
                 Text(
                     modifier = Modifier.padding(10.dp),
                     text = stringResource(Res.string.play_game_with_bot),
-                    color = Color.White,
                     fontSize = 20.sp
                 )
             }
@@ -369,12 +366,10 @@ fun RenderMainScreen(
                     component.onEvent(WelcomeScreenEvent.NavigateToOnlineGame)
                 },
                 shape = RoundedCornerShape(5.dp),
-                colors = BlackGrayColors()
             ) {
                 Text(
                     modifier = Modifier.padding(10.dp),
                     text = stringResource(Res.string.play_online_game),
-                    color = Color.White,
                     fontSize = 20.sp
                 )
             }
@@ -392,12 +387,10 @@ fun RenderMainScreen(
                     component.onEvent(WelcomeScreenEvent.NavigateToLeaderboard)
                 },
                 shape = RoundedCornerShape(5.dp),
-                colors = BlackGrayColors()
             ) {
                 Text(
                     modifier = Modifier.padding(10.dp),
                     text = stringResource(Res.string.leaderboard),
-                    color = Color.White,
                     fontSize = 20.sp
                 )
             }

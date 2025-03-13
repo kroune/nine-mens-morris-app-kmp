@@ -36,7 +36,7 @@ kotlin {
         compilerOptions {
             sourceMapNamesPolicy.assign(JsSourceMapNamesPolicy.SOURCE_MAP_NAMES_POLICY_SIMPLE_NAMES)
         }
-        moduleName = "NineMensMorrisApp"
+        outputModuleName = "NineMensMorrisApp"
         browser {
             testTask {
                 useKarma {
@@ -85,7 +85,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.decompose)

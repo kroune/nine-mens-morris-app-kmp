@@ -3,6 +3,8 @@ package io.github.kroune.nine_mens_morris_kmp_app.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimator
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.active
@@ -94,7 +96,7 @@ class RootComponent(
                     AppStartAnimationComponent(
                         componentContext = context,
                         onNavigationToWelcomeScreen = {
-                            navigation.pushToFront(Configuration.WelcomeScreen(scale()))
+                            navigation.pushToFront(Configuration.WelcomeScreen())
                         }
                     )
                 )
@@ -105,16 +107,16 @@ class RootComponent(
                     WelcomeScreenComponent(
                         componentContext = context,
                         onNavigationToGameWithFriendScreen = {
-                            navigation.pushToFront(Configuration.GameWithFriendScreen(scale()))
+                            navigation.pushToFront(Configuration.GameWithFriendScreen(scale() + fade()))
                         },
                         onNavigationToGameWithBotScreen = {
-                            navigation.pushToFront(Configuration.GameWithBotScreen(scale()))
+                            navigation.pushToFront(Configuration.GameWithBotScreen(scale() + fade()))
                         },
                         onNavigationToOnlineGameScreen = {
-                            navigation.pushToFront(Configuration.SearchingForGameScreen(scale()))
+                            navigation.pushToFront(Configuration.SearchingForGameScreen(scale() + fade()))
                         },
                         onNavigationToLeaderboardScreen = {
-                            navigation.pushToFront(Configuration.LeaderboardScreen(scale()))
+                            navigation.pushToFront(Configuration.LeaderboardScreen(scale() + fade()))
                         },
                         onNavigationToAuthScreen = {
                             navigation.pushToFront(
@@ -136,9 +138,7 @@ class RootComponent(
                         },
                         onNavigationBack = {
                             navigation.pushToFront(
-                                Configuration.AppStartAnimation(
-                                    customAnimation = scale()
-                                )
+                                Configuration.AppStartAnimation()
                             )
                         }
                     )
@@ -249,7 +249,7 @@ class RootComponent(
                     OnlineGameComponent(
                         config.gameId,
                         {
-                            navigation.pushToFront(Configuration.WelcomeScreen(scale()))
+                            navigation.pushToFront(Configuration.WelcomeScreen())
                         },
                         context
                     )

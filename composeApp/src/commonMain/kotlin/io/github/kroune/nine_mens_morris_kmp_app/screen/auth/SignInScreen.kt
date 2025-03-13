@@ -7,14 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,10 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.common.LinkColors
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponentI
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.client_error
@@ -60,11 +61,12 @@ fun SignInScreen(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-        backgroundColor = Color.Transparent
+        }
     ) { contentPadding ->
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -141,7 +143,7 @@ fun SignInScreen(
                         onClick = {
                             component.onEvent(SignInScreenEvent.SwitchToSignInScreen)
                         },
-                        colors = LinkColors()
+                        colors = ExtendedColorTheme.colorScheme.linkColors
                     ) {
                         Text(stringResource(Res.string.sign_up))
                     }

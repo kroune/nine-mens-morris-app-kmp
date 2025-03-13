@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,17 +46,13 @@ fun RenderGameAnalyzeScreen(
             onClick = {
                 startAnalyze()
             },
-            colors = object : ButtonColors {
-                @Composable
-                override fun backgroundColor(enabled: Boolean): State<Color> {
-                    return mutableStateOf(Color.DarkGray)
-                }
-
-                @Composable
-                override fun contentColor(enabled: Boolean): State<Color> {
-                    return mutableStateOf(Color.White)
-                }
-            }) {
+            colors = ButtonColors(
+                containerColor = Color.DarkGray,
+                contentColor = Color.White,
+                disabledContainerColor = Color.DarkGray.copy(alpha = 0.5f),
+                disabledContentColor = Color.White.copy(alpha = 0.5f)
+            )
+        ) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,17 +67,12 @@ fun RenderGameAnalyzeScreen(
                         onClick = {
                             decreaseDepth()
                         },
-                        colors = object : ButtonColors {
-                            @Composable
-                            override fun backgroundColor(enabled: Boolean): State<Color> {
-                                return mutableStateOf(Color.DarkGray.copy(alpha = 0.2f))
-                            }
-
-                            @Composable
-                            override fun contentColor(enabled: Boolean): State<Color> {
-                                return mutableStateOf(Color.White)
-                            }
-                        }
+                        colors = ButtonColors(
+                            containerColor = Color.DarkGray.copy(alpha = 0.2f),
+                            contentColor = Color.White,
+                            disabledContainerColor = Color.DarkGray.copy(alpha = 0.1f),
+                            disabledContentColor = Color.White.copy(alpha = 0.5f)
+                        )
                     ) {
                         // may be it is a bit better to use some icons
                         // but I will leave it like this for now
@@ -95,17 +84,12 @@ fun RenderGameAnalyzeScreen(
                         onClick = {
                             increaseDepth()
                         },
-                        colors = object : ButtonColors {
-                            @Composable
-                            override fun backgroundColor(enabled: Boolean): State<Color> {
-                                return mutableStateOf(Color.DarkGray.copy(alpha = 0.2f))
-                            }
-
-                            @Composable
-                            override fun contentColor(enabled: Boolean): State<Color> {
-                                return mutableStateOf(Color.White)
-                            }
-                        }
+                        colors = ButtonColors(
+                            containerColor = Color.DarkGray.copy(alpha = 0.2f),
+                            contentColor = Color.White,
+                            disabledContainerColor = Color.DarkGray.copy(alpha = 0.1f),
+                            disabledContentColor = Color.White.copy(alpha = 0.5f)
+                        )
                     ) {
                         // may be it is a bit better to use some icons
                         // but I will leave it like this for now

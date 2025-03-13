@@ -6,7 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -31,7 +32,8 @@ fun SearchingForGameScreen(
         Column {
             Spacer(Modifier.height(20.dp))
             Text(
-                text = stringResource(Res.string.searching_for_game)
+                text = stringResource(Res.string.searching_for_game),
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Box(
@@ -44,7 +46,8 @@ fun SearchingForGameScreen(
                 LoadingCircle()
             } else {
                 Text(
-                    "${stringResource(Res.string.game_expected_waiting_time)} $waitingTime"
+                    "${stringResource(Res.string.game_expected_waiting_time)} $waitingTime",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

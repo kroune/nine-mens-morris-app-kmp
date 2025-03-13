@@ -1,6 +1,8 @@
 package io.github.kroune.nine_mens_morris_kmp_app.navigation
 
 import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimator
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
@@ -70,12 +72,12 @@ sealed class Configuration(
     data class AppStartAnimation(
         @Transient
         val customAnimation: StackAnimator = slide()
-    ) : Configuration("", scale())
+    ) : Configuration("", scale() + fade())
 
     @Serializable
     data class WelcomeScreen(
         @Transient
-        val customAnimation: StackAnimator = slide()
+        val customAnimation: StackAnimator = scale() + fade()
     ) : Configuration("welcome", customAnimation)
 
     @Serializable

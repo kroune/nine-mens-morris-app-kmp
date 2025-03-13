@@ -6,20 +6,12 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
@@ -45,43 +37,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
-
-class BlackGrayColors : ButtonColors {
-    @Composable
-    override fun backgroundColor(enabled: Boolean): State<Color> {
-        return mutableStateOf(Color.Black)
-    }
-
-    @Composable
-    override fun contentColor(enabled: Boolean): State<Color> {
-        return mutableStateOf(Color.Gray)
-    }
-}
-
-class LinkColors : ButtonColors {
-    @Composable
-    override fun backgroundColor(enabled: Boolean): State<Color> {
-        return mutableStateOf(Color.Transparent)
-    }
-
-    @Composable
-    override fun contentColor(enabled: Boolean): State<Color> {
-        return mutableStateOf(Color.Blue)
-    }
-
-}
-
-class TransparentColors : ButtonColors {
-    @Composable
-    override fun backgroundColor(enabled: Boolean): State<Color> {
-        return mutableStateOf(Color.Transparent)
-    }
-
-    @Composable
-    override fun contentColor(enabled: Boolean): State<Color> {
-        return mutableStateOf(Color.Transparent)
-    }
-}
 
 val network = HttpClient {
     install(HttpRequestRetry) {
@@ -144,22 +99,10 @@ fun LoadingCircle(
         label = ""
     )
     CircularProgressIndicator(
-        progress = animatedProgress,
-        color = Color.Black,
+        progress = { animatedProgress },
         modifier = modifier
             .aspectRatio(1f)
     )
-}
-
-@Composable
-inline fun AppTheme(function: BoxScope.() -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF7E7E7E))
-    ) {
-        function()
-    }
 }
 
 

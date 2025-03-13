@@ -3,7 +3,8 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,11 +61,13 @@ fun RenderIndicatorsTutorialScreen() {
         }
         Text(
             modifier = Modifier,
+            color = MaterialTheme.colorScheme.onBackground,
             text = stringResource(Res.string.tutorial_indicator_piece_count),
             textAlign = TextAlign.Center
         )
         Text(
             text = stringResource(Res.string.tutorial_indicator_piece_move_turn),
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
     }

@@ -1,7 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,15 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,14 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.kroune.nineMensMorrisLib.Position
-import io.github.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
@@ -68,15 +68,14 @@ fun OnlineGameScreen(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-        backgroundColor = Color.Transparent
+        }
     ) { _ ->
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 modifier = Modifier
-                    .heightIn(max = 110.dp)
+                    .heightIn(max = 150.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -93,7 +92,6 @@ fun OnlineGameScreen(
                         ownAccount = true
                     )
                 }
-                Spacer(modifier = Modifier.width(16.dp))
                 Box(modifier = Modifier.weight(1f)) {
                     PlayerCard(
                         playerName = component.enemyAccountName,
@@ -108,11 +106,33 @@ fun OnlineGameScreen(
                     )
                 }
             }
-            TurnTimerUI(component.timeLeft)
-            var showGameEndDialog by remember { mutableStateOf(true) }
+            Text(
+                text = "${stringResource(Res.string.time_left)}: ${component.timeLeft}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+            var showGameEndDialog by remember { mutableStateOf(false) }
+            LimitSize(
+                0.8f
+            ) {
+                RenderGameBoard(
+                    modifier = Modifier,
+                    pos = component.position,
+                    selectedButton = component.selectedButton,
+                    moveHints = component.moveHints,
+                    onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
+                )
+            }
             if (!component.gameEnded) {
-                // reset showing status to default
-                showGameEndDialog = true
+                if (component.displayGiveUpConfirmation.value)
+                    GiveUpConfirm(
+                        onGiveUpDiscarded = {
+                            component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
+                        },
+                        onGiveUp = {
+                            component.onEvent(OnlineGameScreenEvent.GiveUp)
+                        }
+                    )
             } else {
                 if (showGameEndDialog) {
                     GameEndPopUp(
@@ -127,27 +147,6 @@ fun OnlineGameScreen(
                         }
                     )
                 }
-            }
-            LimitSize(
-                0.8f
-            ) {
-                RenderGameBoard(
-                    modifier = Modifier,
-                    pos = component.position,
-                    selectedButton = component.selectedButton,
-                    moveHints = component.moveHints,
-                    onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
-                )
-            }
-            if (component.displayGiveUpConfirmation.value && !component.gameEnded) {
-                GiveUpConfirm(
-                    onGiveUpDiscarded = {
-                        component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
-                    },
-                    onGiveUp = {
-                        component.onEvent(OnlineGameScreenEvent.GiveUp)
-                    }
-                )
             }
         }
     }
@@ -165,47 +164,28 @@ private fun GiveUpConfirm(
         title = {
             Text(stringResource(Res.string.want_to_give_up))
         },
-        buttons = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+        confirmButton = {
+            Button(
+                onClick = {
+                    onGiveUp()
+                }
             ) {
-                Button(
-                    onClick = {
-                        onGiveUpDiscarded()
-                    },
-                    colors = BlackGrayColors()
-                ) {
-                    Text(stringResource(Res.string.no))
-                }
-                Button(
-                    onClick = {
-                        onGiveUp()
-                    },
-                    colors = BlackGrayColors()
-                ) {
-                    Text(stringResource(Res.string.yes))
-                }
+                Text(stringResource(Res.string.yes))
             }
         },
-        backgroundColor = Color.Gray
+        dismissButton = {
+            Button(
+                onClick = {
+                    onGiveUpDiscarded()
+                }
+            ) {
+                Text(stringResource(Res.string.no))
+            }
+        },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     )
 }
 
-@Composable
-fun TurnTimerUI(timeLeft: Int) {
-    Box(
-        modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
-    ) {
-        Text(
-            text = "${stringResource(Res.string.time_left)}: $timeLeft",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray
-        )
-    }
-}
 
 @Composable
 fun PlayerCard(
@@ -219,78 +199,84 @@ fun PlayerCard(
     onEvent: (OnlineGameScreenEvent) -> Unit,
     ownAccount: Boolean
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
-            .fillMaxSize()
+    Card(
+        Modifier
+            .padding(10.dp)
     ) {
-        DrawIcon(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(5.dp)
-                .aspectRatio(1f),
-            pictureByteArray = pictureByteArray,
-            onReload = {
-                onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount))
-            },
-            scope = scope,
-            snackbarHostState = snackbarHostState
-        )
-        Column(
-            verticalArrangement = Arrangement.Center
+                .clip(RoundedCornerShape(10.dp))
+                .padding(10.dp)
+                .fillMaxSize()
         ) {
-            Box(
+            DrawIcon(
                 modifier = Modifier
-                    .height(with(LocalDensity.current) { 20.sp.toDp() })
-            ) {
-                DrawName(
-                    text = @Composable {
-                        Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    },
-                    accountName = playerName,
-                    onReload = { onEvent(OnlineGameScreenEvent.ReloadName(ownAccount)) },
-                    scope = scope,
-                    snackbarHostState = snackbarHostState
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Box(
-                modifier =
-                Modifier.requiredSize(
-                    (30 * when {
-                        isGreen && pos.pieceToMove -> 1.5f
-                        !isGreen && !pos.pieceToMove -> 1.5f
-                        else -> 1f
-                    }).dp
-                )
-                    .aspectRatio(1f)
-                    .background(if (isGreen) Color.White else Color.Black, CircleShape)
-                    .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    color = if (!isGreen) {
-                        Color.White
-                    } else {
-                        Color.Black
-                    },
-                    text = if (!isGreen) {
-                        pos.freeBluePieces.toString()
-                    } else {
-                        pos.freeGreenPieces.toString()
-                    },
-                )
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-            DrawRating(
-                {
-                    Text(it.toString())
+                    .padding(5.dp)
+                    .aspectRatio(1f),
+                pictureByteArray = pictureByteArray,
+                onReload = {
+                    onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount))
                 },
-                rating,
-                { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
-                scope,
-                snackbarHostState
+                scope = scope,
+                snackbarHostState = snackbarHostState
             )
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(with(LocalDensity.current) { 20.sp.toDp() })
+                ) {
+                    DrawName(
+                        text = {
+                            Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        },
+                        accountName = playerName,
+                        onReload = { onEvent(OnlineGameScreenEvent.ReloadName(ownAccount)) },
+                        scope = scope,
+                        snackbarHostState = snackbarHostState
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Box(
+                    modifier =
+                        Modifier.requiredSize(
+                            (30 * when {
+                                isGreen && pos.pieceToMove -> 1.5f
+                                !isGreen && !pos.pieceToMove -> 1.5f
+                                else -> 1f
+                            }).dp
+                        )
+                            .aspectRatio(1f)
+                            .background(if (isGreen) Color.White else Color.Black, CircleShape)
+                            .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        color = if (!isGreen) {
+                            Color.White
+                        } else {
+                            Color.Black
+                        },
+                        text = if (!isGreen) {
+                            pos.freeBluePieces.toString()
+                        } else {
+                            pos.freeGreenPieces.toString()
+                        },
+                    )
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+                DrawRating(
+                    {
+                        Text(it.toString())
+                    },
+                    rating,
+                    { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
+                    scope,
+                    snackbarHostState
+                )
+            }
         }
     }
 }

@@ -21,11 +21,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
@@ -361,7 +362,7 @@ fun RowScope.CircledButton(
                 ),
             elevation = null,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = when (pos.positions[elementIndex]) {
+                containerColor = when (pos.positions[elementIndex]) {
                     null -> {
                         Color.Transparent
                     }
@@ -373,7 +374,8 @@ fun RowScope.CircledButton(
                     false -> {
                         Color.White
                     }
-                }
+                },
+                disabledContainerColor = Color.Transparent
             ),
             onClick = {
                 onClick(elementIndex)
@@ -402,7 +404,8 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
             },
         ) {
             Icon(
-                painter = painterResource(Res.drawable.undo_move), "undo"
+                painter = painterResource(Res.drawable.undo_move), "undo",
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         IconButton(
@@ -412,7 +415,8 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
                 handleRedo()
             }) {
             Icon(
-                painter = painterResource(Res.drawable.redo_move), "redo"
+                painter = painterResource(Res.drawable.redo_move), "redo",
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }

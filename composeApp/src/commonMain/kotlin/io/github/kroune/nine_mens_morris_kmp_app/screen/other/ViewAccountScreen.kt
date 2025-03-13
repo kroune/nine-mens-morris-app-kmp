@@ -6,18 +6,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import io.github.kroune.nine_mens_morris_kmp_app.common.BlackGrayColors
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
@@ -62,8 +60,7 @@ fun ViewAccountScreen(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-        backgroundColor = Color.Transparent
+        }
     ) { _ ->
         Column(
             horizontalAlignment = Alignment.Start
@@ -150,9 +147,8 @@ fun ViewAccountScreen(
             }
             Button(
                 { launcher.launch() },
-                colors = BlackGrayColors()
             ) {
-                Text(stringResource(Res.string.upload_picture), color = Color.White)
+                Text(stringResource(Res.string.upload_picture))
             }
             if (isOwnAccount) {
                 Box(
@@ -180,8 +176,7 @@ fun DrawOwnAccountOptions(
         onClick = {
             onEvent(ViewAccountScreenEvent.Logout)
         },
-        colors = BlackGrayColors()
     ) {
-        Text(stringResource(Res.string.log_out), color = Color.White)
+        Text(stringResource(Res.string.log_out))
     }
 }

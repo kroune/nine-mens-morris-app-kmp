@@ -16,11 +16,12 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,19 +51,16 @@ fun LeaderboardScreen(component: LeaderboardComponent) {
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-        backgroundColor = Color.Transparent
+        }
     ) { contentPadding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Gray),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             stickyHeader {
                 Text(
                     text = stringResource(Res.string.leaderboard),
-                    color = Color.White,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.DarkGray)
@@ -100,8 +98,7 @@ fun LeaderboardItem(
             .padding(start = 10.dp, end = 10.dp)
             .height(100.dp)
             .clip(RoundedCornerShape(10.dp))
-            .border(3.dp, Color.DarkGray, RoundedCornerShape(10.dp)),
-        backgroundColor = Color.LightGray
+            .border(3.dp, MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(10.dp))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -131,8 +128,7 @@ fun LeaderboardItem(
                     DrawRating(
                         {
                             Text(
-                                text = "${stringResource(Res.string.rating)}: $it",
-                                color = Color.Gray
+                                text = "${stringResource(Res.string.rating)}: $it"
                             )
                         },
                         player.rating.value,
