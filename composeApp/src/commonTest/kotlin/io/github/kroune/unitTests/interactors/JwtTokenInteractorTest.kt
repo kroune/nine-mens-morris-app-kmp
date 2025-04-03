@@ -4,6 +4,9 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.local.accountId.AccountIdD
 import io.github.kroune.nine_mens_morris_kmp_app.data.local.jwtToken.JwtTokenDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtToken.JwtTokenInteractorImpl
+import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
@@ -14,7 +17,7 @@ class JwtTokenInteractorTest {
     @Test
     fun test() {
         val testText = Uuid.random().toString()
-        val local = object: JwtTokenDataSourceI {
+        val local = object : JwtTokenDataSourceI {
             override fun getJwtToken(): String {
                 return testText
             }
@@ -27,20 +30,20 @@ class JwtTokenInteractorTest {
                 error("Not needed for test")
             }
         }
-        val remote = object: AuthRepositoryI {
-            override suspend fun checkJwtToken(jwtToken: String): Result<Boolean> {
+        val remote = object : AuthRepositoryI {
+            override suspend fun checkJwtToken(jwtToken: String): CheckJwtTokenApiResponses {
                 error("Not needed for test")
             }
 
-            override suspend fun login(login: String, password: String): Result<String> {
+            override suspend fun login(login: String, password: String): LoginApiResponse {
                 error("Not needed for test")
             }
 
-            override suspend fun register(login: String, password: String): Result<String> {
+            override suspend fun register(login: String, password: String): RegisterApiResponses {
                 error("Not needed for test")
             }
         }
-        val localId = object: AccountIdDataSourceI {
+        val localId = object : AccountIdDataSourceI {
             override fun deleteAccountId() {
                 error("Not needed for test")
             }
