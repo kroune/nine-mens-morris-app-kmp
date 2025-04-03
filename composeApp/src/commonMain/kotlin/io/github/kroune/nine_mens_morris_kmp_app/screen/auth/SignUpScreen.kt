@@ -1,12 +1,12 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.auth
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -23,13 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenComponent
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.auth.SignUpScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
-import ninemensmorrisappkmp.composeapp.generated.resources.client_error
+import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.have_account_question_mark
 import ninemensmorrisappkmp.composeapp.generated.resources.invalid_login
 import ninemensmorrisappkmp.composeapp.generated.resources.invalid_password
@@ -49,121 +51,20 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SignUpScreen(
-    component: SignUpScreenComponent,
+    component: SignUpScreenState,
+    onEvent: (SignUpScreenEvent) -> Unit
 ) {
-    val username = component.username
-    val isUsernameValid = component.usernameValid
-    val password = component.password
-    val isPasswordValid = component.passwordValid
-    val passwordRepeated = component.passwordRepeated
-    val isPasswordRepeatedValid = component.passwordRepeatedMatches
-    val requestInProcess = component.registrationInProcess
-    val registrationResult = component.registrationResult
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { contentPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.25f))
-            TextField(
-                username,
-                { newValue ->
-                    component.updateUsername(newValue)
-                },
-                label = {
-                    if (!isUsernameValid) {
-                        Text(
-                            stringResource(Res.string.invalid_login),
-                            modifier = Modifier,
-                            color = Color.Red,
-                            fontSize = 12.sp
-                        )
-                    }
-                },
-                placeholder = { Text(stringResource(Res.string.login)) },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.username),
-                        "your preferred username"
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.fillMaxHeight(0.025f))
-            TextField(
-                password,
-                { newValue ->
-                    component.updatePassword(newValue)
-                },
-                label = {
-                    if (!isPasswordValid) {
-                        Text(
-                            stringResource(Res.string.invalid_password),
-                            modifier = Modifier,
-                            color = Color.Red,
-                            fontSize = 12.sp
-                        )
-                    }
-                },
-                placeholder = { Text(stringResource(Res.string.password)) },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.password),
-                        "your new password"
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.fillMaxHeight(0.025f))
-            TextField(
-                passwordRepeated,
-                { newValue ->
-                    component.updatePasswordRepeated(newValue)
-                },
-                label = {
-                    if (!isPasswordRepeatedValid) {
-                        Text(
-                            stringResource(Res.string.passes_do_not_match),
-                            modifier = Modifier,
-                            color = Color.Red,
-                            fontSize = 12.sp
-                        )
-                    }
-                },
-                placeholder = { Text(stringResource(Res.string.repeat_pass)) },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.password),
-                        stringResource(Res.string.repeat_pass)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-            Button(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = {
-                    component.onEvent(SignUpScreenEvent.Register)
-                },
-                enabled = isUsernameValid && isPasswordValid &&
-                        isPasswordRepeatedValid && !requestInProcess
-            ) {
-                Text(stringResource(Res.string.sign_up))
-            }
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
+    with(component) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
+            bottomBar = {
                 Row(
+                    Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -171,7 +72,7 @@ fun SignUpScreen(
                     TextButton(
                         modifier = Modifier,
                         onClick = {
-                            component.onEvent(SignUpScreenEvent.SwitchToSignInScreen)
+                            onEvent(SignUpScreenEvent.SwitchToSignInScreen)
                         },
                         colors = ExtendedColorTheme.colorScheme.linkColors
                     ) {
@@ -179,37 +80,158 @@ fun SignUpScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-        }
-    }
-    registrationResult?.onFailure {
-        val text = when (it) {
-            is RegisterApiResponses -> {
-                when (it) {
-                    RegisterApiResponses.ClientError -> {
-                        stringResource(Res.string.client_error)
+        ) { contentPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextField(
+                    username,
+                    { newValue ->
+                        onEvent(SignUpScreenEvent.UpdateUsername(newValue))
+                    },
+                    label = {
+                        if (!isUsernameValid) {
+                            Text(
+                                stringResource(Res.string.invalid_login),
+                                modifier = Modifier,
+                                color = Color.Red,
+                                fontSize = 12.sp
+                            )
+                        }
+                    },
+                    placeholder = { Text(stringResource(Res.string.login)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.username),
+                            "your preferred username"
+                        )
                     }
-
-                    RegisterApiResponses.LoginAlreadyInUse -> {
-                        stringResource(Res.string.login_in_use)
+                )
+                Spacer(modifier = Modifier.fillMaxHeight(0.025f))
+                TextField(
+                    password,
+                    { newValue ->
+                        onEvent(SignUpScreenEvent.UpdatePassword(newValue))
+                    },
+                    label = {
+                        if (!isPasswordValid) {
+                            Text(
+                                stringResource(Res.string.invalid_password),
+                                modifier = Modifier,
+                                color = Color.Red,
+                                fontSize = 12.sp
+                            )
+                        }
+                    },
+                    placeholder = { Text(stringResource(Res.string.password)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.password),
+                            "your new password"
+                        )
                     }
-
-                    RegisterApiResponses.NetworkError -> {
-                        stringResource(Res.string.network_error)
+                )
+                Spacer(modifier = Modifier.fillMaxHeight(0.025f))
+                TextField(
+                    passwordRepeated,
+                    { newValue ->
+                        onEvent(SignUpScreenEvent.UpdateRepeatedPassword(newValue))
+                    },
+                    label = {
+                        if (!isPasswordRepeatedValid) {
+                            Text(
+                                stringResource(Res.string.passes_do_not_match),
+                                modifier = Modifier,
+                                color = Color.Red,
+                                fontSize = 12.sp
+                            )
+                        }
+                    },
+                    placeholder = { Text(stringResource(Res.string.repeat_pass)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.password),
+                            stringResource(Res.string.repeat_pass)
+                        )
                     }
-
-                    RegisterApiResponses.ServerError -> {
-                        stringResource(Res.string.server_error)
-                    }
+                )
+                Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+                Button(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onClick = {
+                        onEvent(SignUpScreenEvent.Register)
+                    },
+                    enabled = isUsernameValid && isPasswordValid &&
+                            isPasswordRepeatedValid && !registrationInProcess
+                ) {
+                    Text(stringResource(Res.string.sign_up))
                 }
             }
+        }
+        HandleSignUpError(
+            registrationResult,
+            accountIdByJwtTokenResult,
+            scope,
+            snackbarHostState
+        )
+    }
+}
 
-            else -> {
-                stringResource(Res.string.unknown_error)
+@Composable
+private fun HandleSignUpError(
+    registrationResult: RegisterApiResponses?,
+    accountIdByJwtTokenResult: AccountIdByJwtTokenApiResponses?,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState
+) {
+    val text = when (registrationResult) {
+        null -> {
+            return
+        }
+
+        is RegisterApiResponses.Success -> {
+            when (accountIdByJwtTokenResult) {
+                is AccountIdByJwtTokenApiResponses.CredentialsError -> {
+                    stringResource(Res.string.credentials_error)
+                }
+
+                is AccountIdByJwtTokenApiResponses.NetworkError -> {
+                    stringResource(Res.string.network_error)
+                }
+
+                is AccountIdByJwtTokenApiResponses.ServerError -> {
+                    stringResource(Res.string.server_error)
+                }
+
+                is AccountIdByJwtTokenApiResponses.UnknownError -> {
+                    stringResource(Res.string.unknown_error)
+                }
+
+                is AccountIdByJwtTokenApiResponses.Success, null -> return
             }
         }
-        scope.launch {
-            snackbarHostState.showSnackbar(text)
+
+        is RegisterApiResponses.UnknownError -> {
+            stringResource(Res.string.unknown_error)
         }
+
+        is RegisterApiResponses.LoginAlreadyInUse -> {
+            stringResource(Res.string.login_in_use)
+        }
+
+        is RegisterApiResponses.NetworkError -> {
+            stringResource(Res.string.network_error)
+        }
+
+        is RegisterApiResponses.ServerError -> {
+            stringResource(Res.string.server_error)
+        }
+    }
+    scope.launch {
+        snackbarHostState.showSnackbar(text)
     }
 }

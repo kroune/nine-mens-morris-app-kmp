@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
+import kotlinx.io.IOException
 
 @Composable
 expect fun getScreenIntSize(): IntSize
@@ -20,4 +21,12 @@ fun getScreenDpSize(): DpSize {
     }
 }
 
-expect fun <T> Result<T>.recoverNetworkError(networkException: Exception): Result<T>
+fun <T> Result<T>.recoverNetworkError(networkException: T): Result<T> {
+    return recoverCatching {
+        if (it is IOException)
+            return@recoverCatching networkException
+        throw it
+    }.recoverNativeNetworkError(networkException)
+}
+
+expect fun <T> Result<T>.recoverNativeNetworkError(networkException: T): Result<T>

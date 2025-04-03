@@ -1,7 +1,11 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
+import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
+
 interface AuthRepositoryI {
-    suspend fun checkJwtToken(jwtToken: String): Result<Boolean>
-    suspend fun login(login: String, password: String): Result<String>
-    suspend fun register(login: String, password: String): Result<String>
+    suspend fun checkJwtToken(jwtToken: String): CheckJwtTokenApiResponses
+    suspend fun login(login: String, password: String): LoginApiResponse
+    suspend fun register(login: String, password: String): RegisterApiResponses
 }

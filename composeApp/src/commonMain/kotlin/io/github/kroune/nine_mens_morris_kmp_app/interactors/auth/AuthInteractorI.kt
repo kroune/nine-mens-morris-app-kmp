@@ -1,13 +1,16 @@
 package io.github.kroune.nine_mens_morris_kmp_app.interactors.auth
 
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
+
 /**
  * interface for auth repository
  * @see AuthInteractorImpl
  */
 interface AuthInteractorI {
-    suspend fun login(login: String, password: String): Result<String>
+    suspend fun login(login: String, password: String): LoginApiResponse
 
-    suspend fun register(login: String, password: String): Result<String>
+    suspend fun register(login: String, password: String): RegisterApiResponses
 
     /**
      * Validates the provided login.

@@ -5,10 +5,10 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsSourceMapNamesPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 
 val appVersion: String = "1.0.1"
 
@@ -20,6 +20,8 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.baseline.profile)
+//    alias(libs.plugins.compose.compiler.report.generator)
+//    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
 //    alias(libs.plugins.storytale)
 }
 
@@ -32,31 +34,33 @@ composeCompiler {
 
 kotlin {
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        compilerOptions {
-            sourceMapNamesPolicy.assign(JsSourceMapNamesPolicy.SOURCE_MAP_NAMES_POLICY_SIMPLE_NAMES)
-        }
-        outputModuleName = "NineMensMorrisApp"
-        browser {
-            testTask {
-                useKarma {
-                    useDebuggableChrome()
-                }
+    listOf(wasmJs()).forEach {
+        with (it) {
+            compilerOptions {
+                sourceMapNamesPolicy.assign(JsSourceMapNamesPolicy.SOURCE_MAP_NAMES_POLICY_SIMPLE_NAMES)
             }
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
+            outputModuleName = "NineMensMorrisApp"
+            browser {
+                testTask {
+                    useKarma {
+                        useDebuggableChrome()
+                    }
+                }
+                val rootDirPath = project.rootDir.path
+                val projectDirPath = project.projectDir.path
+                commonWebpackConfig {
+                    outputFileName = "composeApp.js"
+                    devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                        static = (static ?: mutableListOf()).apply {
+                            // Serve sources to debug inside browser
+                            add(rootDirPath)
+                            add(projectDirPath)
+                        }
                     }
                 }
             }
+            binaries.executable()
         }
-        binaries.executable()
     }
 
     androidTarget {
@@ -91,6 +95,7 @@ kotlin {
             implementation(libs.decompose)
             implementation(libs.decompose.jetbrains)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.serialization.protobuf)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.coroutines.core)
@@ -124,6 +129,27 @@ kotlin {
             implementation(libs.ktor.client.js)
         }
     }
+}
+
+tasks.register("produceWebRelease") {
+    logger.info("started working")
+    val dir = File("composeApp/build/dist/wasmJs/productionExecutable")
+    if (dir.exists()) {
+        var fileIndex = 0
+        dir.listFiles()?.toList()?.forEach {
+            println(it.name)
+            if (!it.name.endsWith(".wasm"))
+                return@forEach
+            val file = File(dir, "${fileIndex++}.wasm")
+            println(it.renameTo(file))
+        }
+    } else {
+        println("empty")
+    }
+}
+
+tasks.getByName("wasmJsBrowserDistribution").apply {
+//    this.finalizedBy("produceWebRelease")
 }
 
 @OptIn(ExperimentalEncodingApi::class)
@@ -209,7 +235,7 @@ android {
 compose.desktop {
     application {
         buildTypes.release.proguard {
-            configurationFiles.setFrom("proguard-rules.pro")
+            configurationFiles.setFrom("src/desktopMain/proguard-jvm-rules.pro")
             version.set("7.6.1")
             isEnabled = true
             obfuscate.set(true)

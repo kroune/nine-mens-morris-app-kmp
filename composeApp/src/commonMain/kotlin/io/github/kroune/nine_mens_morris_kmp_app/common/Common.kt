@@ -31,8 +31,11 @@ import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
@@ -182,3 +185,19 @@ fun <T> StateFlow<T>.collectValue(
 ): T = collectAsState(
     context = context
 ).value
+
+@Serializable
+data class ServerEvent(
+    val data: ByteArray,
+    val metadata: ByteArray
+)
+
+inline fun <reified A, reified B> Frame.decodeServerEvent(): Pair<A, B> {
+    return data.decodeProtobuf<ServerEvent>().let { (data, metadata) ->
+        data.decodeProtobuf<A>() to metadata.decodeProtobuf<B>()
+    }
+}
+
+inline fun <reified A> ByteArray.decodeProtobuf(): A {
+    return ProtoBuf.decodeFromByteArray(this)
+}

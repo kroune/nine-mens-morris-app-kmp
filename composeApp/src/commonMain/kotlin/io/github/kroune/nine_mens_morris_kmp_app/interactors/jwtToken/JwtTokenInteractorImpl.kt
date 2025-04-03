@@ -6,6 +6,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.jwtTokenDataSource
 import io.github.kroune.nine_mens_morris_kmp_app.data.local.accountId.AccountIdDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.data.local.jwtToken.JwtTokenDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
 
 class JwtTokenInteractorImpl(
     private val local: JwtTokenDataSourceI = jwtTokenDataSource,
@@ -22,8 +23,8 @@ class JwtTokenInteractorImpl(
         return local.getJwtToken()
     }
 
-    override suspend fun checkJwtToken(): Result<Boolean> {
-        val jwtToken = getJwtToken() ?: return Result.success(false)
+    override suspend fun checkJwtToken(): CheckJwtTokenApiResponses {
+        val jwtToken = getJwtToken() ?: return CheckJwtTokenApiResponses.Success(false)
         return remote.checkJwtToken(jwtToken)
     }
 

@@ -1,76 +1,47 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.SearchingForGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.searchingForGameInteractor
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.model.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration.Companion.seconds
 
 class SearchingForGameComponent(
     onGameFind: (Long) -> Unit,
     val onGoingToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    var expectedWaitingTime = Channel<Long>(10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val scope = componentCoroutineScope()
 
-    private val disconnect: CompletableDeferred<suspend () -> Unit> = CompletableDeferred()
+    val searchingForGameError: MutableState<SearchingForGameResponse?> = mutableStateOf(null)
+    val expectedWaitingTime = Channel<Long>(10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     init {
-        CoroutineScope(Dispatchers.Default).launch {
-            val (gameIdDeferred, onClose) = searchingForGameInteractor.searchForGame(
-                expectedWaitingTime
-            )
-            disconnect.complete {
-                onClose()
-            }
-            val gameId = gameIdDeferred.await()
-            if (gameId == null) {
-                println("returned game id was null")
-                withContext(Dispatchers.Main) {
-                    onEvent(SearchingForGameScreenEvent.Back)
-                }
-                return@launch
-            }
-            gameId.fold(
-                onSuccess = {
-                    println("found game, id = $it")
+        with(scope) {
+            launch {
+                val result = searchingForGameInteractor.searchForGame(expectedWaitingTime)
+                if (result is SearchingForGameResponse.Success) {
+                    println("found game, id = ${result.gameId}")
                     withContext(Dispatchers.Main) {
-                        onGameFind(it)
+                        onGameFind(result.gameId)
                     }
-                },
-                onFailure = {
-                    if (it is CancellationException)
-                    // that's ok
-                        return@launch
-                    // TODO: log error
-                    println("getting game id failed")
-                    it.printStackTrace()
-                    withContext(Dispatchers.Main) {
-                        onEvent(SearchingForGameScreenEvent.Back)
-                    }
-                    return@launch
                 }
-            )
+                searchingForGameError.value = result
+            }
         }
     }
 
     fun onEvent(event: SearchingForGameScreenEvent) {
         when (event) {
             SearchingForGameScreenEvent.Back -> {
-                CoroutineScope(Dispatchers.Default).launch {
-                    withTimeoutOrNull(10.seconds) {
-                        disconnect.await()()
-                    }
-                }
                 onGoingToWelcomeScreen()
             }
         }

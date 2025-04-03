@@ -22,6 +22,7 @@ espressoCore = "3.6.1"
 uiautomator = "2.3.0"
 baselineprofile = "1.4.0-alpha09"
 screenshot = "0.0.1-alpha09"
+compose-compiler-report-generator = "1.4.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
@@ -37,6 +38,7 @@ ktor-client-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "kt
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
 decompose-jetbrains = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlinxSerializationJson" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
@@ -59,4 +61,5 @@ storytale = { id = "org.jetbrains.compose.storytale", version.ref = "storytale" 
 android-test = { id = "com.android.test", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 baseline-profile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+compose-compiler-report-generator = { id = "dev.shreyaspatil.compose-compiler-report-generator", version.ref = "compose-compiler-report-generator" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}

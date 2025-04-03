@@ -3,11 +3,14 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenC
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
+import com.russhwolf.settings.Settings
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
-import com.russhwolf.settings.Settings
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,11 +30,12 @@ class WelcomeScreenComponent(
     private val onNavigationToAuthScreen: () -> Unit,
     private val onNavigationBack: () -> Unit
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle, WelcomeScreenComponentI {
+    private val componentScope = componentCoroutineScope()
 
-    private val _accountIdFailure = mutableStateOf<Throwable?>(null)
+    private val _accountIdFailure = mutableStateOf<AccountIdByJwtTokenApiResponses?>(null)
     override val accountIdFailure by _accountIdFailure
 
-    override val isInAccount = flowOf<Result<Boolean>?>().onStart {
+    override val isInAccount = flowOf<CheckJwtTokenApiResponses?>().onStart {
         emit(null)
         emit(jwtTokenInteractor.checkJwtToken())
     }.stateIn(
@@ -46,28 +50,29 @@ class WelcomeScreenComponent(
     override val hasSeenTutorial by _hasSeenTutorial
 
     override fun onEvent(event: WelcomeScreenEvent) {
+        fun isInAccount(): Boolean {
+            val isInAccountState = isInAccount.value
+            return isInAccountState is CheckJwtTokenApiResponses.Success && isInAccountState.result
+        }
         when (event) {
             WelcomeScreenEvent.NavigateToGameWithFriend -> {
                 onNavigationToGameWithFriendScreen()
             }
 
             WelcomeScreenEvent.NavigateToAccountView -> {
-                if (isInAccount.value?.getOrNull() != true) {
+                if (!isInAccount()) {
                     // we aren't authorised
                     onNavigationToAuthScreen()
                     return
                 }
-                CoroutineScope(Dispatchers.Default).launch {
-                    accountIdInteractor.getAccountId().fold(
-                        onSuccess = { accountId ->
-                            withContext(Dispatchers.Main) {
-                                onNavigationToAccountViewScreen(accountId)
-                            }
-                        },
-                        onFailure = {
-                            _accountIdFailure.value = it
+                componentScope.launch {
+                    val accountIdResult = accountIdInteractor.getAccountId()
+                    if (accountIdResult is AccountIdByJwtTokenApiResponses.Success) {
+                        withContext(Dispatchers.Main) {
+                            onNavigationToAccountViewScreen(accountIdResult.accountId)
                         }
-                    )
+                    }
+                    _accountIdFailure.value = accountIdResult
                 }
             }
 
@@ -76,7 +81,7 @@ class WelcomeScreenComponent(
             }
 
             WelcomeScreenEvent.NavigateToOnlineGame -> {
-                if (isInAccount.value?.getOrNull() != true) {
+                if (!isInAccount()) {
                     // we aren't authorised
                     onNavigationToAuthScreen()
                     return
@@ -94,7 +99,7 @@ class WelcomeScreenComponent(
             }
 
             WelcomeScreenEvent.NavigateToLeaderboard -> {
-                if (isInAccount.value?.getOrNull() != true) {
+                if (!isInAccount()) {
                     // we aren't authorised
                     onNavigationToAuthScreen()
                     return

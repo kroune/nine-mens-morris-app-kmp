@@ -24,6 +24,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameCompon
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponent
 import kotlinx.coroutines.CoroutineScope
@@ -129,8 +130,7 @@ class RootComponent(
                         },
                         onNavigationToAccountViewScreen = {
                             navigation.pushToFront(
-                                Configuration.ViewAccountScreen(
-                                    isOwnAccount = true,
+                                Configuration.ViewOwnAccountScreen(
                                     accountId = it,
                                     customAnimation = customSlide(invertDirection = true),
                                 )
@@ -145,13 +145,23 @@ class RootComponent(
                 )
             }
 
+            is Configuration.ViewOwnAccountScreen -> {
+                Child.ViewOwnAccountScreenChild(
+                    ViewOwnAccountScreenComponent(
+                        onNavigationBack = {
+                            popOrFallbackScreen(config.animation)
+                        },
+                        accountId = config.accountId,
+                        componentContext = context
+                    )
+                )
+            }
             is Configuration.ViewAccountScreen -> {
                 Child.ViewAccountScreenChild(
                     ViewAccountScreenComponent(
                         onNavigationBack = {
                             popOrFallbackScreen(config.animation)
                         },
-                        isOwnAccount = config.isOwnAccount,
                         accountId = config.accountId,
                         componentContext = context
                     )
@@ -247,11 +257,17 @@ class RootComponent(
             is Configuration.OnlineGameScreen -> {
                 Child.OnlineGameChild(
                     OnlineGameComponent(
-                        config.gameId,
-                        {
+                        onNavigationToViewAccountScreen = {
+                            navigation.pushToFront(Configuration.ViewAccountScreen(it))
+                        },
+                        onNavigationToViewOwnAccountScreen = {
+                            navigation.pushToFront(Configuration.ViewOwnAccountScreen(it))
+                        },
+                        gameId = config.gameId,
+                        onNavigationToWelcomeScreen = {
                             navigation.pushToFront(Configuration.WelcomeScreen())
                         },
-                        context
+                        componentContext = context
                     )
                 )
             }
@@ -259,6 +275,9 @@ class RootComponent(
             is Configuration.LeaderboardScreen -> {
                 Child.LeaderboardChild(
                     LeaderboardComponent(
+                        {
+                            navigation.pushToFront(Configuration.ViewAccountScreen(it, scale()))
+                        },
                         {
                             popOrFallbackScreen(config.animation)
                         },

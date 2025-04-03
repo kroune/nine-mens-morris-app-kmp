@@ -45,17 +45,18 @@ import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
-import ninemensmorrisappkmp.composeapp.generated.resources.client_error
 import ninemensmorrisappkmp.composeapp.generated.resources.close
+import ninemensmorrisappkmp.composeapp.generated.resources.offline
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.data_is_loading_wait
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
@@ -80,14 +81,14 @@ fun WelcomeScreen(
     val scrollState = rememberScrollState(0)
     val snackbarHostState = remember { SnackbarHostState() }
     val topScreen = remember { mutableStateOf(true) }
-    val coroutine = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
             NavigationBar(
                 modifier = Modifier
-                    .height(50.dp)
+                    .height(55.dp)
                     .semantics {
                         contentDescription = "bottom navigation bar"
                     }
@@ -104,25 +105,7 @@ fun WelcomeScreen(
                     },
                     icon = {
                         val isInAccount = component.isInAccount.collectValue()
-                        when (isInAccount?.getOrDefault(false)) {
-                            true -> {
-                                Icon(
-                                    painterResource(Res.drawable.logged_in),
-                                    "account information was loaded",
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                )
-                            }
-
-                            false -> {
-                                Icon(
-                                    painterResource(Res.drawable.no_account),
-                                    "account information wasn't found",
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                )
-                            }
-
+                        when (isInAccount) {
                             null -> {
                                 LoadingCircle(
                                     modifier = Modifier
@@ -131,6 +114,50 @@ fun WelcomeScreen(
                                         }
                                         .fillMaxHeight()
                                 )
+                            }
+
+                            is CheckJwtTokenApiResponses.Success -> {
+                                if (isInAccount.result)
+                                    Icon(
+                                        painterResource(Res.drawable.logged_in),
+                                        "account information was loaded",
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                    )
+                                else
+                                    Icon(
+                                        painterResource(Res.drawable.no_account),
+                                        "account information wasn't found",
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                    )
+                            }
+
+                            else -> {
+                                Icon(
+                                    painterResource(Res.drawable.offline),
+                                    "you are offline",
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                )
+                                val errorText = when (isInAccount) {
+                                    CheckJwtTokenApiResponses.NetworkError -> {
+                                        stringResource(Res.string.network_error)
+                                    }
+
+                                    CheckJwtTokenApiResponses.ServerError -> {
+                                        stringResource(Res.string.server_error)
+                                    }
+
+                                    is CheckJwtTokenApiResponses.Success -> return@NavigationBarItem
+
+                                    CheckJwtTokenApiResponses.UnknownError -> {
+                                        stringResource(Res.string.unknown_error)
+                                    }
+                                }
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(errorText)
+                                }
                             }
                         }
                     }
@@ -141,7 +168,7 @@ fun WelcomeScreen(
                         val progress = scrollState.value.toFloat() / scrollState.maxValue
                         val scrollUp =
                             (topScreen.value && progress < 0.15f) || (!topScreen.value && progress <= 0.85f)
-                        coroutine.launch {
+                        scope.launch {
                             scrollState.stopScroll()
                             scrollState.animateScrollTo(
                                 if (!scrollUp) {
@@ -209,7 +236,7 @@ fun WelcomeScreen(
                     val scrollUp =
                         (topScreen.value && progress < 0.15f) || (!topScreen.value && progress <= 0.85f)
                     topScreen.value = scrollUp
-                    coroutine.launch {
+                    scope.launch {
                         scrollState.stopScroll()
                         scrollState.animateScrollTo(
                             if (scrollUp) {
@@ -263,12 +290,18 @@ fun WelcomeScreen(
                     TutorialScreen()
                 }
             }
+            HandleError(component.accountIdFailure, snackbarHostState)
         }
     }
+}
 
-    val exception = component.accountIdFailure ?: return
-    val text: String = when (exception) {
-        !is AccountIdByJwtTokenApiResponses -> {
+@Composable
+private fun HandleError(
+    result: AccountIdByJwtTokenApiResponses?,
+    snackbarHostState: SnackbarHostState
+) {
+    val text: String = when (result) {
+        is AccountIdByJwtTokenApiResponses.UnknownError -> {
             stringResource(Res.string.unknown_error)
         }
 
@@ -276,21 +309,15 @@ fun WelcomeScreen(
             stringResource(Res.string.network_error)
         }
 
-        AccountIdByJwtTokenApiResponses.ClientError -> {
-            stringResource(Res.string.client_error)
-        }
-
-        AccountIdByJwtTokenApiResponses.CredentialsError -> {
+        is AccountIdByJwtTokenApiResponses.CredentialsError -> {
             stringResource(Res.string.credentials_error)
         }
 
-        AccountIdByJwtTokenApiResponses.ServerError -> {
+        is AccountIdByJwtTokenApiResponses.ServerError -> {
             stringResource(Res.string.server_error)
         }
 
-        else -> {
-            error("kotlin broke")
-        }
+        is AccountIdByJwtTokenApiResponses.Success, null -> return
     }
     val scope = rememberCoroutineScope()
     scope.launch {

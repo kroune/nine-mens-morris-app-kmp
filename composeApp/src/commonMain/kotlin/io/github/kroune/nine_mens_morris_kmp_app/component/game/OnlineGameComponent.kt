@@ -11,6 +11,11 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithB
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CompletableDeferred
@@ -27,26 +32,36 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OnlineGameComponent(
+    private val onNavigationToViewAccountScreen: (Long) -> Unit,
+    private val onNavigationToViewOwnAccountScreen: (Long) -> Unit,
     private val gameId: Long,
     private val onNavigationToWelcomeScreen: () -> Unit,
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    private var _enemyAccountName = mutableStateOf<Result<String>?>(null)
-    var enemyAccountName by _enemyAccountName
+    private val componentScope = componentCoroutineScope()
 
-    private var _enemyPictureByteArray = mutableStateOf<Result<ByteArray>?>(null)
+    private val _enemyAccountId = mutableStateOf<Long?>(null)
+    val enemyAccountId by _enemyAccountId
+
+    private var _enemyAccountName = mutableStateOf<LoginByIdApiResponses?>(null)
+    val enemyAccountName by _enemyAccountName
+
+    private var _enemyPictureByteArray = mutableStateOf<AccountPictureByIdApiResponses?>(null)
     val enemyPictureByteArray by _enemyPictureByteArray
 
-    private var _enemyAccountRating = mutableStateOf<Result<Long>?>(null)
-    var enemyAccountRating by _enemyAccountRating
+    private var _enemyAccountRating = mutableStateOf<RatingByIdApiResponses?>(null)
+    val enemyAccountRating by _enemyAccountRating
 
-    private var _ownAccountName = mutableStateOf<Result<String>?>(null)
+    private val _ownAccountId = mutableStateOf<Long?>(null)
+    val ownAccountId by _ownAccountId
+
+    private var _ownAccountName = mutableStateOf<LoginByIdApiResponses?>(null)
     val ownAccountName by _ownAccountName
 
-    private var _ownPictureByteArray = mutableStateOf<Result<ByteArray>?>(null)
+    private var _ownPictureByteArray = mutableStateOf<AccountPictureByIdApiResponses?>(null)
     val ownPictureByteArray by _ownPictureByteArray
 
-    private var _ownAccountRating = mutableStateOf<Result<Long>?>(null)
+    private var _ownAccountRating = mutableStateOf<RatingByIdApiResponses?>(null)
     val ownAccountRating by _ownAccountRating
     private val _position = mutableStateOf(
         Position(
@@ -86,7 +101,7 @@ class OnlineGameComponent(
 
 
     init {
-        CoroutineScope(Dispatchers.Default).launch {
+        componentScope.launch {
             runCatching {
                 val gameEnded: CompletableDeferred<Boolean>
                 // TODO: handle errors
@@ -99,8 +114,13 @@ class OnlineGameComponent(
                         onGiveClose = it.second
                         gameEnded = it.first.gameEnded
                     }
+                val accountIdResult = accountIdInteractor.getAccountId()
+                if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
+                    error("accountId is not success")
+                }
+                _ownAccountId.value = accountIdResult.accountId
                 ownAccountInfoUseCase = AccountInfoUseCase(
-                    accountIdInteractor.getAccountId().getOrThrow(),
+                    accountIdResult.accountId,
                     needCreationDate = false,
                     playerInfo = AccountInfoUseCase.PlayerInfo(
                         name = _ownAccountName,
@@ -108,6 +128,7 @@ class OnlineGameComponent(
                         accountPicture = _ownPictureByteArray
                     )
                 )
+                _enemyAccountId.value = enemyId
                 enemyAccountInfoUseCase = AccountInfoUseCase(
                     enemyId,
                     needCreationDate = false,
@@ -210,11 +231,24 @@ class OnlineGameComponent(
                     enemyAccountInfoUseCase.reloadName()
                 }
             }
+
             is OnlineGameScreenEvent.ReloadRating -> {
                 if (event.ownAccount) {
                     ownAccountInfoUseCase.reloadRating()
                 } else {
                     enemyAccountInfoUseCase.reloadRating()
+                }
+            }
+
+            OnlineGameScreenEvent.NavigateToAccountView -> {
+                enemyAccountId?.let {
+                    onNavigationToViewAccountScreen(it)
+                }
+            }
+
+            OnlineGameScreenEvent.NavigateToOwnAccountView -> {
+                ownAccountId?.let {
+                    onNavigationToViewOwnAccountScreen(it)
                 }
             }
         }

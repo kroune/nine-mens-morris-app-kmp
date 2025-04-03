@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,10 +56,9 @@ fun LeaderboardScreen(component: LeaderboardComponent) {
     ) { contentPadding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+                .fillMaxSize()
         ) {
-            stickyHeader {
+            item {
                 Text(
                     text = stringResource(Res.string.leaderboard),
                     modifier = Modifier
@@ -95,32 +95,37 @@ fun LeaderboardItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp)
+            .padding(10.dp)
             .height(100.dp)
             .clip(RoundedCornerShape(10.dp))
             .border(3.dp, MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(10.dp))
     ) {
         Row(
+            modifier = Modifier.padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             DrawIcon(
                 modifier = Modifier
                     .sizeIn(maxWidth = 80.dp, maxHeight = 80.dp),
-                player.accountPicture.value,
-                {
+                pictureByteArray = player.accountPicture.value,
+                onReload = {
                     onEvent(LeaderboardEvent.ReloadIcon(index))
                 },
-                scope,
-                snackbarHostState
+                onClick = {
+                    onEvent(LeaderboardEvent.NavigateToAccountView(index))
+                },
+                scope = scope,
+                snackbarHostState = snackbarHostState
             )
+            Spacer(modifier = Modifier.width(10.dp))
             Column(verticalArrangement = Arrangement.Center) {
                 Box(modifier = Modifier.height(40.dp)) {
                     DrawName(
-                        { Text(it) },
-                        player.name.value,
-                        { onEvent(LeaderboardEvent.ReloadName(index)) },
-                        scope,
-                        snackbarHostState
+                        text = @Composable { Text(it) },
+                        accountName = player.name.value,
+                        onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
+                        scope = scope,
+                        snackbarHostState = snackbarHostState
                     )
                 }
                 Spacer(modifier = Modifier.height(5.dp))

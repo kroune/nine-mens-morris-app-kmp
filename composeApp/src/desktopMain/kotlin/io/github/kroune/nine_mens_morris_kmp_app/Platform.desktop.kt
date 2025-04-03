@@ -4,17 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntSize
-import java.io.IOException
+
+actual fun <T> Result<T>.recoverNativeNetworkError(networkException: T): Result<T> {
+    return recoverCatching {
+        if (it is java.io.IOException || it is java.nio.channels.UnresolvedAddressException)
+            return@recoverCatching networkException
+        throw it
+    }
+}
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 actual fun getScreenIntSize(): IntSize {
     return LocalWindowInfo.current.containerSize
-}
-
-actual fun <T> Result<T>.recoverNetworkError(networkException: Exception): Result<T> {
-    if (networkException is IOException) {
-        return Result.failure(networkException)
-    }
-    return this
 }

@@ -14,6 +14,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameCompon
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponent
 import kotlinx.serialization.Serializable
@@ -27,6 +28,10 @@ sealed class Child(open val component: ComponentContextWithBackHandle) {
 
     data class WelcomeScreenChild(
         override val component: WelcomeScreenComponent
+    ) : Child(component)
+
+    data class ViewOwnAccountScreenChild(
+        override val component: ViewOwnAccountScreenComponent
     ) : Child(component)
 
     data class ViewAccountScreenChild(
@@ -81,12 +86,18 @@ sealed class Configuration(
     ) : Configuration("welcome", customAnimation)
 
     @Serializable
-    data class ViewAccountScreen(
-        val isOwnAccount: Boolean,
+    data class ViewOwnAccountScreen(
         val accountId: Long,
         @Transient
         val customAnimation: StackAnimator = slide()
-    ) : Configuration("account$accountId", customAnimation)
+    ) : Configuration("account-$accountId", customAnimation)
+
+    @Serializable
+    data class ViewAccountScreen(
+        val accountId: Long,
+        @Transient
+        val customAnimation: StackAnimator = slide()
+    ) : Configuration("account-$accountId", customAnimation)
 
     /**
      * We don't pass lambda for navigation to the next destination

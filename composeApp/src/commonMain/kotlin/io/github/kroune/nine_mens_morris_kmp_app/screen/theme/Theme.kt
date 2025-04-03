@@ -11,10 +11,13 @@ import androidx.compose.ui.graphics.Color
 inline fun AppTheme(crossinline content: @Composable () -> Unit) {
     val colorScheme = when (isSystemInDarkTheme()) {
         false -> lightColorScheme(
+            primary = Color.Black,
             background = Color.LightGray
         )
         true -> darkColorScheme(
-            background = Color.DarkGray
+            onPrimary = Color.White,
+            background = Color(red = 58, green = 58, blue = 58),
+            primary = Color.Black,
         )
     }
     val extendedColorScheme = when (isSystemInDarkTheme()) {

@@ -10,5 +10,6 @@ plugins {
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.baseline.profile) apply false
+//    alias(libs.plugins.compose.compiler.report.generator) apply false
 //    alias(libs.plugins.storytale) apply false
 }

@@ -3,7 +3,6 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.popUps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -37,8 +36,6 @@ fun GameEndPopUp(
         },
         confirmButton = {
             Button(
-                modifier = Modifier
-                    .fillMaxHeight(),
                 onClick = {
                     onBackToMainScreen()
                 }
@@ -48,8 +45,6 @@ fun GameEndPopUp(
         },
         dismissButton = {
             Button(
-                modifier = Modifier
-                    .fillMaxHeight(),
                 onClick = { onDiscarded() }
             ) {
                 Text(stringResource(Res.string.keep_me_here))

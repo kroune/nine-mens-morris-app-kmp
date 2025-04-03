@@ -1,11 +1,19 @@
 package io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfo
 
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LeaderboardApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
+
 interface AccountInfoInteractorI {
-    suspend fun getAccountRatingById(id: Long): Result<Long>
-    suspend fun getAccountCreationDateById(id: Long): Result<Triple<Int, Int, Int>>
-    suspend fun getAccountLoginById(id: Long): Result<String>
-    suspend fun getAccountPictureById(id: Long): Result<ByteArray>
-    suspend fun getOwnAccountId(): Result<Long>
-    suspend fun getLeaderboard(): Result<List<Long>>
-    suspend fun uploadPicture(picture: ByteArray): Result<Unit>
+    suspend fun getAccountRatingById(id: Long): RatingByIdApiResponses
+    suspend fun getAccountCreationDateById(id: Long): CreationDateByIdApiResponses
+    suspend fun getAccountLoginById(id: Long): LoginByIdApiResponses
+    suspend fun getAccountPictureById(id: Long): AccountPictureByIdApiResponses
+    suspend fun getOwnAccountId(): AccountIdByJwtTokenApiResponses
+    suspend fun getLeaderboard(): LeaderboardApiResponses
+    suspend fun uploadPicture(picture: ByteArray): UploadPictureApiResponses
 }

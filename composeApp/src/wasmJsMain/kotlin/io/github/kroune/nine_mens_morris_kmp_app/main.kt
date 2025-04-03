@@ -2,14 +2,13 @@ package io.github.kroune.nine_mens_morris_kmp_app
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.ComposeViewport
+import androidx.compose.ui.window.CanvasBasedWindow
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.webhistory.withWebHistory
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
-import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +37,7 @@ fun main() {
         val component = DefaultComponentContext(lifecycle)
         RootComponent(component)
     }
-    ComposeViewport(document.body!!) {
+    CanvasBasedWindow {
         LaunchedEffect(Unit) {
             onLoadFinished()
         }

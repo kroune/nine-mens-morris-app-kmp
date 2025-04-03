@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
@@ -22,6 +23,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.game.SearchingForGameScr
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewOwnAccountScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.AppTheme
 
@@ -53,12 +55,22 @@ fun App(component: RootComponent) {
                         ViewAccountScreen(instance.component)
                     }
 
+                    is Child.ViewOwnAccountScreenChild -> {
+                        ViewOwnAccountScreen(instance.component)
+                    }
+
                     is Child.SignUpScreenChild -> {
-                        SignUpScreen(instance.component)
+                        SignUpScreen(
+                            instance.component.state.collectValue(),
+                            { instance.component.onEvent(it) }
+                        )
                     }
 
                     is Child.SignInScreenChild -> {
-                        SignInScreen(instance.component)
+                        SignInScreen(
+                            instance.component.state.collectValue(),
+                            { instance.component.onEvent(it) }
+                        )
                     }
 
                     is Child.GameWithFriendChild -> {

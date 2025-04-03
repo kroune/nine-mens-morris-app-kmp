@@ -42,6 +42,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
@@ -102,7 +105,7 @@ fun OnlineGameScreen(
                         scope = scope,
                         snackbarHostState = snackbarHostState,
                         onEvent = { component.onEvent(it) },
-                        ownAccount = true
+                        ownAccount = false
                     )
                 }
             }
@@ -111,7 +114,7 @@ fun OnlineGameScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
-            var showGameEndDialog by remember { mutableStateOf(false) }
+            var showGameEndDialog by remember { mutableStateOf(true) }
             LimitSize(
                 0.8f
             ) {
@@ -189,10 +192,10 @@ private fun GiveUpConfirm(
 
 @Composable
 fun PlayerCard(
-    playerName: Result<String>?,
-    pictureByteArray: Result<ByteArray>?,
+    playerName: LoginByIdApiResponses?,
+    pictureByteArray: AccountPictureByIdApiResponses?,
     isGreen: Boolean,
-    rating: Result<Long>?,
+    rating: RatingByIdApiResponses?,
     pos: Position,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
@@ -217,6 +220,12 @@ fun PlayerCard(
                 pictureByteArray = pictureByteArray,
                 onReload = {
                     onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount))
+                },
+                onClick = {
+                    if (ownAccount)
+                        onEvent(OnlineGameScreenEvent.NavigateToOwnAccountView)
+                    else
+                        onEvent(OnlineGameScreenEvent.NavigateToAccountView)
                 },
                 scope = scope,
                 snackbarHostState = snackbarHostState

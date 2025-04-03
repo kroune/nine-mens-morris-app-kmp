@@ -5,9 +5,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import io.ktor.client.plugins.HttpRequestTimeoutException
-import java.net.ConnectException
-import java.nio.channels.UnresolvedAddressException
 
 @Composable
 actual fun getScreenIntSize(): IntSize {
@@ -19,16 +16,10 @@ actual fun getScreenIntSize(): IntSize {
     }
 }
 
-actual fun <T> Result<T>.recoverNetworkError(networkException: Exception): Result<T> {
+actual fun <T> Result<T>.recoverNativeNetworkError(networkException: T): Result<T> {
     return recoverCatching {
-        return when (it) {
-            is ConnectException, is UnresolvedAddressException, is HttpRequestTimeoutException -> {
-                Result.failure(networkException)
-            }
-
-            else -> {
-                this
-            }
-        }
+        if (it is java.io.IOException || it is java.nio.channels.UnresolvedAddressException)
+            return@recoverCatching networkException
+        throw it
     }
 }

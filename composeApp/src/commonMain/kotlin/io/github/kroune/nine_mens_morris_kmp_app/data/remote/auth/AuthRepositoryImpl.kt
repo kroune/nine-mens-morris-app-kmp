@@ -2,149 +2,129 @@ package io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
 import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.serverApi
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.LoginApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
 import kotlinx.serialization.json.Json
 
 class AuthRepositoryImpl : AuthRepositoryI {
-    override suspend fun register(login: String, password: String): Result<String> {
+    override suspend fun register(login: String, password: String): RegisterApiResponses {
         val route = serverApi {
             appendPathSegments("reg")
+            parameters["login"] = login
+            parameters["password"] = password
         }
         return runCatching {
-            val request =
-                network.get(route) {
-                    method = HttpMethod.Post
-                    url {
-                        parameters["login"] = login
-                        parameters["password"] = password
-                    }
-                }
-            when (request.status) {
-                HttpStatusCode.Conflict -> {
-                    when (request.bodyAsText()) {
-                        "login is already in use" -> {
-                            throw RegisterApiResponses.LoginAlreadyInUse
-                        }
-                    }
-                }
-
-                HttpStatusCode.BadRequest -> {
-                    when (request.bodyAsText()) {
-                        "no [login] parameter found" -> {
-                            throw RegisterApiResponses.ClientError
-                        }
-
-                        "no [password] parameter found" -> {
-                            throw RegisterApiResponses.ClientError
-                        }
-                    }
-                }
-
-                HttpStatusCode.InternalServerError -> {
-                    when (request.bodyAsText()) {
-                        "Internal server error" -> {
-                            throw RegisterApiResponses.ServerError
-                        }
-                    }
-                }
+            val request = network.post(route)
+            registerResult(request)
+        }
+            .recoverNetworkError(RegisterApiResponses.NetworkError())
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
+            .getOrElse {
+                RegisterApiResponses.UnknownError()
             }
-            Json.decodeFromString<String>(request.bodyAsText())
-        }.recoverNetworkError(RegisterApiResponses.NetworkError).logOnFailure("exception in $route", severity = Severity.ERROR)
     }
 
-    override suspend fun login(login: String, password: String): Result<String> {
+    private suspend fun registerResult(request: HttpResponse): RegisterApiResponses {
+        return when (request.status) {
+            HttpStatusCode.Conflict -> {
+                RegisterApiResponses.LoginAlreadyInUse()
+            }
+
+            HttpStatusCode.InternalServerError -> {
+                RegisterApiResponses.ServerError()
+            }
+
+            HttpStatusCode.OK -> {
+                val message = Json.decodeFromString<String>(request.bodyAsText())
+                RegisterApiResponses.Success(message)
+            }
+
+            else -> {
+                RegisterApiResponses.UnknownError()
+            }
+        }
+    }
+
+    override suspend fun login(login: String, password: String): LoginApiResponse {
         val route = serverApi {
             appendPathSegments("login")
+            parameters["login"] = login
+            parameters["password"] = password
         }
         return runCatching {
-            val request =
-                network.get(route) {
-                    method = HttpMethod.Get
-                    url {
-                        parameters["login"] = login
-                        parameters["password"] = password
-                    }
-                }
-            when (request.status) {
-                HttpStatusCode.BadRequest -> {
-                    when (request.bodyAsText()) {
-                        "no [login] parameter found" -> {
-                            throw LoginApiResponses.ClientError
-                        }
-
-                        "no [password] parameter found" -> {
-                            throw LoginApiResponses.ClientError
-                        }
-                    }
-                }
-
-                HttpStatusCode.Unauthorized -> {
-                    when (request.bodyAsText()) {
-                        "login + password aren't present in the db" -> {
-                            throw LoginApiResponses.CredentialsError
-                        }
-                    }
-                }
-
-                HttpStatusCode.InternalServerError -> {
-                    when (request.bodyAsText()) {
-                        "Internal server error" -> {
-                            throw LoginApiResponses.ServerError
-                        }
-                    }
-                }
-            }
-            Json.decodeFromString<String>(request.bodyAsText())
-        }.recoverNetworkError(LoginApiResponses.NetworkError).logOnFailure("exception in $route", severity = Severity.ERROR)
+            val request = network.get(route)
+            loginResult(request)
+        }
+            .recoverNetworkError(LoginApiResponse.NetworkError())
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
+            .getOrElse { LoginApiResponse.UnknownError() }
     }
 
-    override suspend fun checkJwtToken(jwtToken: String): Result<Boolean> {
+    private suspend fun loginResult(request: HttpResponse): LoginApiResponse {
+        return when (request.status) {
+            HttpStatusCode.Unauthorized -> {
+                LoginApiResponse.CredentialsError()
+            }
+
+            HttpStatusCode.InternalServerError -> {
+                LoginApiResponse.ServerError()
+            }
+
+            HttpStatusCode.OK -> {
+                val jwtToken = Json.decodeFromString<String>(request.bodyAsText())
+                LoginApiResponse.Success(jwtToken)
+            }
+
+            else -> {
+                LoginApiResponse.UnknownError()
+            }
+        }
+    }
+
+    override suspend fun checkJwtToken(jwtToken: String): CheckJwtTokenApiResponses {
         val route = serverApi {
             appendPathSegments("check-jwt-token")
+            parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route) {
-                method = HttpMethod.Get
-                url {
-                    parameters["jwtToken"] = jwtToken
-                }
+            val request = network.get(route)
+            checkJwtTokenResult(request)
+        }
+            .recoverNetworkError(CheckJwtTokenApiResponses.NetworkError)
+            .logOnFailure("exception in $route", severity = Severity.ERROR)
+            .getOrElse {
+                CheckJwtTokenApiResponses.UnknownError
             }
-            when (request.status) {
-                HttpStatusCode.BadRequest -> {
-                    when (request.bodyAsText()) {
-                        "no [jwtToken] parameter found" -> {
-                            throw CheckJwtTokenApiResponses.ClientError
-                        }
-                    }
-                }
+    }
 
-                HttpStatusCode.Forbidden -> {
-                    when (request.bodyAsText()) {
-                        "[jwtToken] parameter is not valid" -> {
-                            return@runCatching false
-                        }
-                    }
-                }
-
-                HttpStatusCode.InternalServerError -> {
-                    when (request.bodyAsText()) {
-                        "Internal server error" -> {
-                            throw CheckJwtTokenApiResponses.ServerError
-                        }
-                    }
-                }
+    private suspend fun checkJwtTokenResult(request: HttpResponse): CheckJwtTokenApiResponses {
+        return when (request.status) {
+            HttpStatusCode.Forbidden -> {
+                CheckJwtTokenApiResponses.Success(false)
             }
-            Json.decodeFromString<Boolean>(request.bodyAsText())
-        }.recoverNetworkError(CheckJwtTokenApiResponses.NetworkError).logOnFailure("exception in $route", severity = Severity.ERROR)
+
+            HttpStatusCode.InternalServerError -> {
+                CheckJwtTokenApiResponses.ServerError
+            }
+
+            HttpStatusCode.OK -> {
+                val result = Json.decodeFromString<Boolean>(request.bodyAsText())
+                CheckJwtTokenApiResponses.Success(result)
+            }
+
+            else -> {
+                CheckJwtTokenApiResponses.UnknownError
+            }
+        }
     }
 }

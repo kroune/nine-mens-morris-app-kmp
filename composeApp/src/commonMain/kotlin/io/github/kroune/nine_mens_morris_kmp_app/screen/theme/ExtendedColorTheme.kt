@@ -15,7 +15,8 @@ fun lightExtendedColors(): ExtendedColorScheme {
             contentColor = Color(85, 104, 218),
             disabledContainerColor = Color.Unspecified,
             disabledContentColor = Color(71, 86, 177)
-        )
+        ),
+        shimmerColor = Color.DarkGray,
     )
 }
 
@@ -23,16 +24,18 @@ fun darkExtendedColors(): ExtendedColorScheme {
     return ExtendedColorScheme(
         linkColors = ButtonColors(
             containerColor = Color.Unspecified,
-            contentColor = Color(53, 74, 188),
+            contentColor = Color(79, 120, 255),
             disabledContainerColor = Color.Unspecified,
             disabledContentColor = Color(37, 50, 142)
-        )
+        ),
+        shimmerColor = Color.LightGray,
     )
 }
 
 @Immutable
 data class ExtendedColorScheme(
     val linkColors: ButtonColors,
+    val shimmerColor: Color,
 )
 
 internal val LocalColorScheme = staticCompositionLocalOf { lightExtendedColors() }
