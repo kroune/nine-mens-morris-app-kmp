@@ -11,7 +11,6 @@ import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
@@ -39,7 +38,7 @@ class WelcomeScreenComponent(
         emit(null)
         emit(jwtTokenInteractor.checkJwtToken())
     }.stateIn(
-        CoroutineScope(Dispatchers.Default),
+        componentScope,
         SharingStarted.WhileSubscribed(),
         null
     )
