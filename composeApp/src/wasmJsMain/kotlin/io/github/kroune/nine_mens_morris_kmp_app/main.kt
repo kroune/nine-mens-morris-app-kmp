@@ -29,13 +29,8 @@ fun main() {
         }
     }
     val lifecycle = LifecycleRegistry()
-    val root = if (!window.location.host.contains("github")) {
-        withWebHistory { stateKeeper, _ ->
-            val component = DefaultComponentContext(lifecycle, stateKeeper)
-            RootComponent(component)
-        }
-    } else {
-        val component = DefaultComponentContext(lifecycle)
+    val root = withWebHistory { stateKeeper, _ ->
+        val component = DefaultComponentContext(lifecycle, stateKeeper)
         RootComponent(component)
     }
     ComposeViewport(document.body!!) {

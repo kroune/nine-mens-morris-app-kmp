@@ -189,6 +189,7 @@ android {
                     keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
                 }.onFailure {
                     println("Error creating keystore: \n${it.stackTrace}")
+                    throw it
                 }
             } else {
                 storeFile = file("/home/olowo/secureKeystore.jks")

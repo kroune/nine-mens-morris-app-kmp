@@ -56,8 +56,10 @@ class RootComponent(
             navigator = navigation,
             stack = childStack,
             serializer = Configuration.serializer(),
-            pathMapper = {
-                it.configuration.urlName
+            parametersMapper = {
+                buildMap {
+                    put("url", it.configuration.urlName)
+                }
             }
         )
 
