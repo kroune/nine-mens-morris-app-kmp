@@ -179,13 +179,17 @@ android {
         create("release") {
             keyAlias = "release"
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                val file = File.createTempFile("keyStore", ".jks")
-                println("keystore file created at ${file.path}")
-                file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
+                runCatching {
+                    val file = File.createTempFile("keyStore", ".jks")
+                    println("keystore file created at ${file.path}")
+                    file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
 
-                storeFile = file
-                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+                    storeFile = file
+                    storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+                    keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+                }.onFailure {
+                    println("Error creating keystore: \n${it.stackTrace}")
+                }
             } else {
                 storeFile = file("/home/olowo/secureKeystore.jks")
                 storePassword = file("/home/olowo/secureSignPass").readText().trim()
