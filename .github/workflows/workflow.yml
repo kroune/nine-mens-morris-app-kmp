@@ -148,7 +148,7 @@ jobs:
       matrix:
         include:
           # android
-          - target: assembleRelease
+          - target: assembleRelease --stacktrace
             tag: Android
             after: |
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
