@@ -177,9 +177,9 @@ android {
     signingConfigs {
         create("release") {
             keyAlias = "release"
-            println("DIR - ${project.absoluteProjectPath("keyStore.jks")}")
+            println("DIR - ${File("keyStore.jks", project.projectDir.absolutePath).absolutePath}")
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                storeFile = File(project.absoluteProjectPath("keyStore.jks"))
+                storeFile = File("keyStore.jks", project.projectDir.absolutePath)
                 storePassword = System.getenv("KEYSTORE_PASSWORD")!!
                 keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
