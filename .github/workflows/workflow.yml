@@ -143,6 +143,7 @@ jobs:
           key: ${{ runner.os }}-ui-tests-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
 
   produceArtifacts:
+    needs: [ basicTest, uiTest ]
     strategy:
       matrix:
         include:
@@ -237,6 +238,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Create keystore file
+        if: ${{ matrix.tag }} == 'Android'
         run: |
           touch composeApp/keyStore.jks
           echo $KEYSTORE | base64 -d  > composeApp/keyStore.jks
