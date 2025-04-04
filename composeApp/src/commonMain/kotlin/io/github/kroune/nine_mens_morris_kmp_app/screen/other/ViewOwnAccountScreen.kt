@@ -1,12 +1,14 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -19,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewOwnAccountScreenEvent
@@ -66,16 +69,19 @@ fun ViewOwnAccountScreen(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
                 ) {
-                    DrawIcon(
-                        Modifier
-                            .fillMaxWidth(0.45f)
-                            .aspectRatio(1f),
-                        pictureByteArray = accountPicture,
-                        onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadIcon) },
-                        onClick = {},
-                        scope = scope,
-                        snackbarHostState = snackbarHostState
-                    )
+                    BoxWithConstraints {
+                        val size = min(this.maxWidth, this.maxHeight) / 2
+                        DrawIcon(
+                            Modifier
+                                .size(size)
+                                .aspectRatio(1f, true),
+                            pictureByteArray = accountPicture,
+                            onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadIcon) },
+                            onClick = {},
+                            scope = scope,
+                            snackbarHostState = snackbarHostState
+                        )
+                    }
                     DrawName(
                         modifier = Modifier
                             .fillMaxWidth()
