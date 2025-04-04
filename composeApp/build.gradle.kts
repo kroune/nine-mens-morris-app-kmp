@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import java.io.File
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 val appVersion: String = "1.0.1"
@@ -177,9 +178,9 @@ android {
     signingConfigs {
         create("release") {
             keyAlias = "release"
-            println("DIR - ${File("keyStore.jks", project.projectDir.absolutePath).absolutePath}")
+            println("DIR - ${File(project.projectDir.absolutePath, "keyStore.jks").absolutePath}")
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                storeFile = File("keyStore.jks", project.projectDir.absolutePath)
+                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
                 storePassword = System.getenv("KEYSTORE_PASSWORD")!!
                 keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
