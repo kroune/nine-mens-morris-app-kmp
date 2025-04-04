@@ -179,7 +179,7 @@ android {
         create("release") {
             keyAlias = "release"
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                val file = File("keyStore", ".jks")
+                val file = File("keyStore.jks")
                 file.createNewFile()
                 println("keystore file created at ${file.path}")
                 file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
