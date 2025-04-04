@@ -35,7 +35,7 @@ composeCompiler {
 kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     listOf(wasmJs()).forEach {
-        with (it) {
+        with(it) {
             compilerOptions {
                 sourceMapNamesPolicy.assign(JsSourceMapNamesPolicy.SOURCE_MAP_NAMES_POLICY_SIMPLE_NAMES)
             }
@@ -179,18 +179,14 @@ android {
         create("release") {
             keyAlias = "release"
             if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                runCatching {
-                    val file = File.createTempFile("keyStore", ".jks")
-                    println("keystore file created at ${file.path}")
-                    file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
+                val file = File("keyStore", ".jks")
+                file.createNewFile()
+                println("keystore file created at ${file.path}")
+                file.writeBytes(Base64.decode(System.getenv("KEYSTORE")!!.toByteArray()))
 
-                    storeFile = file
-                    storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-                    keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
-                }.onFailure {
-                    println("Error creating keystore: \n${it.stackTrace}")
-                    throw it
-                }
+                storeFile = file
+                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
             } else {
                 storeFile = file("/home/olowo/secureKeystore.jks")
                 storePassword = file("/home/olowo/secureSignPass").readText().trim()
