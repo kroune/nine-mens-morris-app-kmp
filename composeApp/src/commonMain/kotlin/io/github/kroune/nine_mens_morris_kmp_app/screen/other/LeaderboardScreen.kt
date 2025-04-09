@@ -131,15 +131,18 @@ fun LeaderboardItem(
                 Spacer(modifier = Modifier.height(5.dp))
                 Box(modifier = Modifier.height(40.dp)) {
                     DrawRating(
-                        {
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .height(30.dp),
+                        text = {
                             Text(
                                 text = "${stringResource(Res.string.rating)}: $it"
                             )
                         },
-                        player.rating.value,
-                        { onEvent(LeaderboardEvent.ReloadRating(index)) },
-                        scope,
-                        snackbarHostState
+                        accountRating = player.rating.value,
+                        reloadRating = { onEvent(LeaderboardEvent.ReloadRating(index)) },
+                        scope = scope,
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }

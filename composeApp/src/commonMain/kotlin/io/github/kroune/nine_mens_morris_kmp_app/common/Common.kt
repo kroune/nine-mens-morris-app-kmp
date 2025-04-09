@@ -67,18 +67,26 @@ val network = HttpClient {
  * The server's address
  */
 val serverUrl
-    get() = URLBuilder(protocol = URLProtocol.HTTPS, host = "nine-men-s-morris.me")
+    get() = URLBuilder(host = "nine-men-s-morris.me")
 
 /**
  * The API endpoint for user-related operations.
  */
-val serverApi
+private val serverApi
     get() = serverUrl.apply {
         appendPathSegments("/api/v1/user")
     }
 
-fun serverApi(modification: URLBuilder.() -> Unit): Url {
+fun httpApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
+        protocol = URLProtocol.HTTPS
+        modification()
+    }.build()
+}
+
+fun wsApi(modification: URLBuilder.() -> Unit): Url {
+    return serverApi.apply {
+        protocol = URLProtocol.WSS
         modification()
     }.build()
 }

@@ -1,7 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
 import io.github.kroune.nine_mens_morris_kmp_app.common.network
-import io.github.kroune.nine_mens_morris_kmp_app.common.serverApi
+import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
@@ -23,7 +23,7 @@ import kotlinx.serialization.json.Json
 
 class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getAccountRatingById(id: Long, jwtToken: String): RatingByIdApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("get-rating-by-id")
             parameters["id"] = id.toString()
             parameters["jwtToken"] = jwtToken
@@ -64,7 +64,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
         id: Long,
         jwtToken: String,
     ): CreationDateByIdApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("get-creation-date-by-id")
             parameters["id"] = id.toString()
             parameters["jwtToken"] = jwtToken
@@ -102,7 +102,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getAccountLoginById(id: Long, jwtToken: String): LoginByIdApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("get-login-by-id")
             parameters["id"] = id.toString()
             parameters["jwtToken"] = jwtToken
@@ -141,7 +141,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
         id: Long,
         jwtToken: String
     ): AccountPictureByIdApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("get-picture-by-id")
             parameters["id"] = id.toString()
             parameters["jwtToken"] = jwtToken
@@ -179,7 +179,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getAccountIdByJwtToken(jwtToken: String): AccountIdByJwtTokenApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("get-id-by-jwt-token")
             parameters["jwtToken"] = jwtToken
         }
@@ -216,7 +216,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun getLeaderboard(jwtToken: String): LeaderboardApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("leaderboard")
             parameters["jwtToken"] = jwtToken
         }
@@ -253,7 +253,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     }
 
     override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): UploadPictureApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("upload-picture")
             parameters["jwtToken"] = jwtToken
         }

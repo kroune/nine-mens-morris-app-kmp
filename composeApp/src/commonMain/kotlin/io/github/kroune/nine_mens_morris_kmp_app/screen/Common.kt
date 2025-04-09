@@ -84,6 +84,8 @@ fun ComponentContext.componentCoroutineScope(): CoroutineScope {
  */
 @Composable
 fun DrawRating(
+    modifier: Modifier = Modifier
+        .size(120.dp, 30.dp),
     text: @Composable (Long) -> Unit,
     accountRating: RatingByIdApiResponses?,
     reloadRating: () -> Unit,
@@ -100,8 +102,7 @@ fun DrawRating(
         contentAlignment = Alignment.Center
     ) {
         Box(
-            Modifier
-                .size(120.dp, 30.dp)
+            modifier
                 .clip(RoundedCornerShape(10))
         ) {
             when (it) {
@@ -176,6 +177,8 @@ fun DrawRating(
 
 @Composable
 fun DrawAccountCreationDate(
+    modifier: Modifier = Modifier
+        .size(120.dp, 30.dp),
     text: @Composable (Triple<Int, Int, Int>) -> Unit,
     accountCreationDate: CreationDateByIdApiResponses?,
     onReload: () -> Unit,
@@ -183,8 +186,7 @@ fun DrawAccountCreationDate(
     snackbarHostState: SnackbarHostState,
 ) {
     Box(
-        Modifier
-            .size(120.dp, 30.dp)
+        modifier
             .clip(RoundedCornerShape(10))
     ) {
         when (accountCreationDate) {
@@ -385,7 +387,8 @@ fun DrawIcon(
  */
 @Composable
 fun DrawName(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
+        .size(100.dp, 20.dp),
     text: @Composable (String) -> Unit = @Composable {
         Text(it, fontSize = 20.sp)
     },
@@ -396,7 +399,6 @@ fun DrawName(
 ) {
     Box(
         modifier
-            .size(100.dp, 20.dp)
             .clip(RoundedCornerShape(10))
     ) {
         when (accountName) {

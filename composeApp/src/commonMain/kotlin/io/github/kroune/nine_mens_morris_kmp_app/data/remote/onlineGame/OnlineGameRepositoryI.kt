@@ -5,7 +5,7 @@ import com.kroune.nineMensMorrisLib.move.Movement
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 
-sealed interface OnlineGameRepositoryI {
+interface OnlineGameRepositoryI {
     suspend fun connect(
         gameId: Long,
         jwtToken: String,

@@ -1,7 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
 import io.github.kroune.nine_mens_morris_kmp_app.common.network
-import io.github.kroune.nine_mens_morris_kmp_app.common.serverApi
+import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
 import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
 import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
@@ -18,7 +18,7 @@ import kotlinx.serialization.json.Json
 
 class AuthRepositoryImpl : AuthRepositoryI {
     override suspend fun register(login: String, password: String): RegisterApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("reg")
             parameters["login"] = login
             parameters["password"] = password
@@ -56,7 +56,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
     }
 
     override suspend fun login(login: String, password: String): LoginApiResponse {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("login")
             parameters["login"] = login
             parameters["password"] = password
@@ -92,7 +92,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
     }
 
     override suspend fun checkJwtToken(jwtToken: String): CheckJwtTokenApiResponses {
-        val route = serverApi {
+        val route = httpApi {
             appendPathSegments("check-jwt-token")
             parameters["jwtToken"] = jwtToken
         }

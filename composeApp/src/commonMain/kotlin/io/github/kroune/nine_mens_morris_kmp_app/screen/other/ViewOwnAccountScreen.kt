@@ -100,6 +100,9 @@ fun ViewOwnAccountScreen(
                     )
                 }
                 DrawRating(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(30.dp),
                     text = {
                         Text(
                             "${stringResource(Res.string.rating)}: $it",
@@ -112,17 +115,21 @@ fun ViewOwnAccountScreen(
                     snackbarHostState = snackbarHostState
                 )
                 DrawAccountCreationDate(
-                    { (first, second, third) ->
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(30.dp),
+                    text = { (first, second, third) ->
                         Text(
                             "$first-$second-$third",
                             fontSize = 20.sp
                         )
                     },
-                    accountCreationDate,
-                    {
+                    accountCreationDate = accountCreationDate,
+                    onReload = {
                         onEvent(ViewOwnAccountScreenEvent.ReloadCreationDate)
                     },
-                    scope, snackbarHostState
+                    scope = scope,
+                    snackbarHostState = snackbarHostState
                 )
                 val launcher = rememberFilePickerLauncher(
                     type = PickerType.Image,

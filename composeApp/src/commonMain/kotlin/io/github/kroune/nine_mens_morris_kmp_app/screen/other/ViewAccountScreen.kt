@@ -86,6 +86,9 @@ fun ViewAccountScreen(
                 )
             }
             DrawRating(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(30.dp),
                 text = {
                     Text(
                         "${stringResource(Res.string.rating)}: $it",
@@ -98,17 +101,20 @@ fun ViewAccountScreen(
                 snackbarHostState = snackbarHostState
             )
             DrawAccountCreationDate(
-                { (first, second, third) ->
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(30.dp),
+                text = { (first, second, third) ->
                     Text(
                         "$first-$second-$third",
                         fontSize = 20.sp
                     )
                 },
-                creationDate,
-                {
+                accountCreationDate = creationDate,
+                onReload = {
                     onEvent(ViewAccountScreenEvent.ReloadCreationDate)
                 },
-                scope, snackbarHostState
+                scope = scope, snackbarHostState = snackbarHostState
             )
         }
     }

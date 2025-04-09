@@ -238,6 +238,9 @@ fun PlayerCard(
                         .height(with(LocalDensity.current) { 20.sp.toDp() })
                 ) {
                     DrawName(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(30.dp),
                         text = {
                             Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         },
@@ -277,13 +280,13 @@ fun PlayerCard(
                 }
                 Spacer(modifier = Modifier.height(5.dp))
                 DrawRating(
-                    {
+                    text = {
                         Text(it.toString())
                     },
-                    rating,
-                    { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
-                    scope,
-                    snackbarHostState
+                    accountRating = rating,
+                    reloadRating = { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
+                    scope = scope,
+                    snackbarHostState = snackbarHostState
                 )
             }
         }

@@ -6,12 +6,11 @@ import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.receiveDeserialized
 import io.github.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
 import io.github.kroune.nine_mens_morris_kmp_app.common.sendSerializedCatching
-import io.github.kroune.nine_mens_morris_kmp_app.common.serverApi
+import io.github.kroune.nine_mens_morris_kmp_app.common.wsApi
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.wss
-import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.close
 import kotlinx.coroutines.CompletableDeferred
@@ -39,8 +38,7 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
         val session: CompletableDeferred<DefaultClientWebSocketSession?> = CompletableDeferred(null)
         val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred()
         CoroutineScope(Dispatchers.Default).launch {
-            val route = serverApi {
-                protocol = URLProtocol.WSS
+            val route = wsApi {
                 appendPathSegments("game")
             }.toString()
             network.wss(
