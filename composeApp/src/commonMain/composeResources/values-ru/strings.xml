@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?><!--suppress LongLine -->
 <resources>
     <string name="app_name">Мельница</string>
-    <string name="client_error">Мы столкнулись с ошибкой во время работы программы, это может быть вызванно устаревшей версией приложения. Вы можете оставить сообщение об этой проблеме на Github</string>
+    <string name="client_error">Мы столкнулись с ошибкой во время работы программы, это может быть вызвано устаревшей версией приложения. Вы можете оставить сообщение об этой проблеме на Github</string>
     <string name="network_error">Не удалось сделать запрос в сеть. Возможно у вас отключен интернет или включен vpn</string>
-    <string name="server_error">Мы столкнулись с ошибкой в работе нашей инфраструктуры. Мы займемся ее исправлением как можно скорее. Вы можете предоставить допольнительную информацию на Github</string>
+    <string name="server_error">Мы столкнулись с ошибкой в работе нашей инфраструктуры. Мы займемся ее исправлением как можно скорее. Вы можете предоставить дополнительную информацию на Github</string>
     <string name="unknown_error">Мы столкнулись с неожиданной ошибкой. Пожалуйста, сообщите о ней на Github issues </string>
     <string name="credentials_error">Мы столкнулись с ошибкой связанной с вашими данными. Попробуйте перезапустить приложение</string>
     <string name="play_game_with_friends">Играть с другом</string>
@@ -16,7 +16,7 @@
     <string name="invalid_password">Ваш пароль не корректен</string>
     <string name="sign_in">Войдите в аккаунт</string>
     <string name="no_account_question_mark">Нет аккаунта?</string>
-    <string name="repeat_pass">повторите ваш пароль</string>
+    <string name="repeat_pass">Повторите ваш пароль</string>
     <string name="passes_do_not_match">Ваши пароли не совпадают</string>
     <string name="game_ended">Игра закончилась</string>
     <string name="have_account_question_mark">Уже есть аккаунт?</string>
@@ -28,20 +28,20 @@
     <string name="game_expected_waiting_time">предположительное время ожидания:</string>
     <string name="retry">попробовать заново</string>
     <string name="tutorial_indicator_piece_count">В каждом из кругов вверху экрана написано, сколько фишек соответствующего цвета еще не размещены</string>
-    <string name="tutorial_indicator_piece_move_turn">Размер круга показывает чей сейчас ход (например если зеленый больше всего, то сейчас ход игрока с зелеными фишками)</string>
+    <string name="tutorial_indicator_piece_move_turn">Размер круга и его прозрачность указывают на то, чья сейчас очередь</string>
     <string name="tutorial_lose_condition">Вы проиграли, если у вас меньше 3 фишек (включая те, которые вы можете разместить)</string>
-    <string name="tutorial_placement_condition">Если у вас есть еще не размещенные фишки, то вы можете поставить их в любую постую клетку</string>
+    <string name="tutorial_placement_condition">Если у вас есть еще не размещенные фишки, то вы можете поставить их в любую пустую клетку</string>
     <string name="tutorial_placement_highlighting">Возможные ходы подсвечиваются</string>
     <string name="tutorial_normal_moves_condition">Если у вас нет неразмещенных фигур и у вас > 3 фишек, то вы можете двигать фишки в соседние клетки</string>
     <string name="tutorial_normal_moves_highlighting">Возможные ходы подсвечиваются после выбора фишки</string>
     <string name="tutorial_fly_condition">Если у вас нет фигур, чтобы разместить и у вас есть ровно 3 фишки, то вы можете переместить вашу фишку из любой клетки в любую другую (пустую)</string>
     <string name="tutorial_fly_highlighting">Возможные перемещения подсвечиваются после выбора фишки</string>
     <string name="tutorial_triples_condition">Если после вашего хода появляется новая линия из трех фигур, то вы можете убрать фишку противника</string>
-    <string name="tutorial_triples_highlighting">Такие линии подсвеченны серым цветом</string>
+    <string name="tutorial_triples_highlighting">Такие линии подсвечены серым цветом</string>
     <string name="tutorial_removal_moves_explanation">Для удаления фишки противника просто нажмите на неё</string>
     <string name="rating">Рейтинг</string>
-    <string name="keep_me_here">Оставьте меня тут</string>
-    <string name="back_to_main_screen">Обратно на главный экран</string>
+    <string name="keep_me_here">Остаться здесь</string>
+    <string name="back_to_main_screen">Вернуться обратно на главный экран</string>
     <string name="log_out">Выйти</string>
     <string name="image_was_updated">Картинка была обновлена, перезайдите на этот экран, чтобы увидеть изменения</string>
     <string name="image_too_large">Картинка слишком большая, вы можете использовать только картинки меньше %1$d x %2$d</string>
@@ -50,7 +50,7 @@
     <string name="analyze">Анализировать</string>
     <string name="depth">глубина</string>
     <string name="time_left">Оставшееся время</string>
-    <string name="want_to_give_up">Вы уверены, что хотите сдаться</string>
+    <string name="want_to_give_up">Вы уверены, что хотите сдаться?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="data_is_loading_wait">Информация все еще загружается, пожалуйста, подождите</string>

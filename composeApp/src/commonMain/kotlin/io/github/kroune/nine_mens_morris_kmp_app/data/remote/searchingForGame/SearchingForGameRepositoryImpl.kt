@@ -26,8 +26,7 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
         }.toString()
         var result: SearchingForGameResponse = SearchingForGameResponse.UnknownError()
         network.wss(route) {
-            var shouldBreak = false
-            while (!shouldBreak) {
+            while (true) {
                 incoming.receiveCatching()
                     .onSuccess {
                         if (it !is Frame.Binary) {
@@ -43,7 +42,7 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
 
                             "game_id" -> {
                                 result = SearchingForGameResponse.Success(data)
-                                shouldBreak = true
+                                break
                             }
 
                             else -> {
@@ -63,12 +62,12 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                         } else {
                             SearchingForGameResponse.UnknownError()
                         }
-                        shouldBreak = true
+                        break
                     }
                     .onFailure {
                         log("error when using websocket ${closeReason.await().let { "reason - ${it?.knownReason}, code - ${it?.code}" }}", it, Severity.ERROR)
                         result = SearchingForGameResponse.UnknownError()
-                        shouldBreak = true
+                        break
                     }
             }
         }

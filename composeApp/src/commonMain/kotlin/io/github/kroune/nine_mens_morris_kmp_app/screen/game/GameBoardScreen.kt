@@ -91,27 +91,29 @@ fun RenderPieceCount(pos: Position) {
     ) {
         Box(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (pos.pieceToMove) 0.6f else 1f)
-                .background(Color.Black, CircleShape)
-                .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
+                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (pos.pieceToMove) 1f else 0.6f)
+                .alpha(if (pos.pieceToMove) 1f else 0.6f)
+                .background(Color.Black, CircleShape),
             Alignment.Center
         ) {
-            Text(
-                color = Color.White,
-                text = pos.freeGreenPieces.toString()
-            )
+            if (pos.freeGreenPieces != 0.toUByte())
+                Text(
+                    color = Color.White,
+                    text = pos.freeGreenPieces.toString()
+                )
         }
         Box(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (!pos.pieceToMove) 0.6f else 1f)
-                .background(Color.White, CircleShape)
-                .alpha(if (pos.freeBluePieces == 0.toUByte()) 0f else 1f),
+                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (!pos.pieceToMove) 1f else 0.6f)
+                .alpha(if (!pos.pieceToMove) 1f else 0.6f)
+                .background(Color.White, CircleShape),
             Alignment.Center
         ) {
-            Text(
-                color = Color.Black,
-                text = pos.freeBluePieces.toString()
-            )
+            if (pos.freeBluePieces != 0.toUByte())
+                Text(
+                    color = Color.Black,
+                    text = pos.freeBluePieces.toString()
+                )
         }
     }
 }

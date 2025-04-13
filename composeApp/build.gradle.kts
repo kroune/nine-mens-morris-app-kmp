@@ -7,7 +7,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-import java.io.File
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 val appVersion: String = "1.0.1"
@@ -33,6 +32,10 @@ composeCompiler {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xnon-local-break-continue")
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
     listOf(wasmJs()).forEach {
         with(it) {
@@ -131,25 +134,37 @@ kotlin {
     }
 }
 
-tasks.register("produceWebRelease") {
-    logger.info("started working")
-    val dir = File("composeApp/build/dist/wasmJs/productionExecutable")
-    if (dir.exists()) {
-        var fileIndex = 0
-        dir.listFiles()?.toList()?.forEach {
-            println(it.name)
-            if (!it.name.endsWith(".wasm"))
-                return@forEach
-            val file = File(dir, "${fileIndex++}.wasm")
-            println(it.renameTo(file))
+tasks.register("wasmJsProcessBrowserDistribution") {
+    dependsOn("wasmJsBrowserDistribution")
+    val dir = "build/dist/wasmJs/productionExecutable"
+    val absolutePath = projectDir.absolutePath
+    inputs.dir(dir)
+    outputs.dir(dir)
+    description = "Rename wasm files"
+    doLast {
+        val file = File(absolutePath, dir)
+        if (file.exists()) {
+            val fileToParse = File(file, "composeApp.js")
+            val fileText = fileToParse.readText()
+            val regex = Regex("e\\.exports=r\\.p\\+\"[a-zA-Z0-9]*\\.wasm\"")
+            val prefix = "e.exports=r.p+\""
+            val suffix = "\""
+            val matches = regex.findAll(fileText).toList()
+                .map { it.value.removePrefix(prefix).removeSuffix(suffix) }
+            require(matches.size == 2)
+            val app = matches[0]
+            val newAppName = "app.wasm"
+            val skiko = matches[1]
+            val newSkikoName = "skiko.wasm"
+            println("app - $app, skiko - $skiko")
+            assert(File(file, app).renameTo(File(file, newAppName)))
+            assert(File(file, skiko).renameTo(File(file, newSkikoName)))
+            val transformedText = fileText.replace(app, newAppName).replace(skiko, newSkikoName)
+            fileToParse.writeText(transformedText)
+        } else {
+            logger.error("empty")
         }
-    } else {
-        println("empty")
     }
-}
-
-tasks.getByName("wasmJsBrowserDistribution").apply {
-//    this.finalizedBy("produceWebRelease")
 }
 
 @OptIn(ExperimentalEncodingApi::class)
