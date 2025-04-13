@@ -168,7 +168,7 @@ jobs:
             directory: iosOut/
             os: macos-latest
           # web
-          - target: wasmJsBrowserDistribution
+          - target: wasmJsProcessBrowserDistribution
             tag: Web
             after: |
             directory: composeApp/build/dist/wasmJs/productionExecutable/

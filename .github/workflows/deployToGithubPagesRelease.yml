@@ -148,7 +148,7 @@ jobs:
       matrix:
         include:
           # web
-          - target: wasmJsBrowserDistribution
+          - target: wasmJsProcessBrowserDistribution
             tag: Web
             after: |
             directory: composeApp/build/dist/wasmJs/productionExecutable/
