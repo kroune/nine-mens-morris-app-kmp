@@ -89,32 +89,31 @@ fun RenderPieceCount(pos: Position) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (pos.pieceToMove) 1f else 0.6f)
-                .alpha(if (pos.pieceToMove) 1f else 0.6f)
-                .background(Color.Black, CircleShape),
-            Alignment.Center
-        ) {
-            if (pos.freeGreenPieces != 0.toUByte())
-                Text(
-                    color = Color.White,
-                    text = pos.freeGreenPieces.toString()
-                )
-        }
-        Box(
-            modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (!pos.pieceToMove) 1f else 0.6f)
-                .alpha(if (!pos.pieceToMove) 1f else 0.6f)
-                .background(Color.White, CircleShape),
-            Alignment.Center
-        ) {
-            if (pos.freeBluePieces != 0.toUByte())
-                Text(
-                    color = Color.Black,
-                    text = pos.freeBluePieces.toString()
-                )
-        }
+        RenderPieceCountElement(true, pos.pieceToMove, pos.freeGreenPieces)
+        RenderPieceCountElement(false, !pos.pieceToMove, pos.freeBluePieces)
+    }
+}
+
+@Composable
+fun RenderPieceCountElement(
+    isGreen: Boolean,
+    shouldMove: Boolean,
+    freePieces: UByte
+) {
+    val backgroundColor = if (isGreen) Color.Black else Color.White
+    val textColor = if (!isGreen) Color.Black else Color.White
+    Box(
+        modifier = Modifier
+            .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (shouldMove) 1f else 0.6f)
+            .alpha(if (shouldMove) 1f else 0.6f)
+            .background(backgroundColor, CircleShape),
+        Alignment.Center
+    ) {
+        if (freePieces != 0.toUByte())
+            Text(
+                color = textColor,
+                text = freePieces.toString()
+            )
     }
 }
 

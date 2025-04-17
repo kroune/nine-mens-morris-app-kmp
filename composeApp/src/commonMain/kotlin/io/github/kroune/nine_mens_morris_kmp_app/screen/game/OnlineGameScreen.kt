@@ -1,6 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -30,9 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -251,33 +246,17 @@ fun PlayerCard(
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Box(
-                    modifier =
-                        Modifier.requiredSize(
-                            (30 * when {
-                                isGreen && pos.pieceToMove -> 1.5f
-                                !isGreen && !pos.pieceToMove -> 1.5f
-                                else -> 1f
-                            }).dp
-                        )
-                            .aspectRatio(1f)
-                            .background(if (isGreen) Color.White else Color.Black, CircleShape)
-                            .alpha(if (pos.freeGreenPieces == 0.toUByte()) 0f else 1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        color = if (!isGreen) {
-                            Color.White
-                        } else {
-                            Color.Black
-                        },
-                        text = if (!isGreen) {
-                            pos.freeBluePieces.toString()
-                        } else {
-                            pos.freeGreenPieces.toString()
-                        },
-                    )
+
+                val shouldMove = when {
+                    isGreen && pos.pieceToMove -> true
+                    !isGreen && !pos.pieceToMove -> true
+                    else -> false
                 }
+                RenderPieceCountElement(
+                    isGreen,
+                    shouldMove,
+                    if (isGreen) pos.freeGreenPieces else pos.freeBluePieces
+                )
                 Spacer(modifier = Modifier.height(5.dp))
                 DrawRating(
                     text = {
