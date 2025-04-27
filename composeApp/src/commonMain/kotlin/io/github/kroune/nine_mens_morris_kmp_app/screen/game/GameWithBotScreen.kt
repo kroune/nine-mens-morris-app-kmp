@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithBotEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
@@ -43,14 +44,14 @@ fun GameWithBotScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RenderPieceCount(pos = component.position)
+        RenderPieceCount(pos = component.position.collectValue())
         LimitSize(
             0.8f
         ) {
             RenderGameBoard(
                 modifier = Modifier,
-                pos = component.position,
-                selectedButton = component.selectedButton,
+                pos = component.position.collectValue(),
+                selectedButton = component.selectedButton.collectValue(),
                 moveHints = component.moveHints,
                 onClick = {
                     onEvent(GameWithBotEvent.OnPieceClick(it))

@@ -14,6 +14,6 @@ interface AccountInfoInteractorI {
     suspend fun getAccountLoginById(id: Long): LoginByIdApiResponses
     suspend fun getAccountPictureById(id: Long): AccountPictureByIdApiResponses
     suspend fun getOwnAccountId(): AccountIdByJwtTokenApiResponses
-    suspend fun getLeaderboard(): LeaderboardApiResponses
+    suspend fun getLeaderboard(amount: Int): LeaderboardApiResponses
     suspend fun uploadPicture(picture: ByteArray): UploadPictureApiResponses
 }

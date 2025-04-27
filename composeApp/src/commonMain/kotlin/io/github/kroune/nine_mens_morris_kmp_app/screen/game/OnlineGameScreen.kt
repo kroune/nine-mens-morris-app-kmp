@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.kroune.nineMensMorrisLib.Position
-import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
@@ -58,7 +58,8 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun OnlineGameScreen(
-    component: OnlineGameComponent
+    onEvent: (OnlineGameScreenEvent) -> Unit,
+    state: OnlineGameScreenState
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -71,79 +72,81 @@ fun OnlineGameScreen(
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .heightIn(max = 150.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    PlayerCard(
-                        playerName = component.ownAccountName,
-                        pictureByteArray = component.ownPictureByteArray,
-                        isGreen = component.isGreen,
-                        rating = component.ownAccountRating,
-                        pos = component.position,
-                        scope = scope,
-                        snackbarHostState = snackbarHostState,
-                        onEvent = { component.onEvent(it) },
-                        ownAccount = true
-                    )
+            with(state) {
+                Row(
+                    modifier = Modifier
+                        .heightIn(max = 150.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        PlayerCard(
+                            playerName = ownAccountLoginResult,
+                            pictureByteArray = ownAccountPictureResult,
+                            isGreen = isGreen,
+                            rating = ownAccountRatingResult,
+                            pos = position,
+                            scope = scope,
+                            snackbarHostState = snackbarHostState,
+                            onEvent = { onEvent(it) },
+                            ownAccount = true
+                        )
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        PlayerCard(
+                            playerName = enemyAccountLoginResult,
+                            pictureByteArray = enemyAccountPictureResult,
+                            isGreen = !isGreen,
+                            rating = enemyAccountRatingResult,
+                            pos = position,
+                            scope = scope,
+                            snackbarHostState = snackbarHostState,
+                            onEvent = { onEvent(it) },
+                            ownAccount = false
+                        )
+                    }
                 }
-                Box(modifier = Modifier.weight(1f)) {
-                    PlayerCard(
-                        playerName = component.enemyAccountName,
-                        pictureByteArray = component.enemyPictureByteArray,
-                        isGreen = !component.isGreen,
-                        rating = component.enemyAccountRating,
-                        pos = component.position,
-                        scope = scope,
-                        snackbarHostState = snackbarHostState,
-                        onEvent = { component.onEvent(it) },
-                        ownAccount = false
-                    )
-                }
-            }
-            Text(
-                text = "${stringResource(Res.string.time_left)}: ${component.timeLeft}",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            var showGameEndDialog by remember { mutableStateOf(true) }
-            LimitSize(
-                0.8f
-            ) {
-                RenderGameBoard(
-                    modifier = Modifier,
-                    pos = component.position,
-                    selectedButton = component.selectedButton,
-                    moveHints = component.moveHints,
-                    onClick = { component.onEvent(OnlineGameScreenEvent.Click(it)) }
+                Text(
+                    text = "${stringResource(Res.string.time_left)}: $timeLeft",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
                 )
-            }
-            if (!component.gameEnded) {
-                if (component.displayGiveUpConfirmation.value)
-                    GiveUpConfirm(
-                        onGiveUpDiscarded = {
-                            component.onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
-                        },
-                        onGiveUp = {
-                            component.onEvent(OnlineGameScreenEvent.GiveUp)
-                        }
+                var showGameEndDialog by remember { mutableStateOf(true) }
+                LimitSize(
+                    0.8f
+                ) {
+                    RenderGameBoard(
+                        modifier = Modifier,
+                        pos = position,
+                        selectedButton = selectedButton,
+                        moveHints = moveHints,
+                        onClick = { onEvent(OnlineGameScreenEvent.Click(it)) }
                     )
-            } else {
-                if (showGameEndDialog) {
-                    GameEndPopUp(
-                        {
-                            showGameEndDialog = false
-                        },
-                        {
-                            showGameEndDialog = false
-                        },
-                        {
-                            component.onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
-                        }
-                    )
+                }
+                if (!gameEnded) {
+                    if (displayGiveUpConfirmation)
+                        GiveUpConfirm(
+                            onGiveUpDiscarded = {
+                                onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
+                            },
+                            onGiveUp = {
+                                onEvent(OnlineGameScreenEvent.GiveUp)
+                            }
+                        )
+                } else {
+                    if (showGameEndDialog) {
+                        GameEndPopUp(
+                            {
+                                showGameEndDialog = false
+                            },
+                            {
+                                showGameEndDialog = false
+                            },
+                            {
+                                onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
+                            }
+                        )
+                    }
                 }
             }
         }

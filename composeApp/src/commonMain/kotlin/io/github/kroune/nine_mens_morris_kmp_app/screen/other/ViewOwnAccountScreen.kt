@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewOwnAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
@@ -50,12 +50,12 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ViewOwnAccountScreen(
-    component: ViewOwnAccountScreenComponent
+    onEvent: (ViewOwnAccountScreenEvent) -> Unit,
+    state: ViewOwnAccountScreenState
 ) {
-    val onEvent: (ViewOwnAccountScreenEvent) -> Unit = { component.onEvent(it) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    with(component) {
+    with(state) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             snackbarHost = {
@@ -75,7 +75,7 @@ fun ViewOwnAccountScreen(
                             Modifier
                                 .size(size)
                                 .aspectRatio(1f, true),
-                            pictureByteArray = accountPicture,
+                            pictureByteArray = accountPictureResult,
                             onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadIcon) },
                             onClick = {},
                             scope = scope,
@@ -93,7 +93,7 @@ fun ViewOwnAccountScreen(
                                 overflow = TextOverflow.Ellipsis
                             )
                         },
-                        accountName = accountName,
+                        accountName = accountLoginResult,
                         onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadName) },
                         scope = scope,
                         snackbarHostState = snackbarHostState
@@ -109,7 +109,7 @@ fun ViewOwnAccountScreen(
                             fontSize = 20.sp
                         )
                     },
-                    accountRating = accountRating,
+                    accountRating = accountRatingResult,
                     reloadRating = { onEvent(ViewOwnAccountScreenEvent.ReloadRating) },
                     scope = scope,
                     snackbarHostState = snackbarHostState
@@ -124,7 +124,7 @@ fun ViewOwnAccountScreen(
                             fontSize = 20.sp
                         )
                     },
-                    accountCreationDate = accountCreationDate,
+                    accountCreationDate = accountCreationDateResult,
                     onReload = {
                         onEvent(ViewOwnAccountScreenEvent.ReloadCreationDate)
                     },
@@ -139,7 +139,7 @@ fun ViewOwnAccountScreen(
                         return@rememberFilePickerLauncher
                     }
                     CoroutineScope(Dispatchers.Default).launch {
-                        component.onEvent(ViewOwnAccountScreenEvent.UploadNewPicture(file.readBytes()))
+                        onEvent(ViewOwnAccountScreenEvent.UploadNewPicture(file.readBytes()))
                     }
                 }
                 Button(
@@ -157,7 +157,7 @@ fun ViewOwnAccountScreen(
                     )
                 }
             }
-            HandleError(uploadingNewPicture, snackbarHostState, scope)
+            HandleError(uploadingNewPictureResult, snackbarHostState, scope)
         }
     }
 }

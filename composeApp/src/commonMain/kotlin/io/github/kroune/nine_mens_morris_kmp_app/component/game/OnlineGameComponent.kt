@@ -1,12 +1,11 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
+import io.github.kroune.nine_mens_morris_kmp_app.common.map
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
@@ -25,9 +24,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,60 +38,79 @@ class OnlineGameComponent(
     private val onNavigationToWelcomeScreen: () -> Unit,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    private val componentScope = componentCoroutineScope()
-
-    private val _enemyAccountId = mutableStateOf<Long?>(null)
-    val enemyAccountId by _enemyAccountId
-
-    private var _enemyAccountName = mutableStateOf<LoginByIdApiResponses?>(null)
-    val enemyAccountName by _enemyAccountName
-
-    private var _enemyPictureByteArray = mutableStateOf<AccountPictureByIdApiResponses?>(null)
-    val enemyPictureByteArray by _enemyPictureByteArray
-
-    private var _enemyAccountRating = mutableStateOf<RatingByIdApiResponses?>(null)
-    val enemyAccountRating by _enemyAccountRating
-
-    private val _ownAccountId = mutableStateOf<Long?>(null)
-    val ownAccountId by _ownAccountId
-
-    private var _ownAccountName = mutableStateOf<LoginByIdApiResponses?>(null)
-    val ownAccountName by _ownAccountName
-
-    private var _ownPictureByteArray = mutableStateOf<AccountPictureByIdApiResponses?>(null)
-    val ownPictureByteArray by _ownPictureByteArray
-
-    private var _ownAccountRating = mutableStateOf<RatingByIdApiResponses?>(null)
-    val ownAccountRating by _ownAccountRating
-    private val _position = mutableStateOf(
-        Position(
-            // @formatter:off
-            arrayOf(
-                EMPTY,                  EMPTY,                  EMPTY,
-                        EMPTY,          EMPTY,          EMPTY,
-                                EMPTY,  EMPTY,  EMPTY,
-                EMPTY,  EMPTY,  EMPTY,          EMPTY,  EMPTY,  EMPTY,
-                                EMPTY,  EMPTY,  EMPTY,
-                        EMPTY,          EMPTY,          EMPTY,
-                EMPTY,                  EMPTY,                  EMPTY
+    private val _state = MutableStateFlow(
+        OnlineGameScreenState(
+            position = Position(
+                // @formatter:off
+                arrayOf(
+                    EMPTY,                  EMPTY,                  EMPTY,
+                            EMPTY,          EMPTY,          EMPTY,
+                                    EMPTY,  EMPTY,  EMPTY,
+                    EMPTY,  EMPTY,  EMPTY,          EMPTY,  EMPTY,  EMPTY,
+                                    EMPTY,  EMPTY,  EMPTY,
+                            EMPTY,          EMPTY,          EMPTY,
+                    EMPTY,                  EMPTY,                  EMPTY
+                ),
+                // @formatter:on
+                0u, 0u, pieceToMove = true
             ),
-            // @formatter:on
-            0u, 0u, pieceToMove = true
+            selectedButton = null,
+            isGreen = false,
+            timeLeft = 30,
+            moveHints = listOf(),
+            gameEnded = false,
+
+            displayGiveUpConfirmation = false,
+            ownAccountLoginResult = null,
+            ownAccountRatingResult = null,
+            ownAccountPictureResult = null,
+            enemyAccountLoginResult = null,
+            enemyAccountRatingResult = null,
+            enemyAccountPictureResult = null,
         )
     )
-    val position by _position
-    private var _gameEnded = mutableStateOf(false)
-    val gameEnded by _gameEnded
-    private val _isGreen = mutableStateOf(false)
-    val isGreen by _isGreen
-    private val gameUseCase = GameBoardUseCase(_position, onGameEnd = {})
-    val selectedButton by gameUseCase.selectedButton
-    val moveHints by gameUseCase.moveHints
-    var timeLeft by mutableStateOf(30)
+    val state
+        get() = _state
+
+    private val componentScope = componentCoroutineScope()
+
+    private var enemyAccountId: Long? = null
+    private var ownAccountId: Long? = null
+    val selectedButton = MutableStateFlow<Int?>(null)
+    private val gameUseCase = GameBoardUseCase(
+        pos = _state.map(componentScope) { it.position },
+        onPositionChange = { value ->
+            _state.update {
+                it.copy(
+                    position = value
+                )
+            }
+        },
+        onGameEnd = {},
+        selectedButton = _state.map(componentScope) { it.selectedButton },
+        onSelectedButtonUpdate = { value ->
+            _state.update {
+                it.copy(
+                    selectedButton = value
+                )
+            }
+        },
+        onMoveHintsUpdate = { value ->
+            _state.update {
+                it.copy(
+                    moveHints = value
+                )
+            }
+        }
+    )
     private val channelToSendMoves: Channel<Movement> = Channel()
     private val channelToReceiveMoves: Channel<Movement> = Channel()
     val onGiveUp: suspend () -> Unit = {
-        _gameEnded.value = true
+        _state.update {
+            it.copy(
+                gameEnded = true
+            )
+        }
         channelToSendMoves.trySend(Movement(null, null))
     }
     private var onGiveClose: (suspend () -> Unit)? = null
@@ -107,36 +126,70 @@ class OnlineGameComponent(
                 // TODO: handle errors
                 val enemyId: Long
                 onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves)
-                    .let {
-                        _position.value = it.first.startPosition.await()
-                        _isGreen.value = it.first.isGreen.await()
-                        enemyId = it.first.enemyId.await()
-                        onGiveClose = it.second
-                        gameEnded = it.first.gameEnded
+                    .let { value ->
+                        state.update {
+                            it.copy(
+                                position = value.first.startPosition.await(),
+                                isGreen = value.first.isGreen.await()
+                            )
+                        }
+                        enemyId = value.first.enemyId.await()
+                        onGiveClose = value.second
+                        gameEnded = value.first.gameEnded
                     }
                 val accountIdResult = accountIdInteractor.getAccountId()
                 if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
                     error("accountId is not success")
                 }
-                _ownAccountId.value = accountIdResult.accountId
+                ownAccountId = accountIdResult.accountId
                 ownAccountInfoUseCase = AccountInfoUseCase(
-                    accountIdResult.accountId,
-                    needCreationDate = false,
-                    playerInfo = AccountInfoUseCase.PlayerInfo(
-                        name = _ownAccountName,
-                        rating = _ownAccountRating,
-                        accountPicture = _ownPictureByteArray
-                    )
+                    accountId = accountIdResult.accountId,
+                    onLoginResult = { result ->
+                        _state.update {
+                            it.copy(
+                                ownAccountLoginResult = result
+                            )
+                        }
+                    },
+                    onRatingResult = { result ->
+                        _state.update {
+                            it.copy(
+                                ownAccountRatingResult = result
+                            )
+                        }
+                    },
+                    needPicture = { result ->
+                        _state.update {
+                            it.copy(
+                                ownAccountPictureResult = result
+                            )
+                        }
+                    }
                 )
-                _enemyAccountId.value = enemyId
+                enemyAccountId = enemyId
                 enemyAccountInfoUseCase = AccountInfoUseCase(
-                    enemyId,
-                    needCreationDate = false,
-                    playerInfo = AccountInfoUseCase.PlayerInfo(
-                        name = _enemyAccountName,
-                        rating = _enemyAccountRating,
-                        accountPicture = _enemyPictureByteArray
-                    )
+                    accountId = enemyId,
+                    onLoginResult = { result ->
+                        _state.update {
+                            it.copy(
+                                enemyAccountLoginResult = result
+                            )
+                        }
+                    },
+                    onRatingResult = { result ->
+                        _state.update {
+                            it.copy(
+                                enemyAccountRatingResult = result
+                            )
+                        }
+                    },
+                    needPicture = { result ->
+                        _state.update {
+                            it.copy(
+                                enemyAccountPictureResult = result
+                            )
+                        }
+                    }
                 )
                 while (!gameEnded.isCompleted) {
                     val moveResult = channelToReceiveMoves.receiveCatching()
@@ -157,7 +210,11 @@ class OnlineGameComponent(
                     val move = moveResult.getOrThrow()
                     gameUseCase.processMove(move)
                 }
-                _gameEnded.value = true
+                _state.update {
+                    it.copy(
+                        gameEnded = true
+                    )
+                }
             }.onFailure {
                 println("caught unhandled exception at online game ${it.stackTraceToString()}")
                 withContext(Dispatchers.Main) {
@@ -166,8 +223,12 @@ class OnlineGameComponent(
             }
         }
         CoroutineScope(Dispatchers.Default).launch {
-            while (!gameEnded) {
-                timeLeft = max(timeLeft - 1, 0)
+            while (!_state.value.gameEnded) {
+                _state.update {
+                    it.copy(
+                        timeLeft = (it.timeLeft - 1).coerceAtLeast(0)
+                    )
+                }
                 delay(1.seconds)
             }
         }
@@ -183,28 +244,40 @@ class OnlineGameComponent(
             }
 
             is OnlineGameScreenEvent.Click -> {
-                if (_gameEnded.value) {
+                if (_state.value.gameEnded) {
                     return
                 }
-                if (isGreen == gameUseCase.pos.value.pieceToMove) {
+                if (_state.value.isGreen == gameUseCase.pos.value.pieceToMove) {
                     val move = gameUseCase.handleClick(event.index)
                     if (move != null) {
                         gameUseCase.processMove(move)
-                        gameUseCase.moveHints.value = listOf()
+                        _state.update {
+                            it.copy(
+                                moveHints = listOf()
+                            )
+                        }
                         // post our move
                         CoroutineScope(Dispatchers.Default).launch {
                             channelToSendMoves.trySend(move).onFailure {
                                 // game has ended || some exception occurred
                                 return@launch
                             }
-                            timeLeft = 30
+                            _state.update {
+                                it.copy(
+                                    timeLeft = 30
+                                )
+                            }
                         }
                     } else {
                         gameUseCase.handleHighLighting()
                     }
                 } else {
                     // we can't make any move if it isn't our move
-                    gameUseCase.moveHints.value = listOf()
+                    _state.update {
+                        it.copy(
+                            moveHints = listOf()
+                        )
+                    }
                 }
             }
 
@@ -255,9 +328,27 @@ class OnlineGameComponent(
     }
 
     override fun onBackPressed() {
-        if (!gameEnded)
+        if (!_state.value.gameEnded)
             displayGiveUpConfirmation.value = true
         else
             onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
     }
 }
+
+data class OnlineGameScreenState(
+    val position: Position,
+    val selectedButton: Int?,
+    val isGreen: Boolean,
+    val timeLeft: Int,
+    val moveHints: List<Int>,
+    val gameEnded: Boolean,
+    val displayGiveUpConfirmation: Boolean,
+
+    val ownAccountLoginResult: LoginByIdApiResponses?,
+    val ownAccountRatingResult: RatingByIdApiResponses?,
+    val ownAccountPictureResult: AccountPictureByIdApiResponses?,
+
+    val enemyAccountLoginResult: LoginByIdApiResponses?,
+    val enemyAccountRatingResult: RatingByIdApiResponses?,
+    val enemyAccountPictureResult: AccountPictureByIdApiResponses?
+)

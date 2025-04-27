@@ -31,12 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenState
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.PlayerInfo
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.LeaderboardEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
-import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.CoroutineScope
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
@@ -45,7 +45,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LeaderboardScreen(component: LeaderboardComponent) {
+fun LeaderboardScreen(
+    onEvent: (LeaderboardEvent) -> Unit,
+    state: LeaderboardScreenState,
+) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -68,10 +71,10 @@ fun LeaderboardScreen(component: LeaderboardComponent) {
                 )
             }
 
-            itemsIndexed(component.players) { index, player ->
+            itemsIndexed(state.leaderboard) { index, player ->
                 LeaderboardItem(
                     player = player,
-                    onEvent = { component.onEvent(it) },
+                    onEvent = { onEvent(it) },
                     scope,
                     snackbarHostState,
                     index
@@ -86,7 +89,7 @@ fun LeaderboardScreen(component: LeaderboardComponent) {
  */
 @Composable
 fun LeaderboardItem(
-    player: AccountInfoUseCase.PlayerInfo,
+    player: PlayerInfo,
     onEvent: (LeaderboardEvent) -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
@@ -107,7 +110,7 @@ fun LeaderboardItem(
             DrawIcon(
                 modifier = Modifier
                     .sizeIn(maxWidth = 80.dp, maxHeight = 80.dp),
-                pictureByteArray = player.accountPicture.value,
+                pictureByteArray = player.picture,
                 onReload = {
                     onEvent(LeaderboardEvent.ReloadIcon(index))
                 },
@@ -122,7 +125,7 @@ fun LeaderboardItem(
                 Box(modifier = Modifier.height(40.dp)) {
                     DrawName(
                         text = @Composable { Text(it) },
-                        accountName = player.name.value,
+                        accountName = player.loginResult,
                         onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
                         scope = scope,
                         snackbarHostState = snackbarHostState
@@ -139,7 +142,7 @@ fun LeaderboardItem(
                                 text = "${stringResource(Res.string.rating)}: $it"
                             )
                         },
-                        accountRating = player.rating.value,
+                        accountRating = player.ratingResult,
                         reloadRating = { onEvent(LeaderboardEvent.ReloadRating(index)) },
                         scope = scope,
                         snackbarHostState = snackbarHostState

@@ -26,11 +26,14 @@ import io.ktor.http.appendPathSegments
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromByteArray
@@ -208,4 +211,17 @@ inline fun <reified A, reified B> Frame.decodeServerEvent(): Pair<A, B> {
 
 inline fun <reified A> ByteArray.decodeProtobuf(): A {
     return ProtoBuf.decodeFromByteArray(this)
+}
+
+inline fun <T, R> StateFlow<T>.map(
+    scope: CoroutineScope,
+        crossinline transform: (value: T) -> R
+): StateFlow<R> {
+    val stateFlow = MutableStateFlow(transform(value))
+    scope.launch {
+        this@map.collect {
+            stateFlow.emit(transform(it))
+        }
+    }
+    return stateFlow
 }

@@ -18,7 +18,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenCo
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.home.WelcomeScreen
 import io.github.kroune.toCollection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

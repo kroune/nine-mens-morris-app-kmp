@@ -38,9 +38,9 @@ class AccountInfoInteractorImpl : AccountInfoInteractorI {
         return remote.getAccountIdByJwtToken(jwtToken)
     }
 
-    override suspend fun getLeaderboard(): LeaderboardApiResponses {
+    override suspend fun getLeaderboard(amount: Int): LeaderboardApiResponses {
         val jwtToken = jwtTokenInteractor.getJwtToken()!!
-        return remote.getLeaderboard(jwtToken)
+        return remote.getLeaderboard(amount, jwtToken)
     }
 
     override suspend fun uploadPicture(picture: ByteArray): UploadPictureApiResponses {

@@ -12,7 +12,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScree
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
@@ -63,7 +63,7 @@ sealed class Child(open val component: ComponentContextWithBackHandle) {
     ) : Child(component)
 
     data class LeaderboardChild(
-        override val component: LeaderboardComponent
+        override val component: LeaderboardScreenComponent
     ) : Child(component)
 }
 

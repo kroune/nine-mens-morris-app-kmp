@@ -24,7 +24,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationS
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewOwnAccountScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.home.WelcomeScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.AppTheme
 
 @Composable
@@ -52,11 +52,18 @@ fun App(component: RootComponent) {
                     }
 
                     is Child.ViewAccountScreenChild -> {
-                        ViewAccountScreen(instance.component)
+                        with(instance.component) {
+                            ViewAccountScreen(
+                                { onEvent(it) },
+                                state.collectValue()
+                            )
+                        }
                     }
 
                     is Child.ViewOwnAccountScreenChild -> {
-                        ViewOwnAccountScreen(instance.component)
+                        with(instance.component) {
+                            ViewOwnAccountScreen({ onEvent(it) }, state.collectValue())
+                        }
                     }
 
                     is Child.SignUpScreenChild -> {
@@ -86,11 +93,21 @@ fun App(component: RootComponent) {
                     }
 
                     is Child.OnlineGameChild -> {
-                        OnlineGameScreen(instance.component)
+                        with(instance.component) {
+                            OnlineGameScreen(
+                                { onEvent(it) },
+                                state.collectValue()
+                            )
+                        }
                     }
 
                     is Child.LeaderboardChild -> {
-                        LeaderboardScreen(instance.component)
+                        with(instance.component) {
+                            LeaderboardScreen(
+                                { onEvent(it) },
+                                state.collectValue()
+                            )
+                        }
                     }
                 }
                 BackHandler(instance.component.backHandler) {

@@ -1,7 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewOwnAccountScreenEvent
@@ -14,36 +12,61 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ViewOwnAccountScreenComponent(
-    val onNavigationBack: () -> Unit,
+    private val onNavigationBack: () -> Unit,
     accountId: Long,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+    private val _state = MutableStateFlow(
+        ViewOwnAccountScreenState(
+            false,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    )
+    val state: StateFlow<ViewOwnAccountScreenState>
+        get() = _state
+
     private val componentScope = componentCoroutineScope()
 
-    var isUploadingNewPictureInProgress = false
-    private var _uploadingNewPicture = mutableStateOf<UploadPictureApiResponses?>(null)
-    val uploadingNewPicture by _uploadingNewPicture
-
-    private val _accountName = mutableStateOf<LoginByIdApiResponses?>(null)
-    val accountName by _accountName
-    private val _accountRating = mutableStateOf<RatingByIdApiResponses?>(null)
-    val accountRating by _accountRating
-    private var _accountCreationDate = mutableStateOf<CreationDateByIdApiResponses?>(null)
-    val accountCreationDate by _accountCreationDate
-    private var _accountPicture = mutableStateOf<AccountPictureByIdApiResponses?>(null)
-    val accountPicture by _accountPicture
-
     private val accountInfoUseCase = AccountInfoUseCase(
-        accountId,
-        playerInfo = AccountInfoUseCase.PlayerInfo(
-            name = _accountName,
-            rating = _accountRating,
-            creationDate = _accountCreationDate,
-            accountPicture = _accountPicture
-        )
+        accountId = accountId,
+        onLoginResult = { result ->
+            _state.update {
+                it.copy(
+                    accountLoginResult = result
+                )
+            }
+        },
+        onRatingResult = { result ->
+            _state.update {
+                it.copy(
+                    accountRatingResult = result
+                )
+            }
+        },
+        needCreationDate = { result ->
+            _state.update {
+                it.copy(
+                    accountCreationDateResult = result
+                )
+            }
+        },
+        needPicture = { result ->
+            _state.update {
+                it.copy(
+                    accountPictureResult = result
+                )
+            }
+        }
     )
 
     fun onEvent(event: ViewOwnAccountScreenEvent) {
@@ -74,10 +97,18 @@ class ViewOwnAccountScreenComponent(
             }
 
             is ViewOwnAccountScreenEvent.UploadNewPicture -> {
-                isUploadingNewPictureInProgress = true
+                _state.update {
+                    it.copy(
+                        isUploadingNewPictureInProgress = true
+                    )
+                }
                 componentScope.launch {
-                    _uploadingNewPicture.value = accountInfoInteractor.uploadPicture(event.picture)
-                    isUploadingNewPictureInProgress = false
+                    _state.update {
+                        it.copy(
+                            uploadingNewPictureResult = accountInfoInteractor.uploadPicture(event.picture),
+                            isUploadingNewPictureInProgress = false
+                        )
+                    }
                 }
             }
         }
@@ -87,3 +118,12 @@ class ViewOwnAccountScreenComponent(
         onEvent(ViewOwnAccountScreenEvent.Back)
     }
 }
+
+data class ViewOwnAccountScreenState(
+    val isUploadingNewPictureInProgress: Boolean,
+    val uploadingNewPictureResult: UploadPictureApiResponses?,
+    val accountLoginResult: LoginByIdApiResponses?,
+    val accountRatingResult: RatingByIdApiResponses?,
+    val accountCreationDateResult: CreationDateByIdApiResponses?,
+    val accountPictureResult: AccountPictureByIdApiResponses?
+)

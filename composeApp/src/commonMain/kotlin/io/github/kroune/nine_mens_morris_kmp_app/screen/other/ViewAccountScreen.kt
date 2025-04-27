@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
@@ -33,89 +33,87 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ViewAccountScreen(
-    component: ViewAccountScreenComponent
+    onEvent: (ViewAccountScreenEvent) -> Unit,
+    state: ViewAccountScreenState
 ) {
-    val name = component.accountName
-    val rating = component.accountRating
-    val creationDate = component.accountCreationDate
-    val picture = component.accountPicture
-    val onEvent: (ViewAccountScreenEvent) -> Unit = { component.onEvent(it) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { _ ->
-        Column(
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
+    with(state) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            }
+        ) { _ ->
+            Column(
+                horizontalAlignment = Alignment.Start
             ) {
-                BoxWithConstraints {
-                    val size = min(this.maxWidth, this.maxHeight) / 2
-                    DrawIcon(
-                        Modifier
-                            .size(size)
-                            .aspectRatio(1f, true),
-                        pictureByteArray = picture,
-                        onReload = { onEvent(ViewAccountScreenEvent.ReloadIcon) },
-                        onClick = {},
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    BoxWithConstraints {
+                        val size = min(this.maxWidth, this.maxHeight) / 2
+                        DrawIcon(
+                            Modifier
+                                .size(size)
+                                .aspectRatio(1f, true),
+                            pictureByteArray = accountPictureResult,
+                            onReload = { onEvent(ViewAccountScreenEvent.ReloadIcon) },
+                            onClick = {},
+                            scope = scope,
+                            snackbarHostState = snackbarHostState
+                        )
+                    }
+                    DrawName(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        text = @Composable {
+                            Text(
+                                it,
+                                fontSize = 30.sp,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        accountName = accountLoginResult,
+                        onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
                         scope = scope,
                         snackbarHostState = snackbarHostState
                     )
                 }
-                DrawName(
+                DrawRating(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    text = @Composable {
+                        .fillMaxWidth(0.5f)
+                        .height(30.dp),
+                    text = {
                         Text(
-                            it,
-                            fontSize = 30.sp,
-                            overflow = TextOverflow.Ellipsis
+                            "${stringResource(Res.string.rating)}: $it",
+                            fontSize = 20.sp
                         )
                     },
-                    accountName = name,
-                    onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
+                    accountRating = accountRatingResult,
+                    reloadRating = { onEvent(ViewAccountScreenEvent.ReloadRating) },
                     scope = scope,
                     snackbarHostState = snackbarHostState
                 )
+                DrawAccountCreationDate(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(30.dp),
+                    text = { (first, second, third) ->
+                        Text(
+                            "$first-$second-$third",
+                            fontSize = 20.sp
+                        )
+                    },
+                    accountCreationDate = accountCreationDateResult,
+                    onReload = {
+                        onEvent(ViewAccountScreenEvent.ReloadCreationDate)
+                    },
+                    scope = scope, snackbarHostState = snackbarHostState
+                )
             }
-            DrawRating(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(30.dp),
-                text = {
-                    Text(
-                        "${stringResource(Res.string.rating)}: $it",
-                        fontSize = 20.sp
-                    )
-                },
-                accountRating = rating,
-                reloadRating = { onEvent(ViewAccountScreenEvent.ReloadRating) },
-                scope = scope,
-                snackbarHostState = snackbarHostState
-            )
-            DrawAccountCreationDate(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(30.dp),
-                text = { (first, second, third) ->
-                    Text(
-                        "$first-$second-$third",
-                        fontSize = 20.sp
-                    )
-                },
-                accountCreationDate = creationDate,
-                onReload = {
-                    onEvent(ViewAccountScreenEvent.ReloadCreationDate)
-                },
-                scope = scope, snackbarHostState = snackbarHostState
-            )
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
+import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
@@ -35,13 +36,9 @@ fun GameWithFriendScreen(
     var gameEndPopUpClosed by remember { mutableStateOf(false) }
     if (!gameEndPopUpClosed && component.gameEnded) {
         GameEndPopUp(
-            {
-                gameEndPopUpClosed = true
-            },
-            {
-                gameEndPopUpClosed = true
-            },
-            {
+            onDismiss = { gameEndPopUpClosed = true },
+            onDiscarded = { gameEndPopUpClosed = true },
+            onBackToMainScreen = {
                 gameEndPopUpClosed = false
                 component.onEvent(GameWithFriendEvent.Back)
             }
@@ -51,14 +48,14 @@ fun GameWithFriendScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RenderPieceCount(pos = component.position)
+        RenderPieceCount(pos = component.position.collectValue())
         LimitSize(
             0.8f
         ) {
             RenderGameBoard(
                 modifier = Modifier,
-                pos = component.position,
-                selectedButton = component.selectedButton,
+                pos = component.position.collectValue(),
+                selectedButton = component.selectedButton.collectValue(),
                 moveHints = component.moveHints,
                 onClick = {
                     onEvent(GameWithFriendEvent.OnPieceClick(it))

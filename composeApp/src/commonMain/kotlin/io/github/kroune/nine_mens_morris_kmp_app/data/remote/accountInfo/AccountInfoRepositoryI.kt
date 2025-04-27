@@ -14,6 +14,6 @@ interface AccountInfoRepositoryI {
     suspend fun getAccountLoginById(id: Long, jwtToken: String): LoginByIdApiResponses
     suspend fun getAccountPictureById(id: Long, jwtToken: String): AccountPictureByIdApiResponses
     suspend fun getAccountIdByJwtToken(jwtToken: String): AccountIdByJwtTokenApiResponses
-    suspend fun getLeaderboard(jwtToken: String): LeaderboardApiResponses
+    suspend fun getLeaderboard(amount: Int, jwtToken: String): LeaderboardApiResponses
     suspend fun uploadPicture(picture: ByteArray, jwtToken: String): UploadPictureApiResponses
 }

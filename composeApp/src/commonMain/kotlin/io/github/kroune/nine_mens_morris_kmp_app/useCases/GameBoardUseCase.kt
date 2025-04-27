@@ -1,22 +1,24 @@
 package io.github.kroune.nine_mens_morris_kmp_app.useCases
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import com.kroune.nineMensMorrisLib.GameState
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import com.kroune.nineMensMorrisLib.move.Movement
 import com.kroune.nineMensMorrisLib.move.moveProvider
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class GameBoardUseCase(
     /**
      * stores current position
      */
-    val pos: MutableState<Position> = mutableStateOf(gameStartPosition),
+    val pos: StateFlow<Position> = MutableStateFlow(gameStartPosition),
+
+    val onPositionChange: (Position) -> Unit,
     /**
      * stores all pieces which can be moved (used for highlighting)
      */
-    val moveHints: MutableState<List<Int>> = mutableStateOf(listOf()),
+    val onMoveHintsUpdate: (List<Int>) -> Unit = {},
     /**
      * what we should execute on undo
      */
@@ -38,7 +40,9 @@ class GameBoardUseCase(
     /**
      * used for storing info of the previous (valid one) clicked button
      */
-    val selectedButton: MutableState<Int?> = mutableStateOf(null),
+    val onSelectedButtonUpdate: (Int?) -> Unit = {},
+
+    val selectedButton: StateFlow<Int?>,
     /**
      * what should happen on game end
      */
@@ -60,9 +64,9 @@ class GameBoardUseCase(
         if (!movesHistory.isEmpty()) {
             undoneMoveHistory.addLast(movesHistory.last())
             movesHistory.removeLast()
-            pos.value = movesHistory.lastOrNull() ?: gameStartPosition
-            moveHints.value = arrayListOf()
-            selectedButton.value = null
+            onPositionChange(movesHistory.lastOrNull() ?: gameStartPosition)
+            onMoveHintsUpdate(arrayListOf())
+            onSelectedButtonUpdate(null)
         }
     }
 
@@ -70,9 +74,9 @@ class GameBoardUseCase(
         if (!undoneMoveHistory.isEmpty()) {
             movesHistory.addLast(undoneMoveHistory.last())
             undoneMoveHistory.removeLast()
-            pos.value = movesHistory.lastOrNull() ?: gameStartPosition
-            selectedButton.value = null
-            moveHints.value = arrayListOf()
+            onPositionChange(movesHistory.lastOrNull() ?: gameStartPosition)
+            onSelectedButtonUpdate(null)
+            onMoveHintsUpdate(arrayListOf())
         }
     }
 
@@ -80,8 +84,8 @@ class GameBoardUseCase(
      * processes selected movement
      */
     fun processMove(move: Movement) {
-        pos.value = move.producePosition(pos.value).copy()
-        selectedButton.value = null
+        onPositionChange(move.producePosition(pos.value).copy())
+        onSelectedButtonUpdate(null)
         saveMove(pos.value)
         if (pos.value.gameState() == GameState.End) {
             onGameEnd(pos.value)
@@ -113,7 +117,7 @@ class GameBoardUseCase(
             GameState.Normal -> {
                 if (selectedButton.value == null) {
                     if (pos.value.positions[elementIndex] == pos.value.pieceToMove) {
-                        selectedButton.value = elementIndex
+                        onSelectedButtonUpdate(elementIndex)
                     }
                 } else {
                     if (moveProvider[selectedButton.value!!].filter { endIndex ->
@@ -121,7 +125,7 @@ class GameBoardUseCase(
                         }.contains(elementIndex)) {
                         return Movement(selectedButton.value, elementIndex)
                     } else {
-                        selectedButton.value = null
+                        onSelectedButtonUpdate(null)
                     }
                 }
             }
@@ -129,12 +133,12 @@ class GameBoardUseCase(
             GameState.Flying -> {
                 if (selectedButton.value == null) {
                     if (pos.value.positions[elementIndex] == pos.value.pieceToMove)
-                        selectedButton.value = elementIndex
+                        onSelectedButtonUpdate(elementIndex)
                 } else {
                     if (pos.value.positions[elementIndex] == null) {
                         return Movement(selectedButton.value, elementIndex)
                     } else {
-                        selectedButton.value = null
+                        onSelectedButtonUpdate(null)
                     }
                 }
             }
@@ -157,29 +161,35 @@ class GameBoardUseCase(
         pos.value.generateMoves().let { moves ->
             when (pos.value.gameState()) {
                 GameState.Placement -> {
-                    moveHints.value = moves.map { it.endIndex!! }.toMutableList()
+                    onMoveHintsUpdate(moves.map { it.endIndex!! })
                 }
 
                 GameState.Normal -> {
                     if (selectedButton.value == null) {
-                        moveHints.value = moves.map { it.startIndex!! }.toMutableList()
+                        onMoveHintsUpdate(moves.map { it.startIndex!! })
                     } else {
-                        moveHints.value = moves.filter { it.startIndex == selectedButton.value }
-                            .map { it.endIndex!! }.toMutableList()
+                        onMoveHintsUpdate(
+                            moves
+                                .filter { it.startIndex == selectedButton.value }
+                                .map { it.endIndex!! }
+                        )
                     }
                 }
 
                 GameState.Flying -> {
                     if (selectedButton.value == null) {
-                        moveHints.value = moves.map { it.startIndex!! }.toMutableList()
+                        onMoveHintsUpdate(moves.map { it.startIndex!! })
                     } else {
-                        moveHints.value = moves.filter { it.startIndex == selectedButton.value }
-                            .map { it.endIndex!! }.toMutableList()
+                        onMoveHintsUpdate(
+                            moves
+                                .filter { it.startIndex == selectedButton.value }
+                                .map { it.endIndex!! }
+                        )
                     }
                 }
 
                 GameState.Removing -> {
-                    moveHints.value = moves.map { it.startIndex!! }.toMutableList()
+                    onMoveHintsUpdate(moves.map { it.startIndex!! })
                 }
 
                 GameState.End -> {

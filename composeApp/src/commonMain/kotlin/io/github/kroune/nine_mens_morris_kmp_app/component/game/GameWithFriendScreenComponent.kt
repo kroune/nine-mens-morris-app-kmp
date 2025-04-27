@@ -1,30 +1,43 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class GameWithFriendScreenComponent(
     val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+    val selectedButton = MutableStateFlow<Int?>(null)
+    var moveHints by mutableStateOf(listOf<Int>())
+
+    val position = MutableStateFlow(gameStartPosition)
+
     private val gameAnalyzeUseCase = GameAnalyzeUseCase()
     private val gameUseCase = GameBoardUseCase(
-        mutableStateOf(gameStartPosition),
+        position,
+        onPositionChange = {
+            position.value = it
+        },
         onGameEnd = {
             gameEnded = true
+        },
+        onMoveHintsUpdate = {
+            moveHints = it
+        },
+        selectedButton = selectedButton,
+        onSelectedButtonUpdate = {
+            selectedButton.value = it
         }
     )
 
-    val position by gameUseCase.pos
-    val selectedButton by gameUseCase.selectedButton
-    val moveHints by gameUseCase.moveHints
     val gameAnalyzePositions = gameAnalyzeUseCase.positionsValue
     val analyzeDepth by gameAnalyzeUseCase.depthValue
     var gameEnded by mutableStateOf(false)
@@ -32,7 +45,7 @@ class GameWithFriendScreenComponent(
     fun onEvent(event: GameWithFriendEvent) {
         when (event) {
             GameWithFriendEvent.StartAnalyze -> {
-                gameAnalyzeUseCase.startAnalyze(position)
+                gameAnalyzeUseCase.startAnalyze(position.value)
             }
 
             GameWithFriendEvent.DecreaseAnalyzeDepth -> {

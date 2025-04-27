@@ -1,8 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
@@ -12,30 +9,56 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiRespon
 import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 class ViewAccountScreenComponent(
     val onNavigationBack: () -> Unit,
     accountId: Long,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-
-    private val _accountName = mutableStateOf<LoginByIdApiResponses?>(null)
-    var accountName by _accountName
-    private val _accountRating = mutableStateOf<RatingByIdApiResponses?>(null)
-    var accountRating by _accountRating
-    private var _accountCreationDate = mutableStateOf<CreationDateByIdApiResponses?>(null)
-    var accountCreationDate by _accountCreationDate
-    private var _accountPicture = mutableStateOf<AccountPictureByIdApiResponses?>(null)
-    var accountPicture by _accountPicture
+    private val _state = MutableStateFlow(
+        ViewAccountScreenState(
+            null,
+            null,
+            null,
+            null
+        )
+    )
+    val state: StateFlow<ViewAccountScreenState>
+        get() = _state
 
     private val accountInfoUseCase = AccountInfoUseCase(
-        accountId,
-        playerInfo = AccountInfoUseCase.PlayerInfo(
-            name = _accountName,
-            rating = _accountRating,
-            creationDate = _accountCreationDate,
-            accountPicture = _accountPicture
-        )
+        accountId = accountId,
+        onLoginResult = { result ->
+            _state.update {
+                it.copy(
+                    accountLoginResult = result
+                )
+            }
+        },
+        onRatingResult = { result ->
+            _state.update {
+                it.copy(
+                    accountRatingResult = result
+                )
+            }
+        },
+        needCreationDate = { result ->
+            _state.update {
+                it.copy(
+                    accountCreationDateResult = result
+                )
+            }
+        },
+        needPicture = { result ->
+            _state.update {
+                it.copy(
+                    accountPictureResult = result
+                )
+            }
+        }
     )
 
     fun onEvent(event: ViewAccountScreenEvent) {
@@ -71,3 +94,10 @@ class ViewAccountScreenComponent(
         onEvent(ViewAccountScreenEvent.Back)
     }
 }
+
+data class ViewAccountScreenState(
+    val accountLoginResult: LoginByIdApiResponses?,
+    val accountRatingResult: RatingByIdApiResponses?,
+    val accountCreationDateResult: CreationDateByIdApiResponses?,
+    val accountPictureResult: AccountPictureByIdApiResponses?
+)

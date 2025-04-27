@@ -1,4 +1,4 @@
-package io.github.kroune.nine_mens_morris_kmp_app.screen.other
+package io.github.kroune.nine_mens_morris_kmp_app.screen.home
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween

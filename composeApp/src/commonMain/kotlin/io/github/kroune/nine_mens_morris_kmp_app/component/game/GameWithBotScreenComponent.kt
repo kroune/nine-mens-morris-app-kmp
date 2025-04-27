@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class GameWithBotScreenComponent(
@@ -22,9 +23,16 @@ class GameWithBotScreenComponent(
 
     private var botJob: Job? = null
 
+    val selectedButton = MutableStateFlow<Int?>(null)
+    var moveHints by mutableStateOf(listOf<Int>())
+
+    val position = MutableStateFlow(gameStartPosition)
     var gameEnded by mutableStateOf(false)
     private val gameUseCase = GameBoardUseCase(
-        mutableStateOf(gameStartPosition),
+        position,
+        onPositionChange = {
+            position.value = it
+        },
         onClick = { index ->
             if (pos.value.pieceToMove) {
                 val move = this.handleClick(index)
@@ -33,7 +41,7 @@ class GameWithBotScreenComponent(
                 }
                 handleHighLighting()
                 botJob = CoroutineScope(Dispatchers.Default).launch {
-                    while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
+                    while (canBotMove()) {
                         botMove()
                         handleHighLighting()
                     }
@@ -45,7 +53,7 @@ class GameWithBotScreenComponent(
             botJob?.cancel()
             botJob = CoroutineScope(Dispatchers.Default).launch {
                 delay(800)
-                while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
+                while (canBotMove()) {
                     botMove()
                     handleHighLighting()
                 }
@@ -57,13 +65,20 @@ class GameWithBotScreenComponent(
                 botJob?.cancel()
                 botJob = CoroutineScope(Dispatchers.Default).launch {
                     delay(800)
-                    while (!pos.value.pieceToMove && pos.value.gameState() != GameState.End) {
+                    while (canBotMove()) {
                         botMove()
                         handleHighLighting()
                     }
                 }
             }
         },
+        onMoveHintsUpdate = {
+            moveHints = it
+        },
+        onSelectedButtonUpdate = {
+            selectedButton.value = it
+        },
+        selectedButton = selectedButton,
         onGameEnd = {
             gameEnded = true
         }
@@ -74,9 +89,6 @@ class GameWithBotScreenComponent(
         processMove(bestMove!!)
     }
 
-    val position by gameUseCase.pos
-    val selectedButton by gameUseCase.selectedButton
-    val moveHints by gameUseCase.moveHints
     fun onEvent(event: GameWithBotEvent) {
         when (event) {
             is GameWithBotEvent.OnPieceClick -> {
@@ -101,6 +113,11 @@ class GameWithBotScreenComponent(
                 onNavigationBack()
             }
         }
+    }
+
+    fun GameBoardUseCase.canBotMove(): Boolean {
+        return !pos.value.pieceToMove && pos.value.gameState() != GameState.End && pos.value.generateMoves()
+            .isNotEmpty()
     }
 
     override fun onBackPressed() {
