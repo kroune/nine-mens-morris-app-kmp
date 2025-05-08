@@ -16,6 +16,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
@@ -24,6 +25,7 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +57,9 @@ val network = HttpClient {
         }
         exponentialDelay()
     }
+    install(ContentNegotiation) {
+        json()
+    }
     install(HttpTimeout) {
         this.requestTimeoutMillis = 10 * 1000
         this.socketTimeoutMillis = 30 * 60 * 1000
@@ -69,8 +74,8 @@ val network = HttpClient {
 /**
  * The server's address
  */
-val serverUrl
-    get() = URLBuilder(host = "nine-men-s-morris.me")
+private val serverUrl
+    get() = URLBuilder(host = "10.0.2.2", port = 8080)
 
 /**
  * The API endpoint for user-related operations.
@@ -82,14 +87,14 @@ private val serverApi
 
 fun httpApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.HTTPS
+        protocol = URLProtocol.HTTP
         modification()
     }.build()
 }
 
 fun wsApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.WSS
+        protocol = URLProtocol.WS
         modification()
     }.build()
 }

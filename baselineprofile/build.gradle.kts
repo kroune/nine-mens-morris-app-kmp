@@ -59,7 +59,7 @@ androidComponents {
         v.instrumentationRunnerArguments.put(
             "targetAppId",
             @Suppress("UnstableApiUsage")
-            v.testedApks.map { artifactsLoader.load(it)?.applicationId }
+            v.testedApks.map { artifactsLoader.load(it)?.applicationId!! }
         )
     }
 }

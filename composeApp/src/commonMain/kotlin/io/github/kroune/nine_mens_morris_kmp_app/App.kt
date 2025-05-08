@@ -12,7 +12,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
-import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.SignUpScreen

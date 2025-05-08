@@ -1,6 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
-import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
@@ -22,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -76,7 +74,6 @@ class OnlineGameComponent(
 
     private var enemyAccountId: Long? = null
     private var ownAccountId: Long? = null
-    val selectedButton = MutableStateFlow<Int?>(null)
     private val gameUseCase = GameBoardUseCase(
         pos = _state.map(componentScope) { it.position },
         onPositionChange = { value ->
@@ -103,21 +100,10 @@ class OnlineGameComponent(
             }
         }
     )
-    private val channelToSendMoves: Channel<Movement> = Channel()
     private val channelToReceiveMoves: Channel<Movement> = Channel()
-    val onGiveUp: suspend () -> Unit = {
-        _state.update {
-            it.copy(
-                gameEnded = true
-            )
-        }
-        channelToSendMoves.trySend(Movement(null, null))
-    }
     private var onGiveClose: (suspend () -> Unit)? = null
-    var displayGiveUpConfirmation = mutableStateOf(false)
     private lateinit var ownAccountInfoUseCase: AccountInfoUseCase
     private lateinit var enemyAccountInfoUseCase: AccountInfoUseCase
-
 
     init {
         componentScope.launch {
@@ -125,7 +111,7 @@ class OnlineGameComponent(
                 val gameEnded: CompletableDeferred<Boolean>
                 // TODO: handle errors
                 val enemyId: Long
-                onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves)
+                onlineGameInteractor.connect(gameId, channelToReceiveMoves)
                     .let { value ->
                         state.update {
                             it.copy(
@@ -237,9 +223,13 @@ class OnlineGameComponent(
     fun onEvent(event: OnlineGameScreenEvent) {
         when (event) {
             OnlineGameScreenEvent.GiveUp -> {
-                displayGiveUpConfirmation.value = false
-                CoroutineScope(Dispatchers.Default).launch {
-                    onGiveUp()
+                _state.update {
+                    it.copy(
+                        displayGiveUpConfirmation = false
+                    )
+                }
+                componentScope.launch {
+                    onlineGameInteractor.giveUp(gameId)
                 }
             }
 
@@ -257,11 +247,9 @@ class OnlineGameComponent(
                             )
                         }
                         // post our move
-                        CoroutineScope(Dispatchers.Default).launch {
-                            channelToSendMoves.trySend(move).onFailure {
-                                // game has ended || some exception occurred
-                                return@launch
-                            }
+                        componentScope.launch {
+                            // TODO: handle errors
+                            onlineGameInteractor.sendMove(move, gameId)
                             _state.update {
                                 it.copy(
                                     timeLeft = 30
@@ -286,7 +274,11 @@ class OnlineGameComponent(
             }
 
             OnlineGameScreenEvent.GiveUpDiscarded -> {
-                displayGiveUpConfirmation.value = false
+                _state.update {
+                    it.copy(
+                        displayGiveUpConfirmation = false
+                    )
+                }
             }
 
             is OnlineGameScreenEvent.ReloadIcon -> {
@@ -328,9 +320,13 @@ class OnlineGameComponent(
     }
 
     override fun onBackPressed() {
-        if (!_state.value.gameEnded)
-            displayGiveUpConfirmation.value = true
-        else
+        if (!_state.value.gameEnded) {
+            _state.update {
+                it.copy(
+                    displayGiveUpConfirmation = true
+                )
+            }
+        } else
             onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
     }
 }

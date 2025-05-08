@@ -1,7 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
-import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
+import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
@@ -13,14 +13,12 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
-import io.ktor.http.parameters
 import kotlinx.serialization.json.Json
 
 class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
@@ -220,14 +218,11 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getLeaderboard(amount: Int, jwtToken: String): LeaderboardApiResponses {
         val route = httpApi {
             appendPathSegments("leaderboard")
-            parameters {
-                append("jwtToken", jwtToken)
-            }
+            parameters["jwtToken"] = jwtToken
+            parameters["amount"] = amount.toString()
         }
         return runCatching {
-            val request = network.get(route) {
-                parameter("amount", amount)
-            }
+            val request = network.get(route)
             leaderboardResult(request)
         }
             .recoverNetworkError(LeaderboardApiResponses.NetworkError)
@@ -258,7 +253,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
         }
     }
 
-    override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): UploadPictureApiResponses {
+    override suspend fun uploadPicture(
+        picture: ByteArray,
+        jwtToken: String
+    ): UploadPictureApiResponses {
         val route = httpApi {
             appendPathSegments("upload-picture")
             parameters["jwtToken"] = jwtToken

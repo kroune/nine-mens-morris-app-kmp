@@ -8,7 +8,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.webhistory.withWebHistory
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
-import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
