@@ -75,7 +75,7 @@ val network = HttpClient {
  * The server's address
  */
 private val serverUrl
-    get() = URLBuilder(host = "10.0.2.2", port = 8080)
+    get() = URLBuilder(host = "nine-men-s-morris.me")
 
 /**
  * The API endpoint for user-related operations.
