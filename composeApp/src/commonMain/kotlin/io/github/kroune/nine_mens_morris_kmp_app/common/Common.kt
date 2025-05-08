@@ -36,6 +36,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromByteArray
@@ -87,14 +88,14 @@ private val serverApi
 
 fun httpApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.HTTP
+        protocol = URLProtocol.HTTPS
         modification()
     }.build()
 }
 
 fun wsApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.WS
+        protocol = URLProtocol.WSS
         modification()
     }.build()
 }
@@ -214,6 +215,7 @@ inline fun <reified A, reified B> Frame.decodeServerEvent(): Pair<A, B> {
     }
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 inline fun <reified A> ByteArray.decodeProtobuf(): A {
     return ProtoBuf.decodeFromByteArray(this)
 }
