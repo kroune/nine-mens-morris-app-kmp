@@ -2,16 +2,14 @@ package io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame
 
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
+import io.github.kroune.nine_mens_morris_kmp_app.common.ServerEvent
+import io.github.kroune.nine_mens_morris_kmp_app.common.decodeProtobuf
 import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
 import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.receiveDeserialized
-import io.github.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
 import io.github.kroune.nine_mens_morris_kmp_app.common.wsApi
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
 import io.github.kroune.nine_mens_morris_kmp_app.model.GiveUpApiResponse
 import io.github.kroune.nine_mens_morris_kmp_app.model.SendMoveApiResponse
-import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -20,83 +18,66 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
+import io.ktor.websocket.Frame
 import io.ktor.websocket.close
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.onFailure
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 
 class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
     /**
      * @return Triple of [SendChannel] [ReceiveChannel] Unit to close connection
      */
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun connect(
         gameId: Long,
-        jwtToken: String,
-        channelToReceiveMoves: Channel<Movement>
-    ): Pair<GameInfo, suspend () -> Unit> {
-        val receivedIsGreenStatus = CompletableDeferred<Boolean>()
-        val positionReceivedOnConnection = CompletableDeferred<Position>()
-        val enemyId = CompletableDeferred<Long>()
-        val session: CompletableDeferred<DefaultClientWebSocketSession?> = CompletableDeferred(null)
-        val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred()
-        CoroutineScope(Dispatchers.Default).launch {
+        jwtToken: String
+    ): Flow<GameEvent> {
+        return flow {
             val route = wsApi {
                 appendPathSegments("game", "gameWS")
                 parameters["jwtToken"] = jwtToken
                 parameters["gameId"] = gameId.toString()
-            }.toString()
+            }
             network.wss(
-                route
+                route.toString()
             ) {
-                var channelClosedNormally = false
-                // session was created
-                session.complete(this)
                 // if we have green pieces
-                receivedIsGreenStatus.complete(this@wss.receiveDeserialized<Boolean>())
+                val isGreen = receiveDeserialized<Boolean>()
+                emit(GameEvent.IsGreenEvent(isGreen))
                 // enemy id
-                enemyId.complete(this@wss.receiveDeserialized<Long>())
+                val enemyId = receiveDeserialized<Long>()
+                emit(GameEvent.EnemyIdEvent(enemyId))
                 // game start position
-                positionReceivedOnConnection.complete(this@wss.receiveDeserialized<Position>())
-                while (!gameEnded.isCompleted) {
-                    val moveResult = this.receiveDeserializedCatching<Movement>()
-                    // some error happened, cleaning up everything
-                    moveResult.onFailure {
-                        log("failed to send a receive a move", it, Severity.ERROR)
-                        channelToReceiveMoves.close()
-                        close()
-                        if (!channelClosedNormally) {
-                            log("channel was closed abnormally", it, Severity.ERROR)
-                            throw it
-                        }
+                val position = receiveDeserialized<Position>()
+                emit(GameEvent.PositionEvent(position))
+
+                while (isActive) {
+                    val it = incoming.receive()
+                    if (it !is Frame.Binary)
                         return@wss
-                    }
-                    val move = moveResult.getOrThrow()
-                    println("received move $move")
-                    if (move == Movement(null, null)) {
-                        println("game ended")
-                        gameEnded.complete(true)
-                        channelToReceiveMoves.close()
-                        channelClosedNormally = true
-                        close()
-                        break
-                    }
-                    channelToReceiveMoves.trySend(move).onFailure {
-                        // channel to receive moves was closed
-                        channelToReceiveMoves.close()
-                        close()
+                    val (metadata, data) = ProtoBuf.decodeFromByteArray<ServerEvent>(it.data)
+                    println("metadata - $metadata")
+                    when (metadata) {
+                        "move" -> {
+                            emit(GameEvent.MovementEvent(data.decodeProtobuf()))
+                        }
+
+                        "game-end" -> {
+                            emit(GameEvent.GameEnd(data.decodeProtobuf()))
+                            close()
+                        }
                     }
                 }
             }
-        }
-        return Pair(
-            GameInfo(receivedIsGreenStatus, positionReceivedOnConnection, enemyId, gameEnded),
-            { session.await()!!.close() }
-        )
+        }.buffer(20000, BufferOverflow.DROP_OLDEST)
     }
 
     override suspend fun giveUp(gameId: Long, jwtToken: String): GiveUpApiResponse {
@@ -157,4 +138,12 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
             }
         }
     }
+}
+
+sealed interface GameEvent {
+    data class IsGreenEvent(val isGreen: Boolean) : GameEvent
+    data class EnemyIdEvent(val enemyId: Long) : GameEvent
+    data class PositionEvent(val position: Position) : GameEvent
+    data class MovementEvent(val data: Movement) : GameEvent
+    data class GameEnd(val reason: String) : GameEvent
 }

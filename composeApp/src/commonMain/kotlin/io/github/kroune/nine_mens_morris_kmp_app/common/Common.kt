@@ -62,13 +62,13 @@ val network = HttpClient {
         json()
     }
     install(HttpTimeout) {
-        this.requestTimeoutMillis = 10 * 1000
-        this.socketTimeoutMillis = 30 * 60 * 1000
-        this.connectTimeoutMillis = 10 * 1000
+//        this.requestTimeoutMillis = 10 * 1000
+//        this.socketTimeoutMillis = 30 * 60 * 1000
+//        this.connectTimeoutMillis = 10 * 1000
     }
     install(WebSockets) {
         contentConverter = KotlinxWebsocketSerializationConverter(Json)
-        pingInterval = 3.seconds
+        pingInterval = null
     }
 }
 
@@ -76,7 +76,7 @@ val network = HttpClient {
  * The server's address
  */
 private val serverUrl
-    get() = URLBuilder(host = "nine-men-s-morris.me")
+    get() = URLBuilder(host = "10.0.2.2", port = 8080)
 
 /**
  * The API endpoint for user-related operations.
@@ -88,14 +88,14 @@ private val serverApi
 
 fun httpApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.HTTPS
+        protocol = URLProtocol.HTTP
         modification()
     }.build()
 }
 
 fun wsApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.WSS
+        protocol = URLProtocol.WS
         modification()
     }.build()
 }
@@ -205,13 +205,13 @@ fun <T> StateFlow<T>.collectValue(
 
 @Serializable
 data class ServerEvent(
-    val data: ByteArray,
-    val metadata: ByteArray
+    val metadata: String,
+    val data: ByteArray
 )
 
-inline fun <reified A, reified B> Frame.decodeServerEvent(): Pair<A, B> {
+inline fun <reified B> Frame.decodeServerEvent(): Pair<String, B> {
     return data.decodeProtobuf<ServerEvent>().let { (data, metadata) ->
-        data.decodeProtobuf<A>() to metadata.decodeProtobuf<B>()
+        data to metadata.decodeProtobuf<B>()
     }
 }
 

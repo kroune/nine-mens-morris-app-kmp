@@ -33,7 +33,7 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                             println("not a binary")
                             return@onSuccess
                         }
-                        val (data, metadata) = it.decodeServerEvent<Long, String>()
+                        val (metadata, data) = it.decodeServerEvent<Long>()
                         when (metadata) {
                             "waiting_time" -> {
                                 val waitingTime = data
@@ -50,7 +50,6 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                                     "unknown metadata - $metadata, data - $data",
                                     severity = Severity.INFO
                                 )
-                                println("FUCK")
                                 metadata
                             }
                         }

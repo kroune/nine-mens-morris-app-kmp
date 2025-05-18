@@ -30,9 +30,10 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
-import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.core.PickerMode
-import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.dialogs.FileKitMode
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -132,8 +133,8 @@ fun ViewOwnAccountScreen(
                     snackbarHostState = snackbarHostState
                 )
                 val launcher = rememberFilePickerLauncher(
-                    type = PickerType.Image,
-                    mode = PickerMode.Single
+                    type = FileKitType.Image,
+                    mode = FileKitMode.Single
                 ) { file ->
                     if (file == null) {
                         return@rememberFilePickerLauncher

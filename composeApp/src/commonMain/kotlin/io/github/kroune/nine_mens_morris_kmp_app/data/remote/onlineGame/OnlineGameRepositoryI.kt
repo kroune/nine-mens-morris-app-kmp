@@ -5,14 +5,13 @@ import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.model.GiveUpApiResponse
 import io.github.kroune.nine_mens_morris_kmp_app.model.SendMoveApiResponse
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 
 interface OnlineGameRepositoryI {
     suspend fun connect(
         gameId: Long,
         jwtToken: String,
-        channelToReceiveMoves: Channel<Movement>
-    ): Pair<GameInfo, suspend () -> Unit>
+    ): Flow<GameEvent>
 
     suspend fun giveUp(
         gameId: Long,
@@ -25,10 +24,3 @@ interface OnlineGameRepositoryI {
         jwtToken: String
     ): SendMoveApiResponse
 }
-
-class GameInfo(
-    val isGreen: CompletableDeferred<Boolean>,
-    val startPosition: CompletableDeferred<Position>,
-    val enemyId: CompletableDeferred<Long>,
-    val gameEnded: CompletableDeferred<Boolean>
-)

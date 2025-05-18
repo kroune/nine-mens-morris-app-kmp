@@ -4,23 +4,23 @@ android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
 androidx-activityCompose = "1.10.1"
-compose-plugin = "1.8.0-beta01"
-filekitCompose = "0.8.8"
+compose-plugin = "1.8.0"
+filekitCompose = "0.10.0-beta03"
 kotlin = "2.1.20"
 ktor = "3.0.3"
-coroutines = "1.10.1"
+coroutines = "1.10.2"
 decompose = "3.3.0"
-kotlinxSerializationJson = "1.8.0"
+kotlinxSerializationJson = "1.8.1"
 multiplatformSettings = "1.3.0"
 ninemensmorris = "1.0.2"
-uiTestJunit4Android = "1.7.8"
+uiTestJunit4Android = "1.8.1"
 roborazzi = "1.38.0"
 storytale = "0.0.1+dev5"
 macroBenchmark = "1.3.4"
 junit = "1.2.1"
 espressoCore = "3.6.1"
 uiautomator = "2.3.0"
-baselineprofile = "1.4.0-alpha10"
+baselineprofile = "1.4.0-beta01"
 screenshot = "0.0.1-alpha09"
 compose-compiler-report-generator = "1.4.1"
 
@@ -28,7 +28,7 @@ compose-compiler-report-generator = "1.4.1"
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
 androidx-ui-test = { module = "androidx.compose.ui:ui-test", version.ref = "uiTestJunit4Android" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestJunit4Android" }
-filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCompose" }
+filekit-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekitCompose" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

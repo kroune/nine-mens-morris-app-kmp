@@ -3,9 +3,9 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.game
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
-import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.common.map
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame.GameEvent
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
@@ -16,16 +16,11 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -100,115 +95,110 @@ class OnlineGameComponent(
             }
         }
     )
-    private val channelToReceiveMoves: Channel<Movement> = Channel()
-    private var onGiveClose: (suspend () -> Unit)? = null
     private lateinit var ownAccountInfoUseCase: AccountInfoUseCase
     private lateinit var enemyAccountInfoUseCase: AccountInfoUseCase
 
     init {
         componentScope.launch {
-            runCatching {
-                val gameEnded: CompletableDeferred<Boolean>
-                // TODO: handle errors
-                val enemyId: Long
-                onlineGameInteractor.connect(gameId, channelToReceiveMoves)
-                    .let { value ->
-                        state.update {
-                            it.copy(
-                                position = value.first.startPosition.await(),
-                                isGreen = value.first.isGreen.await()
-                            )
-                        }
-                        enemyId = value.first.enemyId.await()
-                        onGiveClose = value.second
-                        gameEnded = value.first.gameEnded
+            val accountIdResult = accountIdInteractor.getAccountId()
+            if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
+                error("accountId is not success")
+            }
+            ownAccountId = accountIdResult.accountId
+            ownAccountInfoUseCase = AccountInfoUseCase(
+                accountId = accountIdResult.accountId,
+                onLoginResult = { result ->
+                    _state.update {
+                        it.copy(
+                            ownAccountLoginResult = result
+                        )
                     }
-                val accountIdResult = accountIdInteractor.getAccountId()
-                if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
-                    error("accountId is not success")
+                },
+                onRatingResult = { result ->
+                    _state.update {
+                        it.copy(
+                            ownAccountRatingResult = result
+                        )
+                    }
+                },
+                needPicture = { result ->
+                    _state.update {
+                        it.copy(
+                            ownAccountPictureResult = result
+                        )
+                    }
                 }
-                ownAccountId = accountIdResult.accountId
-                ownAccountInfoUseCase = AccountInfoUseCase(
-                    accountId = accountIdResult.accountId,
-                    onLoginResult = { result ->
-                        _state.update {
-                            it.copy(
-                                ownAccountLoginResult = result
-                            )
-                        }
-                    },
-                    onRatingResult = { result ->
-                        _state.update {
-                            it.copy(
-                                ownAccountRatingResult = result
-                            )
-                        }
-                    },
-                    needPicture = { result ->
-                        _state.update {
-                            it.copy(
-                                ownAccountPictureResult = result
-                            )
-                        }
-                    }
-                )
-                enemyAccountId = enemyId
-                enemyAccountInfoUseCase = AccountInfoUseCase(
-                    accountId = enemyId,
-                    onLoginResult = { result ->
-                        _state.update {
-                            it.copy(
-                                enemyAccountLoginResult = result
-                            )
-                        }
-                    },
-                    onRatingResult = { result ->
-                        _state.update {
-                            it.copy(
-                                enemyAccountRatingResult = result
-                            )
-                        }
-                    },
-                    needPicture = { result ->
-                        _state.update {
-                            it.copy(
-                                enemyAccountPictureResult = result
-                            )
-                        }
-                    }
-                )
-                while (!gameEnded.isCompleted) {
-                    val moveResult = channelToReceiveMoves.receiveCatching()
-                    if (moveResult.isFailure) {
-                        // game ended
-                        if (gameEnded.isCompleted && gameEnded.getCompleted()) {
-                            break
-                        } else {
-                            // some error happened
-                            // TODO: notify user
-                            println(moveResult.exceptionOrNull()!!.stackTraceToString())
-                            withContext(Dispatchers.Main) {
-                                onNavigationToWelcomeScreen()
+            )
+        }
+        componentScope.launch {
+            // TODO: handle errors
+            onlineGameInteractor.connect(gameId).collect {
+                println(it)
+                when (it) {
+                    is GameEvent.EnemyIdEvent -> {
+                        val enemyId = it.enemyId
+                        enemyAccountId = enemyId
+                        enemyAccountInfoUseCase = AccountInfoUseCase(
+                            accountId = enemyId,
+                            onLoginResult = { result ->
+                                _state.update {
+                                    it.copy(
+                                        enemyAccountLoginResult = result
+                                    )
+                                }
+                            },
+                            onRatingResult = { result ->
+                                _state.update {
+                                    it.copy(
+                                        enemyAccountRatingResult = result
+                                    )
+                                }
+                            },
+                            needPicture = { result ->
+                                _state.update {
+                                    it.copy(
+                                        enemyAccountPictureResult = result
+                                    )
+                                }
                             }
-                            return@launch
+                        )
+                    }
+
+                    is GameEvent.GameEnd -> {
+                        _state.update {
+                            it.copy(
+                                gameEnded = true
+                            )
                         }
                     }
-                    val move = moveResult.getOrThrow()
-                    gameUseCase.processMove(move)
-                }
-                _state.update {
-                    it.copy(
-                        gameEnded = true
-                    )
-                }
-            }.onFailure {
-                println("caught unhandled exception at online game ${it.stackTraceToString()}")
-                withContext(Dispatchers.Main) {
-                    onNavigationToWelcomeScreen()
+
+                    is GameEvent.IsGreenEvent -> {
+                        val isGreen = it.isGreen
+                        _state.update {
+                            it.copy(
+                                isGreen = isGreen
+                            )
+                        }
+                    }
+
+                    is GameEvent.MovementEvent -> {
+                        val move = it.data
+                        gameUseCase.processMove(move)
+                    }
+
+                    is GameEvent.PositionEvent -> {
+                        val position = it.position
+                        _state.update {
+                            it.copy(
+                                position = position
+                            )
+                        }
+                    }
                 }
             }
+            println("GAME ENDED")
         }
-        CoroutineScope(Dispatchers.Default).launch {
+        componentScope.launch {
             while (!_state.value.gameEnded) {
                 _state.update {
                     it.copy(
@@ -229,7 +219,8 @@ class OnlineGameComponent(
                     )
                 }
                 componentScope.launch {
-                    onlineGameInteractor.giveUp(gameId)
+                    val result = onlineGameInteractor.giveUp(gameId)
+                    println(result)
                 }
             }
 
@@ -249,7 +240,8 @@ class OnlineGameComponent(
                         // post our move
                         componentScope.launch {
                             // TODO: handle errors
-                            onlineGameInteractor.sendMove(move, gameId)
+                            val result = onlineGameInteractor.sendMove(move, gameId)
+                            println(result)
                             _state.update {
                                 it.copy(
                                     timeLeft = 30
