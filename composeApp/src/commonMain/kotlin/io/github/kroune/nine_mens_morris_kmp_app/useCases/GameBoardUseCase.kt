@@ -18,7 +18,7 @@ class GameBoardUseCase(
     /**
      * stores all pieces which can be moved (used for highlighting)
      */
-    val onMoveHintsUpdate: (List<Int>) -> Unit = {},
+    val onMoveHintsUpdate: (Set<Int>) -> Unit = {},
     /**
      * what we should execute on undo
      */
@@ -46,7 +46,7 @@ class GameBoardUseCase(
     /**
      * what should happen on game end
      */
-    val onGameEnd: (pos: Position) -> Unit
+    val onGameEnd: () -> Unit
 ) {
 
     /**
@@ -65,7 +65,7 @@ class GameBoardUseCase(
             undoneMoveHistory.addLast(movesHistory.last())
             movesHistory.removeLast()
             onPositionChange(movesHistory.lastOrNull() ?: gameStartPosition)
-            onMoveHintsUpdate(arrayListOf())
+            onMoveHintsUpdate(setOf())
             onSelectedButtonUpdate(null)
         }
     }
@@ -76,7 +76,7 @@ class GameBoardUseCase(
             undoneMoveHistory.removeLast()
             onPositionChange(movesHistory.lastOrNull() ?: gameStartPosition)
             onSelectedButtonUpdate(null)
-            onMoveHintsUpdate(arrayListOf())
+            onMoveHintsUpdate(setOf())
         }
     }
 
@@ -88,7 +88,7 @@ class GameBoardUseCase(
         onSelectedButtonUpdate(null)
         saveMove(pos.value)
         if (pos.value.gameState() == GameState.End) {
-            onGameEnd(pos.value)
+            onGameEnd()
         }
     }
 
@@ -161,35 +161,37 @@ class GameBoardUseCase(
         pos.value.generateMoves().let { moves ->
             when (pos.value.gameState()) {
                 GameState.Placement -> {
-                    onMoveHintsUpdate(moves.map { it.endIndex!! })
+                    onMoveHintsUpdate(moves.map { it.endIndex!! }.toSet())
                 }
 
                 GameState.Normal -> {
                     if (selectedButton.value == null) {
-                        onMoveHintsUpdate(moves.map { it.startIndex!! })
+                        onMoveHintsUpdate(moves.map { it.startIndex!! }.toSet())
                     } else {
                         onMoveHintsUpdate(
                             moves
                                 .filter { it.startIndex == selectedButton.value }
                                 .map { it.endIndex!! }
+                                .toSet()
                         )
                     }
                 }
 
                 GameState.Flying -> {
                     if (selectedButton.value == null) {
-                        onMoveHintsUpdate(moves.map { it.startIndex!! })
+                        onMoveHintsUpdate(moves.map { it.startIndex!! }.toSet())
                     } else {
                         onMoveHintsUpdate(
                             moves
                                 .filter { it.startIndex == selectedButton.value }
                                 .map { it.endIndex!! }
+                                .toSet()
                         )
                     }
                 }
 
                 GameState.Removing -> {
-                    onMoveHintsUpdate(moves.map { it.startIndex!! })
+                    onMoveHintsUpdate(moves.map { it.startIndex!! }.toSet())
                 }
 
                 GameState.End -> {

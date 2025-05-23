@@ -9,6 +9,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -20,11 +21,12 @@ class AuthRepositoryImpl : AuthRepositoryI {
     override suspend fun register(login: String, password: String): RegisterApiResponses {
         val route = httpApi {
             appendPathSegments("reg")
-            parameters["login"] = login
-            parameters["password"] = password
         }
         return runCatching {
-            val request = network.post(route)
+            val request = network.post(route) {
+                parameter("login", login)
+                parameter("password", password)
+            }
             registerResult(request)
         }
             .recoverNetworkError(RegisterApiResponses.NetworkError())

@@ -24,7 +24,7 @@ class GameWithBotScreenComponent(
     private var botJob: Job? = null
 
     val selectedButton = MutableStateFlow<Int?>(null)
-    var moveHints by mutableStateOf(listOf<Int>())
+    var moveHints by mutableStateOf(setOf<Int>())
 
     val position = MutableStateFlow(gameStartPosition)
     var gameEnded by mutableStateOf(false)

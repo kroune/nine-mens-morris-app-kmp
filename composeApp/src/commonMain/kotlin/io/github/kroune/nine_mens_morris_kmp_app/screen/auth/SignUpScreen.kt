@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.component.auth.SignUpScreenState
+import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.auth.SignUpScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses

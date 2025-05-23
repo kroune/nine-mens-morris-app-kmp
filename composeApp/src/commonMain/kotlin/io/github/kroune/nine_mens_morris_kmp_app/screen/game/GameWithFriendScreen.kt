@@ -17,8 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
-import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
-import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
@@ -28,19 +27,17 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
  */
 @Composable
 fun GameWithFriendScreen(
-    component: GameWithFriendScreenComponent
+    state: GameWithFriendScreenState,
+    onEvent: (GameWithFriendEvent) -> Unit
 ) {
-    val onEvent: (GameWithFriendEvent) -> Unit = {
-        component.onEvent(it)
-    }
     var gameEndPopUpClosed by remember { mutableStateOf(false) }
-    if (!gameEndPopUpClosed && component.gameEnded) {
+    if (!gameEndPopUpClosed && state.gameEnded) {
         GameEndPopUp(
             onDismiss = { gameEndPopUpClosed = true },
             onDiscarded = { gameEndPopUpClosed = true },
             onBackToMainScreen = {
                 gameEndPopUpClosed = false
-                component.onEvent(GameWithFriendEvent.Back)
+                onEvent(GameWithFriendEvent.Back)
             }
         )
     }
@@ -48,15 +45,15 @@ fun GameWithFriendScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RenderPieceCount(pos = component.position.collectValue())
+        RenderPieceCount(pos = state.position)
         LimitSize(
             0.8f
         ) {
             RenderGameBoard(
                 modifier = Modifier,
-                pos = component.position.collectValue(),
-                selectedButton = component.selectedButton.collectValue(),
-                moveHints = component.moveHints,
+                pos = state.position,
+                selectedButton = state.selectedButton,
+                moveHints = state.moveHints,
                 onClick = {
                     onEvent(GameWithFriendEvent.OnPieceClick(it))
                 },
@@ -72,19 +69,19 @@ fun GameWithFriendScreen(
                     )
                     .fillMaxHeight()
                     .fillMaxWidth(0.8f),
-                positions = component.gameAnalyzePositions,
-                depth = component.analyzeDepth,
+                positions = state.gameAnalyzePositions,
+                depth = state.depth,
                 startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
                 increaseDepth = { onEvent(GameWithFriendEvent.IncreaseAnalyzeDepth) },
                 decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
             )
             RenderUndoRedo(
                 handleUndo = {
-                    if (!component.gameEnded)
+                    if (!state.gameEnded)
                         onEvent(GameWithFriendEvent.Undo)
                 },
                 handleRedo = {
-                    if (!component.gameEnded)
+                    if (!state.gameEnded)
                         onEvent(GameWithFriendEvent.Redo)
                 }
             )

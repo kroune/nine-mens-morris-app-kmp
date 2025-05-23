@@ -53,7 +53,7 @@ fun RenderLoseTutorialScreen() {
             RenderGameBoard(
                 pos = position,
                 selectedButton = 3,
-                moveHints = listOf(),
+                moveHints = setOf(),
                 onClick = {}
             )
         }

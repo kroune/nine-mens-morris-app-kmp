@@ -1,7 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
-import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
+import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
@@ -20,18 +20,18 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
-import io.ktor.http.parameters
 import kotlinx.serialization.json.Json
 
 class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getAccountRatingById(id: Long, jwtToken: String): RatingByIdApiResponses {
         val route = httpApi {
             appendPathSegments("get-rating-by-id")
-            parameters["id"] = id.toString()
-            parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                parameter("id", id)
+                parameter("jwtToken", jwtToken)
+            }
             accountRatingByIdResult(request)
         }
             .recoverNetworkError(RatingByIdApiResponses.NetworkError)
@@ -68,11 +68,12 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     ): CreationDateByIdApiResponses {
         val route = httpApi {
             appendPathSegments("get-creation-date-by-id")
-            parameters["id"] = id.toString()
-            parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                parameter("id", id)
+                parameter("jwtToken", jwtToken)
+            }
             accountCreationDateByIdResult(request)
         }
             .recoverNetworkError(CreationDateByIdApiResponses.NetworkError)
@@ -106,11 +107,12 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getAccountLoginById(id: Long, jwtToken: String): LoginByIdApiResponses {
         val route = httpApi {
             appendPathSegments("get-login-by-id")
-            parameters["id"] = id.toString()
-            parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                parameter("id", id)
+                parameter("jwtToken", jwtToken)
+            }
             accountLoginByIdResult(request)
         }
             .recoverNetworkError(LoginByIdApiResponses.NetworkError)
@@ -145,11 +147,12 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     ): AccountPictureByIdApiResponses {
         val route = httpApi {
             appendPathSegments("get-picture-by-id")
-            parameters["id"] = id.toString()
-            parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                parameter("id", id)
+                parameter("jwtToken", jwtToken)
+            }
             accountPictureByIdResult(request)
         }
             .recoverNetworkError(AccountPictureByIdApiResponses.NetworkError)
@@ -183,10 +186,11 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getAccountIdByJwtToken(jwtToken: String): AccountIdByJwtTokenApiResponses {
         val route = httpApi {
             appendPathSegments("get-id-by-jwt-token")
-            parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                parameter("jwtToken", jwtToken)
+            }
             accountIdByJwtTokenResult(request)
         }
             .recoverNetworkError(AccountIdByJwtTokenApiResponses.NetworkError())
@@ -220,12 +224,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
     override suspend fun getLeaderboard(amount: Int, jwtToken: String): LeaderboardApiResponses {
         val route = httpApi {
             appendPathSegments("leaderboard")
-            parameters {
-                append("jwtToken", jwtToken)
-            }
         }
         return runCatching {
             val request = network.get(route) {
+                parameter("jwtToken", jwtToken)
                 parameter("amount", amount)
             }
             leaderboardResult(request)
@@ -258,7 +260,10 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
         }
     }
 
-    override suspend fun uploadPicture(picture: ByteArray, jwtToken: String): UploadPictureApiResponses {
+    override suspend fun uploadPicture(
+        picture: ByteArray,
+        jwtToken: String
+    ): UploadPictureApiResponses {
         val route = httpApi {
             appendPathSegments("upload-picture")
             parameters["jwtToken"] = jwtToken

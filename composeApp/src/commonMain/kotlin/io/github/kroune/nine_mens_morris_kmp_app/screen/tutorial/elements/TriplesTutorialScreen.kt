@@ -55,7 +55,7 @@ fun RenderTriplesTutorialScreen() {
                 modifier = Modifier,
                 pos = position,
                 selectedButton = 3,
-                moveHints = listOf(),
+                moveHints = setOf(),
                 onClick = {}
             )
         }

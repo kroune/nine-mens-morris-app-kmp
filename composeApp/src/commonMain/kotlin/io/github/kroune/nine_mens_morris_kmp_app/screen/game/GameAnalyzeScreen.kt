@@ -46,6 +46,7 @@ fun RenderGameAnalyzeScreen(
             onClick = {
                 startAnalyze()
             },
+            shape = RoundedCornerShape(15.dp),
             colors = ButtonColors(
                 containerColor = Color.DarkGray,
                 contentColor = Color.White,
@@ -111,7 +112,7 @@ fun RenderGameAnalyzeScreen(
                         modifier = Modifier,
                         pos = it,
                         selectedButton = null,
-                        moveHints = mutableListOf(),
+                        moveHints = setOf(),
                         onClick = {}
                     )
                     Spacer(modifier = Modifier.height(5.dp))

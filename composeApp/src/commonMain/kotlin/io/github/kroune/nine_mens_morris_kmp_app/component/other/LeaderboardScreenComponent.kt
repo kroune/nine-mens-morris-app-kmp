@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LeaderboardScreenComponent(
@@ -41,6 +42,14 @@ class LeaderboardScreenComponent(
             val localLeaderboardData = accountInfoInteractor.getLeaderboard(leaderboardSize)
             leaderboardData = localLeaderboardData
             if (localLeaderboardData is LeaderboardApiResponses.Success) {
+                val size = localLeaderboardData.leaderboard.size
+                _state.update {
+                    it.copy(
+                        leaderboard = SnapshotStateList(size) {
+                            PlayerInfo(null, null, null, null)
+                        }
+                    )
+                }
                 localLeaderboardData.leaderboard.forEachIndexed { index, id ->
                     AccountInfoUseCase(
                         accountId = id,

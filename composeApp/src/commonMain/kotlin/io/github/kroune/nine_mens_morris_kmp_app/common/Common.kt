@@ -215,9 +215,9 @@ inline fun <reified A> ByteArray.decodeProtobuf(): A {
 
 inline fun <T, R> StateFlow<T>.map(
     scope: CoroutineScope,
-        crossinline transform: (value: T) -> R
+    crossinline transform: (value: T) -> R
 ): StateFlow<R> {
-    val stateFlow = MutableStateFlow(transform(value))
+    val stateFlow = MutableStateFlow(transform(this.value))
     scope.launch {
         this@map.collect {
             stateFlow.emit(transform(it))

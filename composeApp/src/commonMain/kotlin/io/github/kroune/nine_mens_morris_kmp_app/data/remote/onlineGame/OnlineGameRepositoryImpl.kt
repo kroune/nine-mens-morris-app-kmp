@@ -11,6 +11,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.wss
+import io.ktor.client.request.parameter
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.close
 import kotlinx.coroutines.CompletableDeferred
@@ -44,11 +45,10 @@ class OnlineGameRepositoryImpl : OnlineGameRepositoryI {
             network.wss(
                 route,
                 request = {
-                    url {
-                        parameters["jwtToken"] = jwtToken
-                        parameters["gameId"] = gameId.toString()
-                    }
-                }) {
+                    parameter("jwtToken", jwtToken)
+                    parameter("gameId", gameId)
+                }
+            ) {
                 var channelClosedNormally = false
                 // session was created
                 session.complete(this)

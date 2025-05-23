@@ -57,7 +57,7 @@ class OnlineGameComponent(
             selectedButton = null,
             isGreen = false,
             timeLeft = 30,
-            moveHints = listOf(),
+            moveHints = setOf(),
             gameEnded = false,
 
             displayGiveUpConfirmation = false,
@@ -253,7 +253,7 @@ class OnlineGameComponent(
                         gameUseCase.processMove(move)
                         _state.update {
                             it.copy(
-                                moveHints = listOf()
+                                moveHints = setOf()
                             )
                         }
                         // post our move
@@ -275,7 +275,7 @@ class OnlineGameComponent(
                     // we can't make any move if it isn't our move
                     _state.update {
                         it.copy(
-                            moveHints = listOf()
+                            moveHints = setOf()
                         )
                     }
                 }
@@ -340,7 +340,7 @@ data class OnlineGameScreenState(
     val selectedButton: Int?,
     val isGreen: Boolean,
     val timeLeft: Int,
-    val moveHints: List<Int>,
+    val moveHints: Set<Int>,
     val gameEnded: Boolean,
     val displayGiveUpConfirmation: Boolean,
 

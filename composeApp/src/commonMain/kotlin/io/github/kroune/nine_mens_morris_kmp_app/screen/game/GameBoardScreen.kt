@@ -53,7 +53,7 @@ fun RenderGameBoard(
     modifier: Modifier = Modifier,
     pos: Position,
     selectedButton: Int?,
-    moveHints: List<Int>,
+    moveHints: Set<Int>,
     onClick: (Int) -> Unit,
 ) {
     BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
@@ -67,7 +67,7 @@ fun RenderGameBoard(
                         Modifier.fillMaxWidth()
                 )
                 .aspectRatio(1f, !heightBigger.value)
-                .clip(RoundedCornerShape(15))
+                .clip(RoundedCornerShape(15.dp))
                 .background(Color(0xFF8F8F8F))
                 .padding(15.dp),
             contentAlignment = Alignment.TopCenter
@@ -124,7 +124,7 @@ fun RenderPieceCountElement(
 private fun BoxScope.DrawCircles(
     pos: Position,
     selectedButton: Int?,
-    moveHints: List<Int>,
+    moveHints: Set<Int>,
     onClick: (Int) -> Unit
 ) {
     Column(
@@ -268,7 +268,7 @@ private fun ColumnScope.HorizontalShadow(
                 .fillMaxHeight(0.5f)
                 .weight(contentWeight.toFloat() - 0.5f)
                 .alpha(0.5f)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(15.dp))
                 .background(Color.DarkGray)
         )
         Spacer(modifier = Modifier.fillMaxSize().weight(1f / 4))
@@ -290,7 +290,7 @@ private fun ColumnScope.RowOfCircles(
     range: IntRange,
     pos: Position,
     selectedButton: Int?,
-    moveHints: List<Int>,
+    moveHints: Set<Int>,
     onClick: (Int) -> Unit
 ) {
     Row(
@@ -339,7 +339,7 @@ fun RowScope.CircledButton(
     elementIndex: Int,
     pos: Position,
     selectedButton: Int?,
-    moveHints: List<Int>,
+    moveHints: Set<Int>,
     onClick: (Int) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize().weight(1f).wrapContentSize()) {
@@ -353,13 +353,16 @@ fun RowScope.CircledButton(
                         "game piece element with ${pos.positions[elementIndex]} value"
                 }
                 .border(
-                    if (!moveHints.contains(elementIndex)) BorderStroke(
-                        0.dp,
-                        Color.Transparent
-                    ) else BorderStroke(
-                        5.dp,
-                        Color.DarkGray
-                    ), CircleShape
+                    if (!moveHints.contains(elementIndex))
+                        BorderStroke(
+                            0.dp,
+                            Color.Transparent
+                        )
+                    else
+                        BorderStroke(
+                            7.dp,
+                            Color.DarkGray
+                        ), CircleShape
                 ),
             elevation = null,
             colors = ButtonDefaults.buttonColors(

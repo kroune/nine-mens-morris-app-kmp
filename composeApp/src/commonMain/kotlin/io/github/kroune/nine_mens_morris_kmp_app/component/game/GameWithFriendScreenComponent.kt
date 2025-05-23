@@ -1,51 +1,102 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.arkivanov.decompose.ComponentContext
+import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
+import io.github.kroune.nine_mens_morris_kmp_app.common.map
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class GameWithFriendScreenComponent(
-    val onNavigationBack: () -> Unit,
+    private val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    val selectedButton = MutableStateFlow<Int?>(null)
-    var moveHints by mutableStateOf(listOf<Int>())
+    private val componentScope = componentCoroutineScope()
 
-    val position = MutableStateFlow(gameStartPosition)
+    private val _state = MutableStateFlow(
+        GameWithFriendScreenState(
+            gameStartPosition,
+            setOf(),
+            null,
+            4,
+            false,
+            mutableStateListOf()
+        )
+    )
+    val state: StateFlow<GameWithFriendScreenState>
+        get() = _state
 
-    private val gameAnalyzeUseCase = GameAnalyzeUseCase()
-    private val gameUseCase = GameBoardUseCase(
-        position,
-        onPositionChange = {
-            position.value = it
+    private val gameAnalyzeUseCase = GameAnalyzeUseCase(
+        depth = _state.map(componentScope) {
+            it.depth
         },
-        onGameEnd = {
-            gameEnded = true
-        },
-        onMoveHintsUpdate = {
-            moveHints = it
-        },
-        selectedButton = selectedButton,
-        onSelectedButtonUpdate = {
-            selectedButton.value = it
+        onDepthChange = { value ->
+            _state.update {
+                it.copy(
+                    depth = value
+                )
+            }
         }
     )
 
-    val gameAnalyzePositions = gameAnalyzeUseCase.positionsValue
-    val analyzeDepth by gameAnalyzeUseCase.depthValue
-    var gameEnded by mutableStateOf(false)
+    private val gameUseCase = GameBoardUseCase(
+        _state.map(componentScope) { it.position },
+        onPositionChange = { value ->
+            _state.update {
+                it.copy(
+                    position = value
+                )
+            }
+        },
+        onGameEnd = {
+            _state.update {
+                it.copy(
+                    gameEnded = true
+                )
+            }
+        },
+        onMoveHintsUpdate = { value ->
+            _state.update {
+                it.copy(
+                    moveHints = value
+                )
+            }
+        },
+        selectedButton = _state.map(componentScope) {
+            it.selectedButton
+        },
+        onSelectedButtonUpdate = { value ->
+            _state.update {
+                it.copy(
+                    selectedButton = value
+                )
+            }
+        }
+    )
+
+    var analyzeJob: Job? = null
 
     fun onEvent(event: GameWithFriendEvent) {
         when (event) {
             GameWithFriendEvent.StartAnalyze -> {
-                gameAnalyzeUseCase.startAnalyze(position.value)
+                analyzeJob?.cancel()
+                analyzeJob = componentScope.launch {
+                    _state.value.gameAnalyzePositions.clear()
+                    gameAnalyzeUseCase.startAnalyze(_state.value.position).collect {
+                        _state.value.gameAnalyzePositions.add(it)
+                    }
+                }
             }
 
             GameWithFriendEvent.DecreaseAnalyzeDepth -> {
@@ -84,3 +135,14 @@ class GameWithFriendScreenComponent(
         onEvent(GameWithFriendEvent.Back)
     }
 }
+
+@Immutable
+data class GameWithFriendScreenState(
+    val position: Position,
+    val moveHints: Set<Int>,
+    val selectedButton: Int?,
+
+    val depth: Int,
+    val gameEnded: Boolean,
+    val gameAnalyzePositions: SnapshotStateList<Position>
+)

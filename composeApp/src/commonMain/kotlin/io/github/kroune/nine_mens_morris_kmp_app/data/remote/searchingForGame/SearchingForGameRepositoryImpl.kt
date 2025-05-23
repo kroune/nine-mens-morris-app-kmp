@@ -7,6 +7,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
 import io.github.kroune.nine_mens_morris_kmp_app.model.SearchingForGameResponse
 import io.ktor.client.plugins.websocket.wss
+import io.ktor.client.request.parameter
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.Frame
 import kotlinx.coroutines.channels.Channel
@@ -22,10 +23,14 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
     ): SearchingForGameResponse {
         val route = wsApi {
             appendPathSegments("search-for-game")
-            parameters["jwtToken"] = jwtToken
         }.toString()
         var result: SearchingForGameResponse = SearchingForGameResponse.UnknownError()
-        network.wss(route) {
+        network.wss(
+            route,
+            {
+                parameter("jwtToken", jwtToken)
+            }
+        ) {
             while (true) {
                 incoming.receiveCatching()
                     .onSuccess {
@@ -65,7 +70,12 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
                         break
                     }
                     .onFailure {
-                        log("error when using websocket ${closeReason.await().let { "reason - ${it?.knownReason}, code - ${it?.code}" }}", it, Severity.ERROR)
+                        log(
+                            "error when using websocket ${
+                                closeReason.await()
+                                    .let { "reason - ${it?.knownReason}, code - ${it?.code}" }
+                            }", it, Severity.ERROR
+                        )
                         result = SearchingForGameResponse.UnknownError()
                         break
                     }

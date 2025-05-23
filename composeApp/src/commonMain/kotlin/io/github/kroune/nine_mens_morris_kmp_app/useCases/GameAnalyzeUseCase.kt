@@ -1,24 +1,23 @@
 package io.github.kroune.nine_mens_morris_kmp_app.useCases
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.kroune.nineMensMorrisLib.Position
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlin.coroutines.coroutineContext
 import kotlin.math.max
 
 /**
  * game analyze use case
  * uses local analysis
  */
-class GameAnalyzeUseCase() {
-    /**
-     * depth at which search will be performed
-     */
-    var depthValue = mutableIntStateOf(4)
-
+class GameAnalyzeUseCase(
+    val depth: StateFlow<Int>,
+    val onDepthChange: (Int) -> Unit
+) {
     /**
      * best moves as a list of move
      *
@@ -30,7 +29,9 @@ class GameAnalyzeUseCase() {
      * decreases search depth
      */
     fun decreaseDepth() {
-        depthValue.value = max(0, depthValue.value - 1)
+        onDepthChange(
+            max(0, depth.value - 1)
+        )
         stopAnalyze()
     }
 
@@ -38,7 +39,9 @@ class GameAnalyzeUseCase() {
      * increases search depth
      */
     fun increaseDepth() {
-        depthValue.value++
+        onDepthChange(
+            depth.value + 1
+        )
         stopAnalyze()
     }
 
@@ -50,21 +53,17 @@ class GameAnalyzeUseCase() {
     /**
      * starts board analyze
      */
-    fun startAnalyze(pos: Position) {
-        analyzeJob = CoroutineScope(Dispatchers.Default).launch {
+    fun startAnalyze(pos: Position): Flow<Position> {
+        return flow<Position> {
             var currentPos = pos
-            // see https://github.com/detekt/detekt/issues/3566
-            // however we can't exit repeat with break
-            positionsValue.clear()
-            @Suppress("UnusedPrivateProperty")
-            for (i in 1..depthValue.value) {
-                val move = currentPos.findBestMove(depthValue.value.toUByte()) ?: break
-                positionsValue.add(currentPos)
+            emit(currentPos)
+            repeat(depth.value) {
+                coroutineContext.ensureActive()
+                val move = currentPos.findBestMove(depth.value.toUByte()) ?: return@flow
                 currentPos = move.producePosition(currentPos)
+                emit(currentPos)
             }
-            positionsValue.add(currentPos)
         }
-        analyzeJob?.start()
     }
 
     /**
