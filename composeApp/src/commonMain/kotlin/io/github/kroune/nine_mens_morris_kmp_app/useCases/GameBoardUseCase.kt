@@ -5,14 +5,12 @@ import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import com.kroune.nineMensMorrisLib.move.Movement
 import com.kroune.nineMensMorrisLib.move.moveProvider
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class GameBoardUseCase(
     /**
      * stores current position
      */
-    val pos: StateFlow<Position> = MutableStateFlow(gameStartPosition),
+    val pos: () -> Position,
 
     val onPositionChange: (Position) -> Unit,
     /**
@@ -42,7 +40,7 @@ class GameBoardUseCase(
      */
     val onSelectedButtonUpdate: (Int?) -> Unit = {},
 
-    val selectedButton: StateFlow<Int?>,
+    val selectedButton: () -> Int?,
     /**
      * what should happen on game end
      */
@@ -84,10 +82,11 @@ class GameBoardUseCase(
      * processes selected movement
      */
     fun processMove(move: Movement) {
-        onPositionChange(move.producePosition(pos.value).copy())
+        val newPosition = move.producePosition(pos()).copy()
+        onPositionChange(newPosition)
         onSelectedButtonUpdate(null)
-        saveMove(pos.value)
-        if (pos.value.gameState() == GameState.End) {
+        saveMove(newPosition)
+        if (newPosition.gameState() == GameState.End || newPosition.generateMoves().isEmpty()) {
             onGameEnd()
         }
     }
@@ -107,23 +106,23 @@ class GameBoardUseCase(
      * @param elementIndex element that got clicked
      */
     fun handleClick(elementIndex: Int): Movement? {
-        when (pos.value.gameState()) {
+        when (pos().gameState()) {
             GameState.Placement -> {
-                if (pos.value.positions[elementIndex] == null) {
+                if (pos().positions[elementIndex] == null) {
                     return Movement(null, elementIndex)
                 }
             }
 
             GameState.Normal -> {
-                if (selectedButton.value == null) {
-                    if (pos.value.positions[elementIndex] == pos.value.pieceToMove) {
+                if (selectedButton() == null) {
+                    if (pos().positions[elementIndex] == pos().pieceToMove) {
                         onSelectedButtonUpdate(elementIndex)
                     }
                 } else {
-                    if (moveProvider[selectedButton.value!!].filter { endIndex ->
-                            pos.value.positions[endIndex] == null
+                    if (moveProvider[selectedButton()!!].filter { endIndex ->
+                            pos().positions[endIndex] == null
                         }.contains(elementIndex)) {
-                        return Movement(selectedButton.value, elementIndex)
+                        return Movement(selectedButton(), elementIndex)
                     } else {
                         onSelectedButtonUpdate(null)
                     }
@@ -131,12 +130,12 @@ class GameBoardUseCase(
             }
 
             GameState.Flying -> {
-                if (selectedButton.value == null) {
-                    if (pos.value.positions[elementIndex] == pos.value.pieceToMove)
+                if (selectedButton() == null) {
+                    if (pos().positions[elementIndex] == pos().pieceToMove)
                         onSelectedButtonUpdate(elementIndex)
                 } else {
-                    if (pos.value.positions[elementIndex] == null) {
-                        return Movement(selectedButton.value, elementIndex)
+                    if (pos().positions[elementIndex] == null) {
+                        return Movement(selectedButton(), elementIndex)
                     } else {
                         onSelectedButtonUpdate(null)
                     }
@@ -144,7 +143,7 @@ class GameBoardUseCase(
             }
 
             GameState.Removing -> {
-                if (pos.value.positions[elementIndex] == !pos.value.pieceToMove) {
+                if (pos().positions[elementIndex] == !pos().pieceToMove) {
                     return Movement(elementIndex, null)
                 }
             }
@@ -158,19 +157,20 @@ class GameBoardUseCase(
      * finds pieces we should highlight
      */
     fun handleHighLighting() {
-        pos.value.generateMoves().let { moves ->
-            when (pos.value.gameState()) {
+        val position = pos()
+        position.generateMoves().let { moves ->
+            when (pos().gameState()) {
                 GameState.Placement -> {
                     onMoveHintsUpdate(moves.map { it.endIndex!! }.toSet())
                 }
 
                 GameState.Normal -> {
-                    if (selectedButton.value == null) {
+                    if (selectedButton() == null) {
                         onMoveHintsUpdate(moves.map { it.startIndex!! }.toSet())
                     } else {
                         onMoveHintsUpdate(
                             moves
-                                .filter { it.startIndex == selectedButton.value }
+                                .filter { it.startIndex == selectedButton() }
                                 .map { it.endIndex!! }
                                 .toSet()
                         )
@@ -178,12 +178,12 @@ class GameBoardUseCase(
                 }
 
                 GameState.Flying -> {
-                    if (selectedButton.value == null) {
+                    if (selectedButton() == null) {
                         onMoveHintsUpdate(moves.map { it.startIndex!! }.toSet())
                     } else {
                         onMoveHintsUpdate(
                             moves
-                                .filter { it.startIndex == selectedButton.value }
+                                .filter { it.startIndex == selectedButton() }
                                 .map { it.endIndex!! }
                                 .toSet()
                         )

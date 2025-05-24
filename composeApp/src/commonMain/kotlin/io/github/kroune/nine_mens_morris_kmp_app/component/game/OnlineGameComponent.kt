@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
-import io.github.kroune.nine_mens_morris_kmp_app.common.map
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
@@ -18,7 +17,6 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -78,7 +76,9 @@ class OnlineGameComponent(
     private var ownAccountId: Long? = null
     val selectedButton = MutableStateFlow<Int?>(null)
     private val gameUseCase = GameBoardUseCase(
-        pos = _state.map(componentScope) { it.position },
+        pos = {
+            _state.value.position
+        },
         onPositionChange = { value ->
             _state.update {
                 it.copy(
@@ -87,7 +87,9 @@ class OnlineGameComponent(
             }
         },
         onGameEnd = {},
-        selectedButton = _state.map(componentScope) { it.selectedButton },
+        selectedButton = {
+            _state.value.selectedButton
+        },
         onSelectedButtonUpdate = { value ->
             _state.update {
                 it.copy(
@@ -222,7 +224,7 @@ class OnlineGameComponent(
                 }
             }
         }
-        CoroutineScope(Dispatchers.Default).launch {
+        componentScope.launch {
             while (!_state.value.gameEnded) {
                 _state.update {
                     it.copy(
@@ -238,7 +240,7 @@ class OnlineGameComponent(
         when (event) {
             OnlineGameScreenEvent.GiveUp -> {
                 displayGiveUpConfirmation.value = false
-                CoroutineScope(Dispatchers.Default).launch {
+                componentScope.launch {
                     onGiveUp()
                 }
             }
@@ -247,7 +249,7 @@ class OnlineGameComponent(
                 if (_state.value.gameEnded) {
                     return
                 }
-                if (_state.value.isGreen == gameUseCase.pos.value.pieceToMove) {
+                if (_state.value.isGreen == _state.value.position.pieceToMove) {
                     val move = gameUseCase.handleClick(event.index)
                     if (move != null) {
                         gameUseCase.processMove(move)
@@ -257,7 +259,7 @@ class OnlineGameComponent(
                             )
                         }
                         // post our move
-                        CoroutineScope(Dispatchers.Default).launch {
+                        componentScope.launch {
                             channelToSendMoves.trySend(move).onFailure {
                                 // game has ended || some exception occurred
                                 return@launch

@@ -9,8 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
-import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithBotEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
@@ -20,13 +19,11 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
  */
 @Composable
 fun GameWithBotScreen(
-    component: GameWithBotScreenComponent
+    state: GameWithBotScreenState,
+    onEvent: (GameWithBotEvent) -> Unit
 ) {
-    val onEvent: (GameWithBotEvent) -> Unit = {
-        component.onEvent(it)
-    }
     var gameEndPopUpClosed by remember { mutableStateOf(false) }
-    if (!gameEndPopUpClosed && component.gameEnded) {
+    if (!gameEndPopUpClosed && state.gameEnded) {
         GameEndPopUp(
             {
                 gameEndPopUpClosed = true
@@ -36,7 +33,7 @@ fun GameWithBotScreen(
             },
             {
                 gameEndPopUpClosed = false
-                component.onEvent(GameWithBotEvent.Back)
+                onEvent(GameWithBotEvent.Back)
             }
         )
     }
@@ -44,15 +41,15 @@ fun GameWithBotScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RenderPieceCount(pos = component.position.collectValue())
+        RenderPieceCount(pos = state.position)
         LimitSize(
             0.8f
         ) {
             RenderGameBoard(
                 modifier = Modifier,
-                pos = component.position.collectValue(),
-                selectedButton = component.selectedButton.collectValue(),
-                moveHints = component.moveHints,
+                pos = state.position,
+                selectedButton = state.selectedButton,
+                moveHints = state.moveHints,
                 onClick = {
                     onEvent(GameWithBotEvent.OnPieceClick(it))
                 }
@@ -60,11 +57,11 @@ fun GameWithBotScreen(
         }
         RenderUndoRedo(
             handleUndo = {
-                if (!component.gameEnded)
+                if (!state.gameEnded)
                     onEvent(GameWithBotEvent.Undo)
             },
             handleRedo = {
-                if (!component.gameEnded)
+                if (!state.gameEnded)
                     onEvent(GameWithBotEvent.Redo)
             }
         )

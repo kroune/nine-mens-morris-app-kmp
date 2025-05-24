@@ -6,7 +6,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
-import io.github.kroune.nine_mens_morris_kmp_app.common.map
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
@@ -38,8 +37,8 @@ class GameWithFriendScreenComponent(
         get() = _state
 
     private val gameAnalyzeUseCase = GameAnalyzeUseCase(
-        depth = _state.map(componentScope) {
-            it.depth
+        depth = {
+            _state.value.depth
         },
         onDepthChange = { value ->
             _state.update {
@@ -51,7 +50,9 @@ class GameWithFriendScreenComponent(
     )
 
     private val gameUseCase = GameBoardUseCase(
-        _state.map(componentScope) { it.position },
+        {
+            _state.value.position
+        },
         onPositionChange = { value ->
             _state.update {
                 it.copy(
@@ -73,8 +74,8 @@ class GameWithFriendScreenComponent(
                 )
             }
         },
-        selectedButton = _state.map(componentScope) {
-            it.selectedButton
+        selectedButton = {
+            _state.value.selectedButton
         },
         onSelectedButtonUpdate = { value ->
             _state.update {

@@ -97,7 +97,12 @@ fun App(component: RootComponent) {
                     }
 
                     is Child.GameWithBotChild -> {
-                        GameWithBotScreen(instance.component)
+                        with(instance.component) {
+                            GameWithBotScreen(
+                                state = state.collectValue(),
+                                onEvent = { onEvent(it) }
+                            )
+                        }
                     }
 
                     is Child.SearchingForGameChild -> {
