@@ -110,7 +110,7 @@ class GameWithFriendScreenComponent(
 
             is GameWithFriendEvent.OnPieceClick -> {
                 with(gameUseCase) {
-                    gameUseCase.onClick(event.index)
+                    gameUseCase.defaultOnClick(event.index)
                 }
             }
 

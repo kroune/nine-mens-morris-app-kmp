@@ -26,16 +26,6 @@ class GameBoardUseCase(
      */
     val onRedo: GameBoardUseCase.() -> Unit = { this.defaultOnRedo() },
     /**
-     * what will happen if we click some circle
-     */
-    var onClick: GameBoardUseCase.(index: Int) -> Unit = {
-        val move = this.handleClick(it)
-        if (move != null) {
-            processMove(move)
-        }
-        handleHighLighting()
-    },
-    /**
      * used for storing info of the previous (valid one) clicked button
      */
     val onSelectedButtonUpdate: (Int?) -> Unit = {},
@@ -78,6 +68,13 @@ class GameBoardUseCase(
         }
     }
 
+    fun defaultOnClick(index: Int) {
+        val move = this.handleClick(index)
+        if (move != null) {
+            processMove(move)
+        }
+        handleHighLighting()
+    }
     /**
      * processes selected movement
      */

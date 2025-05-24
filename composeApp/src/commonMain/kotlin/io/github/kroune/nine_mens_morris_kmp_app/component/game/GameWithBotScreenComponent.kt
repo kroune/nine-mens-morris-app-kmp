@@ -33,6 +33,22 @@ class GameWithBotScreenComponent(
 
     private var botJob: Job? = null
 
+    private fun onClick(index: Int) {
+        if (_state.value.position.pieceToMove) {
+            val move = gameUseCase.handleClick(index)
+            if (move != null) {
+                gameUseCase.processMove(move)
+            }
+            gameUseCase.handleHighLighting()
+            botJob = CoroutineScope(Dispatchers.Default).launch {
+                while (gameUseCase.canBotMove()) {
+                    gameUseCase.botMove()
+                    gameUseCase.handleHighLighting()
+                }
+            }
+        }
+    }
+
     private val gameUseCase = GameBoardUseCase(
         { _state.value.position },
         onPositionChange = { value ->
@@ -40,21 +56,6 @@ class GameWithBotScreenComponent(
                 it.copy(
                     position = value
                 )
-            }
-        },
-        onClick = { index ->
-            if (_state.value.position.pieceToMove) {
-                val move = this.handleClick(index)
-                if (move != null) {
-                    processMove(move)
-                }
-                handleHighLighting()
-                botJob = CoroutineScope(Dispatchers.Default).launch {
-                    while (canBotMove()) {
-                        botMove()
-                        handleHighLighting()
-                    }
-                }
             }
         },
         onUndo = {
@@ -116,7 +117,7 @@ class GameWithBotScreenComponent(
         when (event) {
             is GameWithBotEvent.OnPieceClick -> {
                 with(gameUseCase) {
-                    gameUseCase.onClick(event.index)
+                    onClick(event.index)
                 }
             }
 
