@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -57,9 +59,27 @@ fun ViewOwnAccountScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     with(state) {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
+            },
+            bottomBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Button(
+                        onClick = {
+                            onEvent(ViewOwnAccountScreenEvent.Logout)
+                        },
+                        shape = RoundedCornerShape(15.dp)
+                    ) {
+                        Text(stringResource(Res.string.log_out))
+                    }
+                }
             }
         ) { _ ->
             Column(
@@ -144,17 +164,9 @@ fun ViewOwnAccountScreen(
                 }
                 Button(
                     { launcher.launch() },
+                    shape = RoundedCornerShape(15.dp)
                 ) {
                     Text(stringResource(Res.string.upload_picture))
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    DrawOwnAccountOptions(
-                        onEvent
-                    )
                 }
             }
             HandleError(uploadingNewPictureResult, snackbarHostState, scope)
@@ -201,21 +213,5 @@ private fun HandleError(
     }
     scope.launch {
         snackbarHostState.showSnackbar(text)
-    }
-}
-
-/**
- * draws specific settings for our account
- */
-@Composable
-fun DrawOwnAccountOptions(
-    onEvent: (ViewOwnAccountScreenEvent) -> Unit
-) {
-    Button(
-        onClick = {
-            onEvent(ViewOwnAccountScreenEvent.Logout)
-        },
-    ) {
-        Text(stringResource(Res.string.log_out))
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -40,7 +41,9 @@ fun ViewAccountScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     with(state) {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             }

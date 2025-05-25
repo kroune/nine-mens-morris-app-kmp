@@ -34,6 +34,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromByteArray
@@ -70,7 +71,7 @@ val network = HttpClient {
  * The server's address
  */
 val serverUrl
-    get() = URLBuilder(host = "nine-men-s-morris.me")
+    get() = URLBuilder(host = "10.0.2.2", port = 8080)
 
 /**
  * The API endpoint for user-related operations.
@@ -82,14 +83,14 @@ private val serverApi
 
 fun httpApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.HTTPS
+        protocol = URLProtocol.HTTP
         modification()
     }.build()
 }
 
 fun wsApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
-        protocol = URLProtocol.WSS
+        protocol = URLProtocol.WS
         modification()
     }.build()
 }
@@ -152,20 +153,6 @@ suspend inline fun <reified T> SendChannel<Frame>.sendSerialized(value: T) {
 @Throws(
     ClosedReceiveChannelException::class,
     CancellationException::class,
-)
-suspend inline fun DefaultClientWebSocketSession.receiveText(): String {
-    return this.incoming.receiveText()
-}
-
-suspend inline fun DefaultClientWebSocketSession.receiveTextCatching(): Result<String> {
-    return runCatching {
-        this.incoming.receiveText()
-    }
-}
-
-@Throws(
-    ClosedReceiveChannelException::class,
-    CancellationException::class,
     SerializationException::class,
     IllegalArgumentException::class
 )
@@ -209,6 +196,7 @@ inline fun <reified A, reified B> Frame.decodeServerEvent(): Pair<A, B> {
     }
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 inline fun <reified A> ByteArray.decodeProtobuf(): A {
     return ProtoBuf.decodeFromByteArray(this)
 }
