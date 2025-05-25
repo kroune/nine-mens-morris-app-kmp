@@ -239,7 +239,7 @@ fun PlayerCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(30.dp),
-                        text = {
+                        onSuccess = {
                             Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         },
                         accountName = playerName,
@@ -262,11 +262,11 @@ fun PlayerCard(
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 DrawRating(
-                    text = {
+                    onSuccess = @Composable {
                         Text(it.toString())
                     },
                     accountRating = rating,
-                    reloadRating = { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
+                    onReload = { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
                     scope = scope,
                     snackbarHostState = snackbarHostState
                 )

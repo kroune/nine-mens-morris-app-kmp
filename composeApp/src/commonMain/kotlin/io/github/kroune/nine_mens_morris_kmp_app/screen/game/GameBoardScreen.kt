@@ -360,7 +360,7 @@ fun RowScope.CircledButton(
                         )
                     else
                         BorderStroke(
-                            7.dp,
+                            6.dp,
                             Color.DarkGray
                         ), CircleShape
                 ),

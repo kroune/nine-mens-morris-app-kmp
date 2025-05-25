@@ -16,8 +16,8 @@ import com.arkivanov.decompose.router.webhistory.WebNavigation
 import com.arkivanov.decompose.router.webhistory.WebNavigationOwner
 import io.github.kroune.nine_mens_morris_kmp_app.common.customSlide
 import io.github.kroune.nine_mens_morris_kmp_app.common.pop
-import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent

@@ -37,8 +37,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackHandler
@@ -86,9 +87,34 @@ fun ComponentContext.componentCoroutineScope(): CoroutineScope {
 fun DrawRating(
     modifier: Modifier = Modifier
         .size(120.dp, 30.dp),
-    text: @Composable (Long) -> Unit,
+    onReload: () -> Unit,
+    onSuccess: @Composable BoxScope.(Long) -> Unit = @Composable {
+        Text(text = it.toString())
+    },
+    onLoading: @Composable BoxScope.() -> Unit = {
+        Box(
+            Modifier
+                .matchParentSize()
+                .shimmerLoading()
+        ) {
+        }
+    },
+    onFailure: @Composable BoxScope.() -> Unit = {
+        IconButton(
+            onClick = {
+                onReload()
+            },
+            modifier = Modifier
+                .matchParentSize()
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.error),
+                contentDescription = "Error",
+                modifier = Modifier
+            )
+        }
+    },
     accountRating: RatingByIdApiResponses?,
-    reloadRating: () -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
 ) {
@@ -107,24 +133,15 @@ fun DrawRating(
         ) {
             when (it) {
                 null -> {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .shimmerLoading(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                    }
+                    onLoading()
                 }
 
                 is RatingByIdApiResponses.Success -> {
-                    Box(
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        text(it.rating)
-                    }
+                    onSuccess(it.rating)
                 }
 
                 else -> {
+                    onFailure()
                     val errorText = when (it) {
                         is RatingByIdApiResponses.NetworkError -> {
                             stringResource(Res.string.network_error)
@@ -144,28 +161,12 @@ fun DrawRating(
 
                         is RatingByIdApiResponses.Success -> return@AnimatedContent
                     }
-                    Box(
-                        modifier = Modifier,
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        IconButton(onClick = {
-                            reloadRating()
-                        }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.error),
-                                contentDescription = "Error",
-                                modifier = Modifier
-                                    .aspectRatio(1f, true)
-                                    .clip(CircleShape)
-                            )
-                        }
-                    }
                     var retryText = stringResource(Res.string.retry)
                     scope.launch {
                         snackbarHostState.showSnackbar(errorText, retryText)
                             .let { snackbarResult ->
                                 if (snackbarResult == SnackbarResult.ActionPerformed) {
-                                    reloadRating()
+                                    onReload()
                                 }
                             }
                     }
@@ -288,9 +289,45 @@ fun Modifier.shimmerLoading(
 @Composable
 fun DrawIcon(
     modifier: Modifier = Modifier,
-    pictureByteArray: AccountPictureByIdApiResponses?,
     onReload: () -> Unit,
     onClick: () -> Unit,
+    shape: Shape = CircleShape,
+    onSuccess: @Composable BoxScope.(ByteArray) -> Unit = @Composable {
+        Image(
+            bitmap = it.decodeToImageBitmap(),
+            contentDescription = "Profile icon",
+            modifier = Modifier
+                .clickable { onClick() }
+                .matchParentSize()
+                .aspectRatio(1f, true)
+        )
+    },
+    onLoading: @Composable BoxScope.() -> Unit = {
+        Box(
+            Modifier
+                .matchParentSize()
+                .aspectRatio(1f, true)
+                .shimmerLoading()
+        ) {
+        }
+    },
+    onFailure: @Composable BoxScope.() -> Unit = {
+        IconButton(
+            onClick = {
+                onReload()
+            },
+            modifier = Modifier
+                .matchParentSize()
+                .aspectRatio(1f, true)
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.error),
+                contentDescription = "Error",
+                modifier = Modifier
+            )
+        }
+    },
+    pictureByteArray: AccountPictureByIdApiResponses?,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
 ) {
@@ -304,50 +341,19 @@ fun DrawIcon(
     ) {
         Box(
             modifier
-                .size(70.dp)
-                .clip(CircleShape)
+                .clip(shape)
         ) {
             when (pictureByteArray) {
                 null -> {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .aspectRatio(1f)
-                            .shimmerLoading(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                    }
+                    onLoading()
                 }
 
                 is AccountPictureByIdApiResponses.Success -> {
-                    Image(
-                        bitmap = pictureByteArray.picture.decodeToImageBitmap(),
-                        contentDescription = "Profile icon",
-                        modifier = Modifier
-                            .clickable { onClick() }
-                            .matchParentSize()
-                            .aspectRatio(1f, true)
-                    )
+                    onSuccess(pictureByteArray.picture)
                 }
 
                 else -> {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .aspectRatio(1f),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        IconButton(onClick = {
-                            onReload()
-                        }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.error),
-                                contentDescription = "Error",
-                                modifier = Modifier
-                                    .aspectRatio(1f)
-                            )
-                        }
-                    }
+                    onFailure()
                     val text: String = when (pictureByteArray) {
                         is AccountPictureByIdApiResponses.NetworkError -> {
                             stringResource(Res.string.network_error)
@@ -387,60 +393,52 @@ fun DrawIcon(
  */
 @Composable
 fun DrawName(
-    modifier: Modifier = Modifier
-        .size(100.dp, 20.dp),
-    text: @Composable (String) -> Unit = @Composable {
-        Text(it, fontSize = 20.sp)
+    modifier: Modifier = Modifier,
+    onReload: () -> Unit,
+    onSuccess: @Composable BoxScope.(String) -> Unit = @Composable {
+        Text(
+            it,
+            overflow = TextOverflow.Ellipsis
+        )
+    },
+    onLoading: @Composable BoxScope.() -> Unit = {
+        Box(
+            Modifier
+                .clip(RoundedCornerShape(15.dp))
+                .matchParentSize()
+                .shimmerLoading()
+        ) {
+        }
+    },
+    onFailure: @Composable BoxScope.() -> Unit = {
+        IconButton(onClick = {
+            onReload()
+        }) {
+            Icon(
+                painter = painterResource(Res.drawable.error),
+                contentDescription = "Error",
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+            )
+        }
     },
     accountName: LoginByIdApiResponses?,
-    onReload: () -> Unit,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
 ) {
-    Box(
-        modifier
-            .clip(RoundedCornerShape(10))
-    ) {
+    Box(modifier) {
         when (accountName) {
             null -> {
-                Box(
-                    Modifier
-                        .matchParentSize()
-                        .shimmerLoading(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                }
+                onLoading()
             }
 
             is LoginByIdApiResponses.Success -> {
-                Box(
-                    Modifier
-                        .matchParentSize(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    text(accountName.login)
-                }
+                onSuccess(accountName.login)
             }
 
             else -> {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .aspectRatio(1f),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    IconButton(onClick = {
-                        onReload()
-                    }) {
-                        Icon(
-                            painter = painterResource(Res.drawable.error),
-                            contentDescription = "Error",
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .clip(CircleShape)
-                        )
-                    }
-                }
+                onFailure()
                 val exceptionText: String = when (accountName) {
                     is LoginByIdApiResponses.Success -> return
 

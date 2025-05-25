@@ -8,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponentI
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.press_to_start
 import org.jetbrains.compose.resources.stringResource
@@ -54,10 +56,11 @@ private fun DrawAnimation() {
         ),
         label = "backgroundAnimation"
     )
-    val colorScheme = MaterialTheme.colorScheme
+    val foregroundColor = ExtendedColorTheme.colorScheme.animationScreenForeground
     Canvas(
         modifier = Modifier
             .fillMaxSize()
+            .background(ExtendedColorTheme.colorScheme.animationScreenBackground)
     ) {
         val lightPath = Path()
         for (x in 0 until size.width.toInt() step 10) {
@@ -70,7 +73,7 @@ private fun DrawAnimation() {
         lightPath.lineTo(0f, size.height)
         drawPath(
             path = lightPath,
-            color = colorScheme.onBackground
+            color = foregroundColor
         )
     }
 }
@@ -109,7 +112,7 @@ private fun StartButton(
                 .clickable {
                     component.onEvent(AppStartAnimationScreenEvent.ClickButton)
                 },
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 22.sp
         )
     }

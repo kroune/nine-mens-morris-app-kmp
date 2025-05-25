@@ -1,4 +1,4 @@
-package io.github.kroune.nine_mens_morris_kmp_app.screen.home
+package io.github.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -37,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -56,7 +55,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.close
-import ninemensmorrisappkmp.composeapp.generated.resources.offline
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.data_is_loading_wait
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
@@ -64,6 +62,7 @@ import ninemensmorrisappkmp.composeapp.generated.resources.logged_in
 import ninemensmorrisappkmp.composeapp.generated.resources.main_component
 import ninemensmorrisappkmp.composeapp.generated.resources.network_error
 import ninemensmorrisappkmp.composeapp.generated.resources.no_account
+import ninemensmorrisappkmp.composeapp.generated.resources.offline
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_bot
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_friends
 import ninemensmorrisappkmp.composeapp.generated.resources.play_online_game
@@ -88,7 +87,7 @@ fun WelcomeScreen(
         bottomBar = {
             NavigationBar(
                 modifier = Modifier
-                    .height(55.dp)
+                    .height(64.dp)
                     .semantics {
                         contentDescription = "bottom navigation bar"
                     }
@@ -112,7 +111,6 @@ fun WelcomeScreen(
                                         .semantics {
                                             contentDescription = "loading account information"
                                         }
-                                        .fillMaxHeight()
                                 )
                             }
 
@@ -121,15 +119,11 @@ fun WelcomeScreen(
                                     Icon(
                                         painterResource(Res.drawable.logged_in),
                                         "account information was loaded",
-                                        modifier = Modifier
-                                            .fillMaxHeight()
                                     )
                                 else
                                     Icon(
                                         painterResource(Res.drawable.no_account),
                                         "account information wasn't found",
-                                        modifier = Modifier
-                                            .fillMaxHeight()
                                     )
                             }
 
@@ -138,7 +132,6 @@ fun WelcomeScreen(
                                     painterResource(Res.drawable.offline),
                                     "you are offline",
                                     modifier = Modifier
-                                        .fillMaxHeight()
                                 )
                                 val errorText = when (isInAccount) {
                                     CheckJwtTokenApiResponses.NetworkError -> {
@@ -185,8 +178,6 @@ fun WelcomeScreen(
                         Icon(
                             painterResource(Res.drawable.main_component),
                             "scroll up or down",
-                            modifier = Modifier
-                                .fillMaxHeight()
                         )
                     },
                 )
@@ -201,8 +192,6 @@ fun WelcomeScreen(
                         Icon(
                             painterResource(Res.drawable.settings),
                             "go to settings button",
-                            modifier = Modifier
-                                .fillMaxHeight(),
                         )
                     }
                 )
@@ -210,8 +199,7 @@ fun WelcomeScreen(
         },
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-        containerColor = Color.Transparent
+        }
     ) { padding ->
         Box(
             modifier = Modifier

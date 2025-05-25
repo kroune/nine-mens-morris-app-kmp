@@ -6,8 +6,8 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameComponent

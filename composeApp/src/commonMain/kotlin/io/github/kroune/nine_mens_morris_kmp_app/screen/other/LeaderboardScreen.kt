@@ -1,23 +1,19 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.other
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -28,9 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.PlayerInfo
 import io.github.kroune.nine_mens_morris_kmp_app.event.other.LeaderboardEvent
@@ -55,19 +51,23 @@ fun LeaderboardScreen(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        }
+        },
     ) { contentPadding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .padding(horizontal = 10.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
                 Text(
                     text = stringResource(Res.string.leaderboard),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.DarkGray)
-                        .padding(8.dp)
+                        .padding(top = 10.dp),
+                    fontWeight = FontWeight.W500,
+                    fontSize = 22.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
 
@@ -97,19 +97,18 @@ fun LeaderboardItem(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .height(100.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .border(3.dp, MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(10.dp))
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+        elevation = CardDefaults.elevatedCardElevation(10.dp)
     ) {
         Row(
-            modifier = Modifier.padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             DrawIcon(
                 modifier = Modifier
-                    .sizeIn(maxWidth = 80.dp, maxHeight = 80.dp),
+                    .size(80.dp)
+                    .padding(10.dp),
                 pictureByteArray = player.picture,
                 onReload = {
                     onEvent(LeaderboardEvent.ReloadIcon(index))
@@ -120,34 +119,41 @@ fun LeaderboardItem(
                 scope = scope,
                 snackbarHostState = snackbarHostState
             )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(verticalArrangement = Arrangement.Center) {
-                Box(modifier = Modifier.height(40.dp)) {
-                    DrawName(
-                        text = @Composable { Text(it) },
-                        accountName = player.loginResult,
-                        onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
-                        scope = scope,
-                        snackbarHostState = snackbarHostState
-                    )
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-                Box(modifier = Modifier.height(40.dp)) {
-                    DrawRating(
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .height(30.dp),
-                        text = {
-                            Text(
-                                text = "${stringResource(Res.string.rating)}: $it"
-                            )
-                        },
-                        accountRating = player.ratingResult,
-                        reloadRating = { onEvent(LeaderboardEvent.ReloadRating(index)) },
-                        scope = scope,
-                        snackbarHostState = snackbarHostState
-                    )
-                }
+            Column(
+                modifier = Modifier
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                DrawName(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(20.dp),
+                    onSuccess = @Composable {
+                        Text(
+                            it,
+                            fontSize = 18.sp
+                        )
+                    },
+                    accountName = player.loginResult,
+                    onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
+                    scope = scope,
+                    snackbarHostState = snackbarHostState
+                )
+                DrawRating(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(20.dp),
+                    onSuccess = {
+                        Text(
+                            text = "${stringResource(Res.string.rating)}: $it",
+                            fontWeight = FontWeight.W300
+                        )
+                    },
+                    accountRating = player.ratingResult,
+                    onReload = { onEvent(LeaderboardEvent.ReloadRating(index)) },
+                    scope = scope,
+                    snackbarHostState = snackbarHostState
+                )
             }
         }
     }

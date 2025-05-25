@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -16,12 +18,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
@@ -90,8 +95,10 @@ fun SignInScreen(
                     { newValue ->
                         onEvent(SignInScreenEvent.UsernameUpdate(newValue))
                     },
+                    modifier = Modifier
+                        .shadow(5.dp, RoundedCornerShape(15.dp)),
                     label = {
-                        if (!isUsernameValid) {
+                        if (!isUsernameValid && username.isNotEmpty()) {
                             Text(
                                 stringResource(Res.string.invalid_login),
                                 modifier = Modifier,
@@ -106,7 +113,13 @@ fun SignInScreen(
                             painter = painterResource(resource = Res.drawable.username),
                             "your username"
                         )
-                    }
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    singleLine = true
                 )
                 Spacer(modifier = Modifier.fillMaxHeight(0.025f))
                 TextField(
@@ -114,8 +127,10 @@ fun SignInScreen(
                     { newValue ->
                         onEvent(SignInScreenEvent.PasswordUpdate(newValue))
                     },
+                    modifier = Modifier
+                        .shadow(5.dp, RoundedCornerShape(15.dp)),
                     label = {
-                        if (!isPasswordValid) {
+                        if (!isPasswordValid && password.isNotEmpty()) {
                             Text(
                                 stringResource(Res.string.invalid_password),
                                 modifier = Modifier,
@@ -130,7 +145,13 @@ fun SignInScreen(
                             painter = painterResource(resource = Res.drawable.password),
                             "your password"
                         )
-                    }
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    singleLine = true
                 )
                 Spacer(modifier = Modifier.fillMaxHeight(0.1f))
                 Button(
@@ -138,7 +159,9 @@ fun SignInScreen(
                     onClick = {
                         onEvent(SignInScreenEvent.Login)
                     },
-                    enabled = isUsernameValid && isPasswordValid && !requestInProcess
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp, pressedElevation = 5.dp),
+                    enabled = isUsernameValid && isPasswordValid && !requestInProcess,
+                    shape = RoundedCornerShape(15.dp)
                 ) {
                     Text(stringResource(Res.string.sign_in))
                 }

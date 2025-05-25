@@ -7,9 +7,8 @@ import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithBotEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +19,8 @@ class GameWithBotScreenComponent(
     val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+    private val componentScope = componentCoroutineScope()
+
     private val _state = MutableStateFlow(
         GameWithBotScreenState(
             gameStartPosition,
@@ -40,7 +41,7 @@ class GameWithBotScreenComponent(
                 gameUseCase.processMove(move)
             }
             gameUseCase.handleHighLighting()
-            botJob = CoroutineScope(Dispatchers.Default).launch {
+            botJob = componentScope.launch {
                 while (gameUseCase.canBotMove()) {
                     gameUseCase.botMove()
                     gameUseCase.handleHighLighting()
@@ -61,7 +62,7 @@ class GameWithBotScreenComponent(
         onUndo = {
             defaultOnUndo()
             botJob?.cancel()
-            botJob = CoroutineScope(Dispatchers.Default).launch {
+            botJob = componentScope.launch {
                 delay(800)
                 while (canBotMove()) {
                     botMove()
@@ -73,7 +74,7 @@ class GameWithBotScreenComponent(
             if (_state.value.position.pieceToMove) {
                 defaultOnRedo()
                 botJob?.cancel()
-                botJob = CoroutineScope(Dispatchers.Default).launch {
+                botJob = componentScope.launch {
                     delay(800)
                     while (canBotMove()) {
                         botMove()
@@ -139,9 +140,11 @@ class GameWithBotScreenComponent(
         }
     }
 
-    fun GameBoardUseCase.canBotMove(): Boolean {
-        return !_state.value.position.pieceToMove && _state.value.position.gameState() != GameState.End && _state.value.position.generateMoves()
+    private fun GameBoardUseCase.canBotMove(): Boolean {
+        val position = _state.value.position
+        val canMove = position.generateMoves()
             .isNotEmpty()
+        return !position.pieceToMove && position.gameState() != GameState.End && canMove
     }
 
     override fun onBackPressed() {

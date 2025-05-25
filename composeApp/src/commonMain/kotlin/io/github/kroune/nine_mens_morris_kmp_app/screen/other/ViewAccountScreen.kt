@@ -69,7 +69,7 @@ fun ViewAccountScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        text = @Composable {
+                        onSuccess = @Composable {
                             Text(
                                 it,
                                 fontSize = 30.sp,
@@ -86,14 +86,14 @@ fun ViewAccountScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .height(30.dp),
-                    text = {
+                    onSuccess = {
                         Text(
                             "${stringResource(Res.string.rating)}: $it",
                             fontSize = 20.sp
                         )
                     },
                     accountRating = accountRatingResult,
-                    reloadRating = { onEvent(ViewAccountScreenEvent.ReloadRating) },
+                    onReload = { onEvent(ViewAccountScreenEvent.ReloadRating) },
                     scope = scope,
                     snackbarHostState = snackbarHostState
                 )

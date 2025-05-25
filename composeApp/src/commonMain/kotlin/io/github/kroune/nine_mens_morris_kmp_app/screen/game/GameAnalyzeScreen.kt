@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -101,13 +103,13 @@ fun RenderGameAnalyzeScreen(
         }
         Spacer(modifier = Modifier.height(5.dp))
         if (positions.isNotEmpty()) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.DarkGray, RoundedCornerShape(5)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                positions.forEach {
+                items(positions) {
                     RenderGameBoard(
                         modifier = Modifier,
                         pos = it,

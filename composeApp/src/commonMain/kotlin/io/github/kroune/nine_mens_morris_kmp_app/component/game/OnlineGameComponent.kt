@@ -74,7 +74,7 @@ class OnlineGameComponent(
 
     private var enemyAccountId: Long? = null
     private var ownAccountId: Long? = null
-    val selectedButton = MutableStateFlow<Int?>(null)
+
     private val gameUseCase = GameBoardUseCase(
         pos = {
             _state.value.position
@@ -86,7 +86,13 @@ class OnlineGameComponent(
                 )
             }
         },
-        onGameEnd = {},
+        onGameEnd = {
+            _state.update {
+                it.copy(
+                    gameEnded = true
+                )
+            }
+        },
         selectedButton = {
             _state.value.selectedButton
         },

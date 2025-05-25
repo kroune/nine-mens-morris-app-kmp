@@ -12,7 +12,8 @@ inline fun AppTheme(crossinline content: @Composable () -> Unit) {
     val colorScheme = when (isSystemInDarkTheme()) {
         false -> lightColorScheme(
             primary = Color.Black,
-            background = Color.LightGray
+            background = Color(255, 255, 255),
+            secondaryContainer = Color(0, 0, 0, 80)
         )
         true -> darkColorScheme(
             onPrimary = Color.White,
