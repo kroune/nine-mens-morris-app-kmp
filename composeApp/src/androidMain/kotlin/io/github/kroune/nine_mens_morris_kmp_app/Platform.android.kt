@@ -16,10 +16,11 @@ actual fun getScreenIntSize(): IntSize {
     }
 }
 
-actual fun <T> Result<T>.recoverNativeNetworkError(networkException: T): Result<T> {
-    return recoverCatching {
-        if (it is java.io.IOException || it is java.nio.channels.UnresolvedAddressException)
-            return@recoverCatching networkException
-        throw it
+actual inline fun <T> Result<T>.onNativeNetworkError(lambda: (Throwable) -> Unit) {
+    onFailure {
+        if (it is java.io.IOException || it is java.nio.channels.UnresolvedAddressException) {
+            lambda(it)
+            return
+        }
     }
 }
