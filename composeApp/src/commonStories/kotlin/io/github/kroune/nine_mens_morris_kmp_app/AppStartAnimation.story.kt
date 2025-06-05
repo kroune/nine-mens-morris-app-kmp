@@ -6,11 +6,12 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationS
 import org.jetbrains.compose.storytale.story
 
 val AppStartAnimation by story {
-    object : AppStartAnimationComponentI {
-        override fun onEvent(event: AppStartAnimationScreenEvent) {
-            TODO("Not yet implemented")
-        }
-    }.let {
-        AppStartAnimationScreen(it)
-    }
+    AppStartAnimationScreen(
+        AppStartAnimationScreenState(
+            null,
+            null,
+            false
+        ),
+        {}
+    )
 }
