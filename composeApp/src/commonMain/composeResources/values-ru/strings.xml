@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--suppress LongLine -->
 <resources>
-    <string name="app_name">Мельница</string>
     <string name="client_error">Мы столкнулись с ошибкой во время работы программы, это может быть вызвано устаревшей версией приложения. Вы можете оставить сообщение об этой проблеме на Github</string>
     <string name="network_error">Не удалось сделать запрос в сеть. Возможно у вас отключен интернет или включен vpn</string>
     <string name="server_error">Мы столкнулись с ошибкой в работе нашей инфраструктуры. Мы займемся ее исправлением как можно скорее. Вы можете предоставить дополнительную информацию на Github</string>
@@ -54,4 +53,8 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="data_is_loading_wait">Информация все еще загружается, пожалуйста, подождите</string>
+    <string name="about_app">О приложении</string>
+    <string name="view_own_account">Мой профиль</string>
+    <string name="source_code_link">Ссылка на исходный код</string>
+    <string name="report_an_issue">Сообщить об ошибке</string>
 </resources>

@@ -16,6 +16,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.GameWithFriendScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.OnlineGameScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.SearchingForGameScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AboutScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
@@ -114,6 +115,15 @@ fun App(component: RootComponent) {
                 is Child.LeaderboardChild -> {
                     with(instance.component) {
                         LeaderboardScreen(
+                            { onEvent(it) },
+                            state.collectValue()
+                        )
+                    }
+                }
+
+                is Child.AboutChild -> {
+                    with(instance.component) {
+                        AboutScreen(
                             { onEvent(it) },
                             state.collectValue()
                         )

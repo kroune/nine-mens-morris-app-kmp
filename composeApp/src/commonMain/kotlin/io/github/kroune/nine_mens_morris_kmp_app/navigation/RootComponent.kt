@@ -25,6 +25,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGame
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.aboutScreenComponent.AboutScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponent
 import kotlinx.coroutines.CoroutineScope
@@ -136,6 +137,11 @@ class RootComponent(
                                     accountId = it,
                                     customAnimation = customSlide(invertDirection = true),
                                 )
+                            )
+                        },
+                        onNavigationToAboutScreen = {
+                            navigation.pushToFront(
+                                Configuration.AboutScreen()
                             )
                         },
                         onNavigationBack = {
@@ -283,6 +289,17 @@ class RootComponent(
                         },
                         {
                             popOrFallbackScreen(config.animation)
+                        },
+                        context
+                    )
+                )
+            }
+
+            is Configuration.AboutScreen -> {
+                Child.AboutChild(
+                    AboutScreenComponent(
+                        {
+                            popOrFallbackScreen(customSlide(invertDirection = true))
                         },
                         context
                     )

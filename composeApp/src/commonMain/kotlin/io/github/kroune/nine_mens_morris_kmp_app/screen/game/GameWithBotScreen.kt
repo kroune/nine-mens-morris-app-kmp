@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithBotEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithBotEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 

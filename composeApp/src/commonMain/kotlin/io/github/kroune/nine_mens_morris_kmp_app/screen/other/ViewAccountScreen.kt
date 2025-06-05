@@ -23,11 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.rating
 import org.jetbrains.compose.resources.stringResource
@@ -42,13 +43,16 @@ fun ViewAccountScreen(
     with(state) {
         Scaffold(
             modifier = Modifier
-                .padding(10.dp)
                 .fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             }
-        ) { _ ->
+        ) { padding ->
             Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = padding2)
+                    .padding(top = padding2),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(

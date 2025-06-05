@@ -1,7 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.interactors.auth
 
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
-import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
 
 /**
  * interface for auth repository

@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
-import io.github.kroune.nine_mens_morris_kmp_app.model.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch

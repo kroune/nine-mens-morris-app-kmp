@@ -5,7 +5,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.wsApi
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
-import io.github.kroune.nine_mens_morris_kmp_app.model.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.parameter
 import io.ktor.http.appendPathSegments

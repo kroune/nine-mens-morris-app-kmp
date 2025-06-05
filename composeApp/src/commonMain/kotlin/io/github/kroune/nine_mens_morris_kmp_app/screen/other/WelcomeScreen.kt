@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,16 +45,17 @@ import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.about
 import ninemensmorrisappkmp.composeapp.generated.resources.close
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.data_is_loading_wait
@@ -67,7 +69,6 @@ import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_bot
 import ninemensmorrisappkmp.composeapp.generated.resources.play_game_with_friends
 import ninemensmorrisappkmp.composeapp.generated.resources.play_online_game
 import ninemensmorrisappkmp.composeapp.generated.resources.server_error
-import ninemensmorrisappkmp.composeapp.generated.resources.settings
 import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -119,11 +120,15 @@ fun WelcomeScreen(
                                     Icon(
                                         painterResource(Res.drawable.logged_in),
                                         "account information was loaded",
+                                        modifier = Modifier
+                                            .size(32.dp)
                                     )
                                 else
                                     Icon(
                                         painterResource(Res.drawable.no_account),
                                         "account information wasn't found",
+                                        modifier = Modifier
+                                            .size(32.dp)
                                     )
                             }
 
@@ -132,6 +137,7 @@ fun WelcomeScreen(
                                     painterResource(Res.drawable.offline),
                                     "you are offline",
                                     modifier = Modifier
+                                        .size(32.dp)
                                 )
                                 val errorText = when (isInAccount) {
                                     CheckJwtTokenApiResponses.NetworkError -> {
@@ -178,20 +184,22 @@ fun WelcomeScreen(
                         Icon(
                             painterResource(Res.drawable.main_component),
                             "scroll up or down",
+                            modifier = Modifier
+                                .size(32.dp)
                         )
                     },
                 )
                 NavigationBarItem(
                     false,
                     onClick = {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            snackbarHostState.showSnackbar("This button doesn't have functionality for now, come back later")
-                        }
+                        component.onEvent(WelcomeScreenEvent.NavigateToAboutScreen)
                     },
                     icon = {
                         Icon(
-                            painterResource(Res.drawable.settings),
+                            painterResource(Res.drawable.about),
                             "go to settings button",
+                            modifier = Modifier
+                                .size(32.dp)
                         )
                     }
                 )

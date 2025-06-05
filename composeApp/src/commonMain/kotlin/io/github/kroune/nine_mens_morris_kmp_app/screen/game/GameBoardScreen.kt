@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
+import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.redo_move
 import ninemensmorrisappkmp.composeapp.generated.resources.undo_move
@@ -100,10 +102,13 @@ fun RenderPieceCountElement(
     shouldMove: Boolean,
     freePieces: UByte
 ) {
-    val backgroundColor = if (isGreen) Color.Black else Color.White
-    val textColor = if (!isGreen) Color.Black else Color.White
+    val backgroundColor =
+        if (isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
+    val textColor =
+        if (!isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
     Box(
         modifier = Modifier
+            .shadow(10.dp, CircleShape)
             .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (shouldMove) 1f else 0.6f)
             .alpha(if (shouldMove) 1f else 0.6f)
             .background(backgroundColor, CircleShape),
@@ -342,9 +347,22 @@ fun RowScope.CircledButton(
     moveHints: Set<Int>,
     onClick: (Int) -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize().weight(1f).wrapContentSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .weight(1f)
+            .wrapContentSize()
+    ) {
         Button(
             modifier = Modifier
+                .then(
+                    if (pos.positions[elementIndex] != null) {
+                        Modifier
+                            .shadow(10.dp, CircleShape)
+                    } else {
+                        Modifier
+                    }
+                )
                 .clip(CircleShape)
                 .fillMaxSize(if (selectedButton == elementIndex) 0.7f else 0.9f)
                 .background(Color.Transparent)
@@ -372,11 +390,11 @@ fun RowScope.CircledButton(
                     }
 
                     true -> {
-                        Color.Black
+                        ExtendedColorTheme.colorScheme.colorPiece1
                     }
 
                     false -> {
-                        Color.White
+                        ExtendedColorTheme.colorScheme.colorPiece2
                     }
                 },
                 disabledContainerColor = Color.Transparent

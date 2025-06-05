@@ -7,7 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase

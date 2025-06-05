@@ -5,11 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import com.russhwolf.settings.Settings
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,6 +27,7 @@ class WelcomeScreenComponent(
     private val onNavigationToLeaderboardScreen: () -> Unit,
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
     private val onNavigationToAuthScreen: () -> Unit,
+    private val onNavigationToAboutScreen: () -> Unit,
     private val onNavigationBack: () -> Unit
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle, WelcomeScreenComponentI {
     private val componentScope = componentCoroutineScope()
@@ -104,6 +105,10 @@ class WelcomeScreenComponent(
                     return
                 }
                 onNavigationToLeaderboardScreen()
+            }
+
+            WelcomeScreenEvent.NavigateToAboutScreen -> {
+                onNavigationToAboutScreen()
             }
         }
     }

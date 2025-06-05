@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import io.github.kroune.UiTest
 import io.github.kroune.forEach
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
 import io.github.kroune.toCollection
 import kotlinx.coroutines.CoroutineScope

@@ -2,7 +2,7 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimat
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.AppStartAnimationScreenEvent
 
 class AppStartAnimationComponent(
     componentContext: ComponentContext,

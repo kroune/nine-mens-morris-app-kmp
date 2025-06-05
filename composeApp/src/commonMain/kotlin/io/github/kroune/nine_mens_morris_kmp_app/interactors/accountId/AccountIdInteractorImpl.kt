@@ -3,7 +3,7 @@ package io.github.kroune.nine_mens_morris_kmp_app.interactors.accountId
 import io.github.kroune.nine_mens_morris_kmp_app.data.accountIdDataSource
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
 
 class AccountIdInteractorImpl : AccountIdInteractorI {
     private val local = accountIdDataSource

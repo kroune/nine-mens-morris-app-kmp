@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.PlayerInfo
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.LeaderboardEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.LeaderboardEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating

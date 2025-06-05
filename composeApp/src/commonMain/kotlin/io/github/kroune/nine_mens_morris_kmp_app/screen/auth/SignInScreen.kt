@@ -29,9 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.event.auth.SignInScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.auth.SignInScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginApiResponse
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

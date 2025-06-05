@@ -10,7 +10,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val component = retainedComponent {
-                RootComponent(it)
+            RootComponent(it)
         }
         setContent {
             App(component)

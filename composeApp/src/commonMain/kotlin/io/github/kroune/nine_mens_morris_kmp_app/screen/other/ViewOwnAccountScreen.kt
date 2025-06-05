@@ -26,12 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewOwnAccountScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewOwnAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
@@ -60,7 +61,6 @@ fun ViewOwnAccountScreen(
     with(state) {
         Scaffold(
             modifier = Modifier
-                .padding(10.dp)
                 .fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
@@ -68,12 +68,13 @@ fun ViewOwnAccountScreen(
             bottomBar = {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxWidth()
+                        .padding(bottom = padding2),
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     Button(
                         onClick = {
-                            onEvent(ViewOwnAccountScreenEvent.Logout)
+                            onEvent(ViewOwnAccountScreenEvent.OnLogoutPressed)
                         },
                         shape = RoundedCornerShape(15.dp)
                     ) {
@@ -81,8 +82,12 @@ fun ViewOwnAccountScreen(
                     }
                 }
             }
-        ) { _ ->
+        ) { padding ->
             Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = padding2)
+                    .padding(top = padding2),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(

@@ -1,6 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.interactors.searchingForGame
 
-import io.github.kroune.nine_mens_morris_kmp_app.model.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
 import io.github.kroune.nine_mens_morris_kmp_app.data.searchingForGameRepository
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import kotlinx.coroutines.channels.Channel

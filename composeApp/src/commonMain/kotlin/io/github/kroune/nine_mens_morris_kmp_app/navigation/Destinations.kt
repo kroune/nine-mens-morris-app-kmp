@@ -15,6 +15,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGame
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.aboutScreenComponent.AboutScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponent
 import kotlinx.serialization.Serializable
@@ -64,6 +65,10 @@ sealed class Child(open val component: ComponentContextWithBackHandle) {
 
     data class LeaderboardChild(
         override val component: LeaderboardScreenComponent
+    ) : Child(component)
+
+    data class AboutChild(
+        override val component: AboutScreenComponent
     ) : Child(component)
 }
 
@@ -149,4 +154,10 @@ sealed class Configuration(
         @Transient
         val customAnimation: StackAnimator = slide()
     ) : Configuration("leaderboard", customAnimation)
+
+    @Serializable
+    data class AboutScreen(
+        @Transient
+        val customAnimation: StackAnimator = slide()
+    ) : Configuration("about", customAnimation)
 }

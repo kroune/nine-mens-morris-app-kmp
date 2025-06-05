@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 
