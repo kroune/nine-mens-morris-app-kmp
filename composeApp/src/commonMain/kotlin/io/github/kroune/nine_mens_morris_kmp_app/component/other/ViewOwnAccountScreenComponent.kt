@@ -66,7 +66,8 @@ class ViewOwnAccountScreenComponent(
                     accountPictureResult = result
                 )
             }
-        }
+        },
+        scope = componentScope
     )
 
     fun onEvent(event: ViewOwnAccountScreenEvent) {

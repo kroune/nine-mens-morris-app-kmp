@@ -1,4 +1,4 @@
-package io.github.kroune.nine_mens_morris_kmp_app.screen.other
+package io.github.kroune.nine_mens_morris_kmp_app.screen.other.welcomeScreen
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -43,21 +43,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
-import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.about
 import ninemensmorrisappkmp.composeapp.generated.resources.close
-import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.data_is_loading_wait
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
 import ninemensmorrisappkmp.composeapp.generated.resources.logged_in
@@ -76,7 +71,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WelcomeScreen(
-    component: WelcomeScreenComponentI
+    state: WelcomeScreenState,
+    onEvent: (WelcomeScreenEvent) -> Unit,
 ) {
     val scrollState = rememberScrollState(0)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -94,21 +90,25 @@ fun WelcomeScreen(
                     }
             ) {
                 NavigationBarItem(
-                    false, onClick = {
-                        if (component.isInAccount.value == null) {
-                            CoroutineScope(Dispatchers.Default).launch {
-                                snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                    false,
+                    onClick = {
+                        if (state.isInAccount == null) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    getString(Res.string.data_is_loading_wait)
+                                )
                             }
                             return@NavigationBarItem
                         }
-                        component.onEvent(WelcomeScreenEvent.NavigateToAccountView)
+                        onEvent(WelcomeScreenEvent.NavigateToAccountView)
                     },
                     icon = {
-                        val isInAccount = component.isInAccount.collectValue()
+                        val isInAccount = state.isInAccount
                         when (isInAccount) {
                             null -> {
                                 LoadingCircle(
                                     modifier = Modifier
+                                        .size(32.dp)
                                         .semantics {
                                             contentDescription = "loading account information"
                                         }
@@ -140,17 +140,17 @@ fun WelcomeScreen(
                                         .size(32.dp)
                                 )
                                 val errorText = when (isInAccount) {
-                                    CheckJwtTokenApiResponses.NetworkError -> {
+                                    is CheckJwtTokenApiResponses.NetworkError -> {
                                         stringResource(Res.string.network_error)
                                     }
 
-                                    CheckJwtTokenApiResponses.ServerError -> {
+                                    is CheckJwtTokenApiResponses.ServerError -> {
                                         stringResource(Res.string.server_error)
                                     }
 
                                     is CheckJwtTokenApiResponses.Success -> return@NavigationBarItem
 
-                                    CheckJwtTokenApiResponses.UnknownError -> {
+                                    is CheckJwtTokenApiResponses.UnknownError -> {
                                         stringResource(Res.string.unknown_error)
                                     }
                                 }
@@ -171,7 +171,7 @@ fun WelcomeScreen(
                             scrollState.stopScroll()
                             scrollState.animateScrollTo(
                                 if (!scrollUp) {
-                                    component.onEvent(WelcomeScreenEvent.CloseTutorial)
+                                    onEvent(WelcomeScreenEvent.CloseTutorial)
                                     0
                                 } else {
                                     scrollState.maxValue
@@ -192,7 +192,7 @@ fun WelcomeScreen(
                 NavigationBarItem(
                     false,
                     onClick = {
-                        component.onEvent(WelcomeScreenEvent.NavigateToAboutScreen)
+                        onEvent(WelcomeScreenEvent.NavigateToAboutScreen)
                     },
                     icon = {
                         Icon(
@@ -214,10 +214,10 @@ fun WelcomeScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            val onEvent: (WelcomeScreenEvent) -> Unit = { component.onEvent(it) }
+            val onEvent: (WelcomeScreenEvent) -> Unit = { onEvent(it) }
             // show that this screen can be scrolled
             LaunchedEffect(Unit) {
-                if (!component.hasSeenTutorial) {
+                if (!state.hasSeenTutorial) {
                     delay(250L)
                     scrollState.stopScroll()
                     scrollState.animateScrollTo(
@@ -263,9 +263,11 @@ fun WelcomeScreen(
                         .requiredHeight(height)
                         .requiredWidth(width)
                 ) {
-                    IconButton({
-                        component.onEvent(WelcomeScreenEvent.NavigateBack)
-                    }) {
+                    IconButton(
+                        {
+                            onEvent(WelcomeScreenEvent.NavigateBack)
+                        }
+                    ) {
                         Icon(
                             painterResource(Res.drawable.close),
                             "close button",
@@ -273,7 +275,10 @@ fun WelcomeScreen(
                         )
                     }
                     RenderMainScreen(
-                        component,
+                        state,
+                        {
+                            onEvent(it)
+                        },
                         snackbarHostState
                     )
                 }
@@ -286,38 +291,11 @@ fun WelcomeScreen(
                     TutorialScreen()
                 }
             }
-            HandleError(component.accountIdFailure, snackbarHostState)
+            HandleWelcomeScreenError(
+                state.accountIdFailure,
+                snackbarHostState
+            )
         }
-    }
-}
-
-@Composable
-private fun HandleError(
-    result: AccountIdByJwtTokenApiResponses?,
-    snackbarHostState: SnackbarHostState
-) {
-    val text: String = when (result) {
-        is AccountIdByJwtTokenApiResponses.UnknownError -> {
-            stringResource(Res.string.unknown_error)
-        }
-
-        is AccountIdByJwtTokenApiResponses.NetworkError -> {
-            stringResource(Res.string.network_error)
-        }
-
-        is AccountIdByJwtTokenApiResponses.CredentialsError -> {
-            stringResource(Res.string.credentials_error)
-        }
-
-        is AccountIdByJwtTokenApiResponses.ServerError -> {
-            stringResource(Res.string.server_error)
-        }
-
-        is AccountIdByJwtTokenApiResponses.Success, null -> return
-    }
-    val scope = rememberCoroutineScope()
-    scope.launch {
-        snackbarHostState.showSnackbar(text)
     }
 }
 
@@ -327,9 +305,11 @@ private fun HandleError(
  */
 @Composable
 fun RenderMainScreen(
-    component: WelcomeScreenComponentI,
+    state: WelcomeScreenState,
+    onEvent: (WelcomeScreenEvent) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
+    val scope = rememberCoroutineScope()
     val screenSize = getScreenDpSize()
     val height = screenSize.height
     Box(
@@ -350,7 +330,7 @@ fun RenderMainScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    component.onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
+                    onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
                 },
                 shape = RoundedCornerShape(5.dp),
             ) {
@@ -365,7 +345,7 @@ fun RenderMainScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    component.onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
+                    onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
                 },
                 shape = RoundedCornerShape(5.dp),
             ) {
@@ -380,13 +360,15 @@ fun RenderMainScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    if (component.isInAccount.value == null) {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                    if (state.isInAccount == null) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                getString(Res.string.data_is_loading_wait)
+                            )
                         }
                         return@Button
                     }
-                    component.onEvent(WelcomeScreenEvent.NavigateToOnlineGame)
+                    onEvent(WelcomeScreenEvent.NavigateToOnlineGame)
                 },
                 shape = RoundedCornerShape(5.dp),
             ) {
@@ -401,13 +383,15 @@ fun RenderMainScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 onClick = {
-                    if (component.isInAccount.value == null) {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            snackbarHostState.showSnackbar(getString(Res.string.data_is_loading_wait))
+                    if (state.isInAccount == null) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                getString(Res.string.data_is_loading_wait)
+                            )
                         }
                         return@Button
                     }
-                    component.onEvent(WelcomeScreenEvent.NavigateToLeaderboard)
+                    onEvent(WelcomeScreenEvent.NavigateToLeaderboard)
                 },
                 shape = RoundedCornerShape(5.dp),
             ) {

@@ -102,10 +102,10 @@ class AuthRepositoryImpl : AuthRepositoryI {
             val request = network.get(route)
             checkJwtTokenResult(request)
         }
-            .recoverNetworkError(CheckJwtTokenApiResponses.NetworkError)
+            .recoverNetworkError(CheckJwtTokenApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
             .getOrElse {
-                CheckJwtTokenApiResponses.UnknownError
+                CheckJwtTokenApiResponses.UnknownError()
             }
     }
 
@@ -116,7 +116,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
             }
 
             HttpStatusCode.InternalServerError -> {
-                CheckJwtTokenApiResponses.ServerError
+                CheckJwtTokenApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
@@ -125,7 +125,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
             }
 
             else -> {
-                CheckJwtTokenApiResponses.UnknownError
+                CheckJwtTokenApiResponses.UnknownError()
             }
         }
     }

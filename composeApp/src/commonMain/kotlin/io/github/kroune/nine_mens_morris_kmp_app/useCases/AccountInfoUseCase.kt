@@ -6,7 +6,6 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiRe
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AccountInfoUseCase(
@@ -15,9 +14,8 @@ class AccountInfoUseCase(
     private val onRatingResult: ((RatingByIdApiResponses) -> Unit)? = null,
     private val needCreationDate: ((CreationDateByIdApiResponses) -> Unit)? = null,
     private val needPicture: ((AccountPictureByIdApiResponses) -> Unit)? = null,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.Default)
-
     fun reloadName() {
         if (onLoginResult == null)
             return

@@ -7,9 +7,8 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.AppStartAnima
 class AppStartAnimationComponent(
     componentContext: ComponentContext,
     private val onNavigationToWelcomeScreen: () -> Unit
-) : ComponentContext by componentContext, ComponentContextWithBackHandle,
-    AppStartAnimationComponentI {
-    override fun onEvent(event: AppStartAnimationScreenEvent) {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+    fun onEvent(event: AppStartAnimationScreenEvent) {
         when (event) {
             is AppStartAnimationScreenEvent.ClickButton -> {
                 onNavigationToWelcomeScreen()

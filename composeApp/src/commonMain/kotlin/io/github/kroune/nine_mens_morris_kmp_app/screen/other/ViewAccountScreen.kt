@@ -15,7 +15,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +37,6 @@ fun ViewAccountScreen(
     onEvent: (ViewAccountScreenEvent) -> Unit,
     state: ViewAccountScreenState
 ) {
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     with(state) {
         Scaffold(
@@ -68,7 +66,6 @@ fun ViewAccountScreen(
                             pictureByteArray = accountPictureResult,
                             onReload = { onEvent(ViewAccountScreenEvent.ReloadIcon) },
                             onClick = {},
-                            scope = scope,
                             snackbarHostState = snackbarHostState
                         )
                     }
@@ -85,7 +82,6 @@ fun ViewAccountScreen(
                         },
                         accountName = accountLoginResult,
                         onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
-                        scope = scope,
                         snackbarHostState = snackbarHostState
                     )
                 }
@@ -101,16 +97,15 @@ fun ViewAccountScreen(
                     },
                     accountRating = accountRatingResult,
                     onReload = { onEvent(ViewAccountScreenEvent.ReloadRating) },
-                    scope = scope,
                     snackbarHostState = snackbarHostState
                 )
                 DrawAccountCreationDate(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .height(30.dp),
-                    text = { (first, second, third) ->
+                    onSuccess = { (first, second, third) ->
                         Text(
-                            "$first-$second-$third",
+                            "$first.$second.$third",
                             fontSize = 20.sp
                         )
                     },
@@ -118,7 +113,7 @@ fun ViewAccountScreen(
                     onReload = {
                         onEvent(ViewAccountScreenEvent.ReloadCreationDate)
                     },
-                    scope = scope, snackbarHostState = snackbarHostState
+                    snackbarHostState = snackbarHostState
                 )
             }
         }

@@ -76,7 +76,7 @@ class OnlineGameComponent(
     private var ownAccountId: Long? = null
 
     private val gameUseCase = GameBoardUseCase(
-        pos = {
+        getPosition = {
             _state.value.position
         },
         onPositionChange = { value ->
@@ -93,9 +93,7 @@ class OnlineGameComponent(
                 )
             }
         },
-        selectedButton = {
-            _state.value.selectedButton
-        },
+        selectedButton = { _state.value.selectedButton },
         onSelectedButtonUpdate = { value ->
             _state.update {
                 it.copy(
@@ -172,7 +170,8 @@ class OnlineGameComponent(
                                 ownAccountPictureResult = result
                             )
                         }
-                    }
+                    },
+                    scope = componentScope
                 )
                 enemyAccountId = enemyId
                 enemyAccountInfoUseCase = AccountInfoUseCase(
@@ -197,7 +196,8 @@ class OnlineGameComponent(
                                 enemyAccountPictureResult = result
                             )
                         }
-                    }
+                    },
+                    scope = componentScope
                 )
                 while (!gameEnded.isCompleted) {
                     val moveResult = channelToReceiveMoves.receiveCatching()

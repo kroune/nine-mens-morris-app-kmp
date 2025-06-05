@@ -6,22 +6,22 @@ import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.kroune.nine_mens_morris_kmp_app.common.collectValue
+import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
-import io.github.kroune.nine_mens_morris_kmp_app.navigation.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.BackHandler
-import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.SignInScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.SignUpScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.signInScreen.SignInScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.auth.signUpScreen.SignUpScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.GameWithBotScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.GameWithFriendScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.OnlineGameScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.SearchingForGameScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.onlineGameScreen.OnlineGameScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.searchingForGameScreen.SearchingForGameScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AboutScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewOwnAccountScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.viewOwnAccountScreen.ViewOwnAccountScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.welcomeScreen.WelcomeScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.AppTheme
 
 @Composable
@@ -38,11 +38,20 @@ fun App(component: RootComponent) {
             val instance = child.instance
             when (instance) {
                 is Child.AppStartAnimationScreenChild -> {
-                    AppStartAnimationScreen(instance.component)
+                    with(instance.component) {
+                        AppStartAnimationScreen(
+                            onEvent = { onEvent(it) }
+                        )
+                    }
                 }
 
                 is Child.WelcomeScreenChild -> {
-                    WelcomeScreen(instance.component)
+                    with(instance.component) {
+                        WelcomeScreen(
+                            onEvent = { onEvent(it) },
+                            state = state.collectValue()
+                        )
+                    }
                 }
 
                 is Child.ViewAccountScreenChild -> {
@@ -130,6 +139,7 @@ fun App(component: RootComponent) {
                     }
                 }
             }
+
             BackHandler(instance.component.backHandler) {
                 instance.component.onBackPressed()
             }

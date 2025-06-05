@@ -8,16 +8,19 @@ import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApi
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class ViewAccountScreenComponent(
-    val onNavigationBack: () -> Unit,
+    private val onNavigationBack: () -> Unit,
     accountId: Long,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+    private val componentScope = componentCoroutineScope()
+
     private val _state = MutableStateFlow(
         ViewAccountScreenState(
             null,
@@ -58,7 +61,8 @@ class ViewAccountScreenComponent(
                     accountPictureResult = result
                 )
             }
-        }
+        },
+        scope = componentScope
     )
 
     fun onEvent(event: ViewAccountScreenEvent) {

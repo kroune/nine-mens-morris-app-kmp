@@ -4,14 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
@@ -22,6 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendScreenEvent.GameAnalyzeEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.analyze
 import ninemensmorrisappkmp.composeapp.generated.resources.depth
@@ -35,20 +35,18 @@ fun RenderGameAnalyzeScreen(
     modifier: Modifier = Modifier,
     positions: List<Position>,
     depth: Int,
-    startAnalyze: () -> Unit,
-    increaseDepth: () -> Unit,
-    decreaseDepth: () -> Unit
+    onEvent: (GameAnalyzeEvent) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
     Column(
-        modifier = modifier.verticalScroll(scrollState),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
+            modifier = Modifier.padding(bottom = 5.dp),
             onClick = {
-                startAnalyze()
+                onEvent(GameAnalyzeEvent.StartAnalyze)
             },
-            shape = RoundedCornerShape(15.dp),
+            shape = RoundedCornerShape3,
             colors = ButtonColors(
                 containerColor = Color.DarkGray,
                 contentColor = Color.White,
@@ -66,9 +64,10 @@ fun RenderGameAnalyzeScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f),
                         onClick = {
-                            decreaseDepth()
+                            onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth)
                         },
                         colors = ButtonColors(
                             containerColor = Color.DarkGray.copy(alpha = 0.2f),
@@ -83,9 +82,10 @@ fun RenderGameAnalyzeScreen(
                     }
                     Text("${stringResource(Res.string.depth)} - $depth", fontSize = 13.sp)
                     Button(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f),
                         onClick = {
-                            increaseDepth()
+                            onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth)
                         },
                         colors = ButtonColors(
                             containerColor = Color.DarkGray.copy(alpha = 0.2f),
@@ -101,7 +101,6 @@ fun RenderGameAnalyzeScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(5.dp))
         if (positions.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
@@ -111,13 +110,13 @@ fun RenderGameAnalyzeScreen(
             ) {
                 items(positions) {
                     RenderGameBoard(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .padding(10.dp),
                         pos = it,
                         selectedButton = null,
                         moveHints = setOf(),
                         onClick = {}
                     )
-                    Spacer(modifier = Modifier.height(5.dp))
                 }
             }
         }

@@ -2,11 +2,9 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,10 +14,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCount
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderUndoRedo
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 
 /**
@@ -28,7 +28,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 @Composable
 fun GameWithFriendScreen(
     state: GameWithFriendScreenState,
-    onEvent: (GameWithFriendEvent) -> Unit
+    onEvent: (GameWithFriendScreenEvent) -> Unit
 ) {
     var gameEndPopUpClosed by remember { mutableStateOf(false) }
     if (!gameEndPopUpClosed && state.gameEnded) {
@@ -37,7 +37,7 @@ fun GameWithFriendScreen(
             onDiscarded = { gameEndPopUpClosed = true },
             onBackToMainScreen = {
                 gameEndPopUpClosed = false
-                onEvent(GameWithFriendEvent.Back)
+                onEvent(GameWithFriendScreenEvent.Back)
             }
         )
     }
@@ -55,34 +55,34 @@ fun GameWithFriendScreen(
                 selectedButton = state.selectedButton,
                 moveHints = state.moveHints,
                 onClick = {
-                    onEvent(GameWithFriendEvent.OnPieceClick(it))
+                    onEvent(GameWithFriendScreenEvent.OnPieceClick(it))
                 },
             )
         }
-        Spacer(modifier = Modifier.height(5.dp))
-        Box(contentAlignment = Alignment.TopCenter) {
+        Box(
+            modifier = Modifier
+                .padding(top = 5.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
             RenderGameAnalyzeScreen(
                 modifier = Modifier
                     .padding(
-                        start = GAME_BOARD_BUTTON_WIDTH,
-                        end = GAME_BOARD_BUTTON_WIDTH
+                        horizontal = 10.dp,
                     )
                     .fillMaxHeight()
                     .fillMaxWidth(0.8f),
                 positions = state.gameAnalyzePositions,
                 depth = state.depth,
-                startAnalyze = { onEvent(GameWithFriendEvent.StartAnalyze) },
-                increaseDepth = { onEvent(GameWithFriendEvent.IncreaseAnalyzeDepth) },
-                decreaseDepth = { onEvent(GameWithFriendEvent.DecreaseAnalyzeDepth) }
+                onEvent = { onEvent(it) }
             )
             RenderUndoRedo(
                 handleUndo = {
                     if (!state.gameEnded)
-                        onEvent(GameWithFriendEvent.Undo)
+                        onEvent(GameWithFriendScreenEvent.Undo)
                 },
                 handleRedo = {
                     if (!state.gameEnded)
-                        onEvent(GameWithFriendEvent.Redo)
+                        onEvent(GameWithFriendScreenEvent.Redo)
                 }
             )
         }

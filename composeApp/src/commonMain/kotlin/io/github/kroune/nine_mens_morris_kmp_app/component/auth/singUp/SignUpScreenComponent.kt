@@ -3,12 +3,12 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp
 import androidx.compose.runtime.Immutable
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.auth.SignUpScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
-import kotlinx.coroutines.CoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.auth.SignUpScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ class SignUpScreenComponent(
     val onSuccessfulAuth: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
-    private val componentScope = CoroutineScope(Dispatchers.Default)
+    private val componentScope = componentCoroutineScope()
 
     private val _state = MutableStateFlow(
         SignUpScreenState(
@@ -108,9 +108,11 @@ class SignUpScreenComponent(
             is SignUpScreenEvent.UpdatePassword -> {
                 updatePassword(event.newPassword)
             }
+
             is SignUpScreenEvent.UpdateRepeatedPassword -> {
                 updatePasswordRepeated(event.newRepeatedPassword)
             }
+
             is SignUpScreenEvent.UpdateUsername -> {
                 updateUsername(event.newUsername)
             }
