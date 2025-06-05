@@ -33,16 +33,15 @@ fun <T> Result<T>.recoverNetworkError(networkException: T): Result<T> {
 }
 
 inline fun <T> Result<T>.onNetworkError(lambda: (Throwable) -> Unit) {
-    recoverCatching {
+    onFailure {
         if (it is IOException) {
             lambda(it)
-            return@recoverCatching
+            return
         }
         if (it is ConnectTimeoutException) {
             lambda(it)
-            return@recoverCatching
+            return
         }
-        throw it
     }.onNativeNetworkError(
         lambda
     )
