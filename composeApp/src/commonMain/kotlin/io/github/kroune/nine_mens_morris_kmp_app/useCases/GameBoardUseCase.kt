@@ -10,13 +10,13 @@ class GameBoardUseCase(
     /**
      * stores current position
      */
-    val pos: () -> Position,
+    private val getPosition: () -> Position,
 
-    val onPositionChange: (Position) -> Unit,
+    private val onPositionChange: (Position) -> Unit,
     /**
      * stores all pieces which can be moved (used for highlighting)
      */
-    val onMoveHintsUpdate: (Set<Int>) -> Unit = {},
+    private val onMoveHintsUpdate: (Set<Int>) -> Unit = {},
     /**
      * what we should execute on undo
      */
@@ -28,14 +28,16 @@ class GameBoardUseCase(
     /**
      * used for storing info of the previous (valid one) clicked button
      */
-    val onSelectedButtonUpdate: (Int?) -> Unit = {},
+    private val onSelectedButtonUpdate: (Int?) -> Unit = {},
 
-    val selectedButton: () -> Int?,
+    private val selectedButton: () -> Int?,
     /**
      * what should happen on game end
      */
-    val onGameEnd: () -> Unit
+    private val onGameEnd: () -> Unit
 ) {
+     private val pos
+         get() = getPosition()
 
     /**
      * stores all movements (positions) history
@@ -79,7 +81,7 @@ class GameBoardUseCase(
      * processes selected movement
      */
     fun processMove(move: Movement) {
-        val newPosition = move.producePosition(pos()).copy()
+        val newPosition = move.producePosition(pos).copy()
         onPositionChange(newPosition)
         onSelectedButtonUpdate(null)
         saveMove(newPosition)
@@ -103,21 +105,21 @@ class GameBoardUseCase(
      * @param elementIndex element that got clicked
      */
     fun handleClick(elementIndex: Int): Movement? {
-        when (pos().gameState()) {
+        when (pos.gameState()) {
             GameState.Placement -> {
-                if (pos().positions[elementIndex] == null) {
+                if (pos.positions[elementIndex] == null) {
                     return Movement(null, elementIndex)
                 }
             }
 
             GameState.Normal -> {
                 if (selectedButton() == null) {
-                    if (pos().positions[elementIndex] == pos().pieceToMove) {
+                    if (pos.positions[elementIndex] == pos.pieceToMove) {
                         onSelectedButtonUpdate(elementIndex)
                     }
                 } else {
                     if (moveProvider[selectedButton()!!].filter { endIndex ->
-                            pos().positions[endIndex] == null
+                            pos.positions[endIndex] == null
                         }.contains(elementIndex)) {
                         return Movement(selectedButton(), elementIndex)
                     } else {
@@ -128,10 +130,10 @@ class GameBoardUseCase(
 
             GameState.Flying -> {
                 if (selectedButton() == null) {
-                    if (pos().positions[elementIndex] == pos().pieceToMove)
+                    if (pos.positions[elementIndex] == pos.pieceToMove)
                         onSelectedButtonUpdate(elementIndex)
                 } else {
-                    if (pos().positions[elementIndex] == null) {
+                    if (pos.positions[elementIndex] == null) {
                         return Movement(selectedButton(), elementIndex)
                     } else {
                         onSelectedButtonUpdate(null)
@@ -140,7 +142,7 @@ class GameBoardUseCase(
             }
 
             GameState.Removing -> {
-                if (pos().positions[elementIndex] == !pos().pieceToMove) {
+                if (pos.positions[elementIndex] == !pos.pieceToMove) {
                     return Movement(elementIndex, null)
                 }
             }
@@ -154,9 +156,9 @@ class GameBoardUseCase(
      * finds pieces we should highlight
      */
     fun handleHighLighting() {
-        val position = pos()
+        val position = pos
         position.generateMoves().let { moves ->
-            when (pos().gameState()) {
+            when (pos.gameState()) {
                 GameState.Placement -> {
                     onMoveHintsUpdate(moves.map { it.endIndex!! }.toSet())
                 }

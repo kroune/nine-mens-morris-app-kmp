@@ -1,12 +1,12 @@
 package io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfo
 
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LeaderboardApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LeaderboardApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.UploadPictureApiResponses
 
 interface AccountInfoInteractorI {
     suspend fun getAccountRatingById(id: Long): RatingByIdApiResponses

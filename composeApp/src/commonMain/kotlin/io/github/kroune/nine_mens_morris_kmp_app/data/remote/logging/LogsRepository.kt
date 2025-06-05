@@ -1,5 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging
 
+import kotlinx.coroutines.CancellationException
+
 fun log(message: String, throwable: Throwable? = null, severity: Severity) {
     buildString {
         appendLine(message)
@@ -13,7 +15,8 @@ fun log(message: String, throwable: Throwable? = null, severity: Severity) {
 
 fun <T> Result<T>.logOnFailure(message: String, severity: Severity): Result<T> {
     return this.onFailure {
-        log(message, throwable = it, severity)
+        if (it !is CancellationException)
+            log(message, throwable = it, severity)
     }
 }
 

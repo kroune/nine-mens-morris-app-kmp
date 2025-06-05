@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,16 +46,16 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackHandler
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
 import ninemensmorrisappkmp.composeapp.generated.resources.error
@@ -64,8 +65,8 @@ import ninemensmorrisappkmp.composeapp.generated.resources.server_error
 import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 
 fun ComponentContext.componentCoroutineScope(): CoroutineScope {
@@ -89,7 +90,7 @@ fun DrawRating(
         .size(120.dp, 30.dp),
     onReload: () -> Unit,
     onSuccess: @Composable BoxScope.(Long) -> Unit = @Composable {
-        Text(text = it.toString())
+        Text(text = it.toString(), overflow = TextOverflow.Ellipsis)
     },
     onLoading: @Composable BoxScope.() -> Unit = {
         Box(
@@ -115,7 +116,6 @@ fun DrawRating(
         }
     },
     accountRating: RatingByIdApiResponses?,
-    scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
 ) {
     AnimatedContent(
@@ -142,27 +142,27 @@ fun DrawRating(
 
                 else -> {
                     onFailure()
-                    val errorText = when (it) {
-                        is RatingByIdApiResponses.NetworkError -> {
-                            stringResource(Res.string.network_error)
-                        }
+                    LaunchedEffect(it) {
+                        val errorText = when (it) {
+                            is RatingByIdApiResponses.NetworkError -> {
+                                getString(Res.string.network_error)
+                            }
 
-                        RatingByIdApiResponses.UnknownError -> {
-                            stringResource(Res.string.unknown_error)
-                        }
+                            is RatingByIdApiResponses.UnknownError -> {
+                                getString(Res.string.unknown_error)
+                            }
 
-                        RatingByIdApiResponses.CredentialsError -> {
-                            stringResource(Res.string.credentials_error)
-                        }
+                            is RatingByIdApiResponses.CredentialsError -> {
+                                getString(Res.string.credentials_error)
+                            }
 
-                        RatingByIdApiResponses.ServerError -> {
-                            stringResource(Res.string.server_error)
-                        }
+                            is RatingByIdApiResponses.ServerError -> {
+                                getString(Res.string.server_error)
+                            }
 
-                        is RatingByIdApiResponses.Success -> return@AnimatedContent
-                    }
-                    var retryText = stringResource(Res.string.retry)
-                    scope.launch {
+                            is RatingByIdApiResponses.Success -> return@LaunchedEffect
+                        }
+                        var retryText = getString(Res.string.retry)
                         snackbarHostState.showSnackbar(errorText, retryText)
                             .let { snackbarResult ->
                                 if (snackbarResult == SnackbarResult.ActionPerformed) {
@@ -180,10 +180,32 @@ fun DrawRating(
 fun DrawAccountCreationDate(
     modifier: Modifier = Modifier
         .size(120.dp, 30.dp),
-    text: @Composable (Triple<Int, Int, Int>) -> Unit,
-    accountCreationDate: CreationDateByIdApiResponses?,
     onReload: () -> Unit,
-    scope: CoroutineScope,
+    onSuccess: @Composable (Triple<Int, Int, Int>) -> Unit = @Composable { (day, week, month) ->
+        Text("$day.$week.$month")
+    },
+    onLoading: @Composable BoxScope.() -> Unit = {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .shimmerLoading()
+        ) {}
+    },
+    onFailure: @Composable BoxScope.() -> Unit = {
+        IconButton(onClick = {
+            onReload()
+        }) {
+            Icon(
+                painter = painterResource(Res.drawable.error),
+                contentDescription = "Error",
+                modifier = Modifier
+                    .matchParentSize()
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+            )
+        }
+    },
+    accountCreationDate: CreationDateByIdApiResponses?,
     snackbarHostState: SnackbarHostState,
 ) {
     Box(
@@ -192,54 +214,36 @@ fun DrawAccountCreationDate(
     ) {
         when (accountCreationDate) {
             null -> {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .shimmerLoading(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                }
+                onLoading()
             }
 
             is CreationDateByIdApiResponses.Success -> {
-                text(accountCreationDate.creationDate)
+                onSuccess(accountCreationDate.creationDate)
             }
 
             else -> {
-                IconButton(onClick = {
-                    onReload()
-                }) {
-                    Icon(
-                        painter = painterResource(Res.drawable.error),
-                        contentDescription = "Error",
-                        modifier = Modifier
-                            .matchParentSize()
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
-                    )
-                }
+                onFailure()
+                LaunchedEffect(accountCreationDate) {
+                    val exceptionText: String = when (accountCreationDate) {
+                        is CreationDateByIdApiResponses.NetworkError -> {
+                            getString(Res.string.network_error)
+                        }
 
-                val exceptionText: String = when (accountCreationDate) {
-                    is CreationDateByIdApiResponses.NetworkError -> {
-                        stringResource(Res.string.network_error)
+                        is CreationDateByIdApiResponses.UnknownError -> {
+                            getString(Res.string.unknown_error)
+                        }
+
+                        is CreationDateByIdApiResponses.CredentialsError -> {
+                            getString(Res.string.credentials_error)
+                        }
+
+                        is CreationDateByIdApiResponses.ServerError -> {
+                            getString(Res.string.server_error)
+                        }
+
+                        is CreationDateByIdApiResponses.Success -> return@LaunchedEffect
                     }
-
-                    CreationDateByIdApiResponses.UnknownError -> {
-                        stringResource(Res.string.unknown_error)
-                    }
-
-                    CreationDateByIdApiResponses.CredentialsError -> {
-                        stringResource(Res.string.credentials_error)
-                    }
-
-                    CreationDateByIdApiResponses.ServerError -> {
-                        stringResource(Res.string.server_error)
-                    }
-
-                    is CreationDateByIdApiResponses.Success -> return
-                }
-                val retryText = stringResource(Res.string.retry)
-                scope.launch {
+                    val retryText = getString(Res.string.retry)
                     snackbarHostState.showSnackbar(exceptionText, retryText).let {
                         if (it == SnackbarResult.ActionPerformed) {
                             onReload()
@@ -328,7 +332,6 @@ fun DrawIcon(
         }
     },
     pictureByteArray: AccountPictureByIdApiResponses?,
-    scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
 ) {
     AnimatedContent(
@@ -354,27 +357,27 @@ fun DrawIcon(
 
                 else -> {
                     onFailure()
-                    val text: String = when (pictureByteArray) {
-                        is AccountPictureByIdApiResponses.NetworkError -> {
-                            stringResource(Res.string.network_error)
-                        }
+                    LaunchedEffect(pictureByteArray) {
+                        val text: String = when (pictureByteArray) {
+                            is AccountPictureByIdApiResponses.NetworkError -> {
+                                getString(Res.string.network_error)
+                            }
 
-                        AccountPictureByIdApiResponses.UnknownError -> {
-                            stringResource(Res.string.unknown_error)
-                        }
+                            is AccountPictureByIdApiResponses.UnknownError -> {
+                                getString(Res.string.unknown_error)
+                            }
 
-                        AccountPictureByIdApiResponses.CredentialsError -> {
-                            stringResource(Res.string.credentials_error)
-                        }
+                            is AccountPictureByIdApiResponses.CredentialsError -> {
+                                getString(Res.string.credentials_error)
+                            }
 
-                        AccountPictureByIdApiResponses.ServerError -> {
-                            stringResource(Res.string.server_error)
-                        }
+                            is AccountPictureByIdApiResponses.ServerError -> {
+                                getString(Res.string.server_error)
+                            }
 
-                        is AccountPictureByIdApiResponses.Success -> return@AnimatedContent
-                    }
-                    val retryText = stringResource(Res.string.retry)
-                    scope.launch {
+                            is AccountPictureByIdApiResponses.Success -> return@LaunchedEffect
+                        }
+                        val retryText = getString(Res.string.retry)
                         snackbarHostState.showSnackbar(text, retryText).let { result ->
                             if (result == SnackbarResult.ActionPerformed) {
                                 onReload()
@@ -404,7 +407,7 @@ fun DrawName(
     onLoading: @Composable BoxScope.() -> Unit = {
         Box(
             Modifier
-                .clip(RoundedCornerShape(15.dp))
+                .clip(RoundedCornerShape3)
                 .matchParentSize()
                 .shimmerLoading()
         ) {
@@ -424,7 +427,6 @@ fun DrawName(
         }
     },
     accountName: LoginByIdApiResponses?,
-    scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
 ) {
     Box(modifier) {
@@ -439,27 +441,27 @@ fun DrawName(
 
             else -> {
                 onFailure()
-                val exceptionText: String = when (accountName) {
-                    is LoginByIdApiResponses.Success -> return
+                LaunchedEffect(accountName) {
+                    val exceptionText: String = when (accountName) {
+                        is LoginByIdApiResponses.Success -> return@LaunchedEffect
 
-                    is LoginByIdApiResponses.NetworkError -> {
-                        stringResource(Res.string.network_error)
-                    }
+                        is LoginByIdApiResponses.NetworkError -> {
+                            getString(Res.string.network_error)
+                        }
 
-                    LoginByIdApiResponses.CredentialsError -> {
-                        stringResource(Res.string.credentials_error)
-                    }
+                        is LoginByIdApiResponses.CredentialsError -> {
+                            getString(Res.string.credentials_error)
+                        }
 
-                    LoginByIdApiResponses.ServerError -> {
-                        stringResource(Res.string.server_error)
-                    }
+                        is LoginByIdApiResponses.ServerError -> {
+                            getString(Res.string.server_error)
+                        }
 
-                    LoginByIdApiResponses.UnknownError -> {
-                        stringResource(Res.string.unknown_error)
+                        is LoginByIdApiResponses.UnknownError -> {
+                            getString(Res.string.unknown_error)
+                        }
                     }
-                }
-                val retryText = stringResource(Res.string.retry)
-                scope.launch {
+                    val retryText = getString(Res.string.retry)
                     snackbarHostState.showSnackbar(exceptionText, retryText).let { result ->
                         if (result == SnackbarResult.ActionPerformed) {
                             onReload()

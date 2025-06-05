@@ -6,7 +6,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.jwtTokenDataSource
 import io.github.kroune.nine_mens_morris_kmp_app.data.local.accountId.AccountIdDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.data.local.jwtToken.JwtTokenDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
 
 class JwtTokenInteractorImpl(
     private val local: JwtTokenDataSourceI = jwtTokenDataSource,

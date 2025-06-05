@@ -1,0 +1,13 @@
+package io.github.kroune.nine_mens_morris_kmp_app.model.event.game
+
+sealed interface GameWithFriendScreenEvent {
+    sealed interface GameAnalyzeEvent: GameWithFriendScreenEvent {
+        data object StartAnalyze: GameAnalyzeEvent
+        data object IncreaseAnalyzeDepth: GameAnalyzeEvent
+        data object DecreaseAnalyzeDepth: GameAnalyzeEvent
+    }
+    data class OnPieceClick(val index: Int): GameWithFriendScreenEvent
+    data object Undo: GameWithFriendScreenEvent
+    data object Redo: GameWithFriendScreenEvent
+    data object Back: GameWithFriendScreenEvent
+}

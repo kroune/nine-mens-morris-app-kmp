@@ -2,9 +2,9 @@ package io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
 import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
-import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
@@ -102,10 +102,10 @@ class AuthRepositoryImpl : AuthRepositoryI {
             val request = network.get(route)
             checkJwtTokenResult(request)
         }
-            .recoverNetworkError(CheckJwtTokenApiResponses.NetworkError)
+            .recoverNetworkError(CheckJwtTokenApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
             .getOrElse {
-                CheckJwtTokenApiResponses.UnknownError
+                CheckJwtTokenApiResponses.UnknownError()
             }
     }
 
@@ -116,7 +116,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
             }
 
             HttpStatusCode.InternalServerError -> {
-                CheckJwtTokenApiResponses.ServerError
+                CheckJwtTokenApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
@@ -125,7 +125,7 @@ class AuthRepositoryImpl : AuthRepositoryI {
             }
 
             else -> {
-                CheckJwtTokenApiResponses.UnknownError
+                CheckJwtTokenApiResponses.UnknownError()
             }
         }
     }

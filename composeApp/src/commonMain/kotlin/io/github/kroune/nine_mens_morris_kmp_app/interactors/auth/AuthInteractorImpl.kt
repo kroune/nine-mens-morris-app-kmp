@@ -3,8 +3,8 @@ package io.github.kroune.nine_mens_morris_kmp_app.interactors.auth
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.data.accountIdDataSource
 import io.github.kroune.nine_mens_morris_kmp_app.data.authRepository
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginApiResponse
-import io.github.kroune.nine_mens_morris_kmp_app.model.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
 
 class AuthInteractorImpl : AuthInteractorI {
     private val authRemote = authRepository

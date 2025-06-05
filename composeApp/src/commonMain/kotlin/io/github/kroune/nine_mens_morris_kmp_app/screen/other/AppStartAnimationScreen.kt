@@ -22,8 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponentI
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.AppStartAnimationScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.AppStartAnimationScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.press_to_start
@@ -33,15 +32,16 @@ import kotlin.math.sin
 
 @Composable
 fun AppStartAnimationScreen(
-    component: AppStartAnimationComponentI
+    onEvent: (AppStartAnimationScreenEvent) -> Unit
 ) {
     DrawAnimation()
-    StartButton(component)
+    StartButton(
+        onClick = { onEvent(AppStartAnimationScreenEvent.ClickButton) }
+    )
 }
 
-
 /**
- * draw good looking animation
+ * draw good-looking animation
  * can be used when loading data
  */
 @Composable
@@ -84,7 +84,7 @@ private fun DrawAnimation() {
  */
 @Composable
 private fun StartButton(
-    component: AppStartAnimationComponentI
+    onClick: () -> Unit
 ) {
     val infiniteScale = rememberInfiniteTransition(label = "buttonAnimation")
     val animatedProgress by infiniteScale.animateFloat(
@@ -110,7 +110,7 @@ private fun StartButton(
             modifier = Modifier
                 .alpha(animatedProgress)
                 .clickable {
-                    component.onEvent(AppStartAnimationScreenEvent.ClickButton)
+                    onClick()
                 },
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 22.sp

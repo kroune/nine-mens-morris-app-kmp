@@ -1,6 +1,5 @@
 <!--suppress LongLine -->
 <resources>
-    <string name="app_name">NineMensMorris</string>
     <string name="client_error">We have encountered error in app runtime, it may be caused by an obsolete app version. Feel free to report this issue on Github</string>
     <string name="network_error">Unable to make a network request. Maybe you have internet disabled or using vpn</string>
     <string name="server_error">We have encountered error in our infrastructure. We will fix it as soon as possible. Feel free to provide additional info on Github issues </string>
@@ -54,4 +53,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="data_is_loading_wait">Data is still loading, please wait</string>
+    <string name="about_app">About app</string>
+    <string name="view_own_account">My own profile</string>
+    <string name="source_code_link">Link to source code</string>
+    <string name="creator_telegram_link">Link to creator's telegram</string>
+    <string name="report_an_issue">Report an issue</string>
 </resources>

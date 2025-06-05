@@ -1,18 +1,18 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.LeaderboardEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LeaderboardApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LeaderboardApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.LeaderboardEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -23,6 +23,8 @@ class LeaderboardScreenComponent(
     private val onNavigationBack: () -> Unit,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+    private val componentScope = componentCoroutineScope()
+
     private val leaderboardSize = 10
     private val _state = MutableStateFlow(
         LeaderboardScreenState(
@@ -38,7 +40,7 @@ class LeaderboardScreenComponent(
     private val useCases = mutableListOf<AccountInfoUseCase>()
 
     init {
-        CoroutineScope(Dispatchers.Default).launch {
+        componentScope.launch {
             val localLeaderboardData = accountInfoInteractor.getLeaderboard(leaderboardSize)
             leaderboardData = localLeaderboardData
             if (localLeaderboardData is LeaderboardApiResponses.Success) {
@@ -51,23 +53,29 @@ class LeaderboardScreenComponent(
                     )
                 }
                 localLeaderboardData.leaderboard.forEachIndexed { index, id ->
-                    AccountInfoUseCase(
-                        accountId = id,
-                        onLoginResult = { result ->
-                            _state.value.leaderboard[index] = _state.value.leaderboard[index].copy(
-                                loginResult = result
-                            )
-                        },
-                        onRatingResult = { result ->
-                            _state.value.leaderboard[index] = _state.value.leaderboard[index].copy(
-                                ratingResult = result
-                            )
-                        },
-                        needPicture = { result ->
-                            _state.value.leaderboard[index] = _state.value.leaderboard[index].copy(
-                                picture = result
-                            )
-                        },
+                    useCases.add(
+                        AccountInfoUseCase(
+                            accountId = id,
+                            onLoginResult = { result ->
+                                _state.value.leaderboard[index] =
+                                    _state.value.leaderboard[index].copy(
+                                        loginResult = result
+                                    )
+                            },
+                            onRatingResult = { result ->
+                                _state.value.leaderboard[index] =
+                                    _state.value.leaderboard[index].copy(
+                                        ratingResult = result
+                                    )
+                            },
+                            needPicture = { result ->
+                                _state.value.leaderboard[index] =
+                                    _state.value.leaderboard[index].copy(
+                                        picture = result
+                                    )
+                            },
+                            scope = componentScope
+                        )
                     )
                 }
             }
@@ -94,8 +102,12 @@ class LeaderboardScreenComponent(
 
             is LeaderboardEvent.NavigateToAccountView -> {
                 val leaderboardDataState = leaderboardData
-                if (leaderboardDataState is LeaderboardApiResponses.Success)
-                    onNavigationToAccountView(leaderboardDataState.leaderboard[event.index])
+                if (leaderboardDataState is LeaderboardApiResponses.Success) {
+                    val element = leaderboardDataState.leaderboard.getOrElse(event.index) {
+                        return
+                    }
+                    onNavigationToAccountView(element)
+                }
             }
         }
     }
@@ -112,6 +124,7 @@ data class PlayerInfo(
     val picture: AccountPictureByIdApiResponses?,
 )
 
+@Immutable
 data class LeaderboardScreenState(
     val leaderboard: SnapshotStateList<PlayerInfo>
 )

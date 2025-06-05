@@ -4,13 +4,13 @@ import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
 import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LeaderboardApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LeaderboardApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -34,25 +34,25 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             accountRatingByIdResult(request)
         }
-            .recoverNetworkError(RatingByIdApiResponses.NetworkError)
+            .recoverNetworkError(RatingByIdApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
             .getOrElse {
-                RatingByIdApiResponses.UnknownError
+                RatingByIdApiResponses.UnknownError()
             }
     }
 
     suspend fun accountRatingByIdResult(request: HttpResponse): RatingByIdApiResponses {
         return when (request.status) {
             HttpStatusCode.BadRequest -> {
-                RatingByIdApiResponses.UnknownError
+                RatingByIdApiResponses.UnknownError()
             }
 
             HttpStatusCode.Forbidden -> {
-                RatingByIdApiResponses.CredentialsError
+                RatingByIdApiResponses.CredentialsError()
             }
 
             HttpStatusCode.InternalServerError -> {
-                RatingByIdApiResponses.ServerError
+                RatingByIdApiResponses.ServerError()
             }
 
             else -> {
@@ -76,21 +76,21 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             accountCreationDateByIdResult(request)
         }
-            .recoverNetworkError(CreationDateByIdApiResponses.NetworkError)
+            .recoverNetworkError(CreationDateByIdApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
             .getOrElse {
-                CreationDateByIdApiResponses.UnknownError
+                CreationDateByIdApiResponses.UnknownError()
             }
     }
 
     suspend fun accountCreationDateByIdResult(request: HttpResponse): CreationDateByIdApiResponses {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
-                CreationDateByIdApiResponses.CredentialsError
+                CreationDateByIdApiResponses.CredentialsError()
             }
 
             HttpStatusCode.InternalServerError -> {
-                CreationDateByIdApiResponses.ServerError
+                CreationDateByIdApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
@@ -99,7 +99,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
 
             else -> {
-                CreationDateByIdApiResponses.UnknownError
+                CreationDateByIdApiResponses.UnknownError()
             }
         }
     }
@@ -115,19 +115,19 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             accountLoginByIdResult(request)
         }
-            .recoverNetworkError(LoginByIdApiResponses.NetworkError)
+            .recoverNetworkError(LoginByIdApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
-            .getOrElse { LoginByIdApiResponses.UnknownError }
+            .getOrElse { LoginByIdApiResponses.UnknownError() }
     }
 
     suspend fun accountLoginByIdResult(request: HttpResponse): LoginByIdApiResponses {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
-                LoginByIdApiResponses.CredentialsError
+                LoginByIdApiResponses.CredentialsError()
             }
 
             HttpStatusCode.InternalServerError -> {
-                LoginByIdApiResponses.ServerError
+                LoginByIdApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
@@ -136,7 +136,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
 
             else -> {
-                LoginByIdApiResponses.UnknownError
+                LoginByIdApiResponses.UnknownError()
             }
         }
     }
@@ -155,21 +155,21 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             accountPictureByIdResult(request)
         }
-            .recoverNetworkError(AccountPictureByIdApiResponses.NetworkError)
+            .recoverNetworkError(AccountPictureByIdApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
             .getOrElse {
-                AccountPictureByIdApiResponses.UnknownError
+                AccountPictureByIdApiResponses.UnknownError()
             }
     }
 
     private suspend fun accountPictureByIdResult(request: HttpResponse): AccountPictureByIdApiResponses {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
-                AccountPictureByIdApiResponses.CredentialsError
+                AccountPictureByIdApiResponses.CredentialsError()
             }
 
             HttpStatusCode.InternalServerError -> {
-                AccountPictureByIdApiResponses.ServerError
+                AccountPictureByIdApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
@@ -178,7 +178,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
 
             else -> {
-                AccountPictureByIdApiResponses.UnknownError
+                AccountPictureByIdApiResponses.UnknownError()
             }
         }
     }
@@ -232,21 +232,21 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             leaderboardResult(request)
         }
-            .recoverNetworkError(LeaderboardApiResponses.NetworkError)
+            .recoverNetworkError(LeaderboardApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
             .getOrElse {
-                LeaderboardApiResponses.UnknownError
+                LeaderboardApiResponses.UnknownError()
             }
     }
 
     suspend fun leaderboardResult(request: HttpResponse): LeaderboardApiResponses {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
-                LeaderboardApiResponses.CredentialsError
+                LeaderboardApiResponses.CredentialsError()
             }
 
             HttpStatusCode.InternalServerError -> {
-                LeaderboardApiResponses.ServerError
+                LeaderboardApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
@@ -255,7 +255,7 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
 
             else -> {
-                LeaderboardApiResponses.UnknownError
+                LeaderboardApiResponses.UnknownError()
             }
         }
     }
@@ -274,15 +274,15 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
             }
             uploadPictureResult(request)
         }
-            .recoverNetworkError(UploadPictureApiResponses.NetworkError)
+            .recoverNetworkError(UploadPictureApiResponses.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
-            .getOrElse { UploadPictureApiResponses.UnknownError }
+            .getOrElse { UploadPictureApiResponses.UnknownError() }
     }
 
     suspend fun uploadPictureResult(request: HttpResponse): UploadPictureApiResponses {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
-                UploadPictureApiResponses.CredentialsError
+                UploadPictureApiResponses.CredentialsError()
             }
 
             HttpStatusCode.BadRequest -> {
@@ -292,19 +292,19 @@ class AccountInfoRepositoryImpl : AccountInfoRepositoryI {
                 if (text.any { it == 'x' } && maxWidth != null && maxHeight != null)
                     UploadPictureApiResponses.TooLargeImage(maxWidth, maxHeight)
                 else
-                    UploadPictureApiResponses.UnknownError
+                    UploadPictureApiResponses.UnknownError()
             }
 
             HttpStatusCode.InternalServerError -> {
-                UploadPictureApiResponses.ServerError
+                UploadPictureApiResponses.ServerError()
             }
 
             HttpStatusCode.OK -> {
-                UploadPictureApiResponses.Success
+                UploadPictureApiResponses.Success()
             }
 
             else -> {
-                UploadPictureApiResponses.UnknownError
+                UploadPictureApiResponses.UnknownError()
             }
         }
     }

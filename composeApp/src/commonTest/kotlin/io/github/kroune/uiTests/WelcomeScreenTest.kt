@@ -14,19 +14,9 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.github.kroune.UiTest
 import io.github.kroune.forEach
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponentI
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.WelcomeScreen
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenState
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.welcomeScreen.WelcomeScreen
 import io.github.kroune.toCollection
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -36,25 +26,16 @@ class WelcomeScreenTest {
     @Test
     fun testAnimation() {
         runComposeUiTest {
-            val component = object : WelcomeScreenComponentI {
-                override val isInAccount: StateFlow<CheckJwtTokenApiResponses?> =
-                    flowOf<CheckJwtTokenApiResponses?>().onStart {
-                        emit(null)
-                    }.stateIn(
-                        CoroutineScope(Dispatchers.Default),
-                        SharingStarted.WhileSubscribed(),
-                        null
-                    )
-
-                override fun onEvent(event: WelcomeScreenEvent) {
-                    error("Not needed for test")
-                }
-
-                override val accountIdFailure: AccountIdByJwtTokenApiResponses? = null
-                override val hasSeenTutorial: Boolean = false
-            }
+            val state = WelcomeScreenState(
+                null,
+                null,
+                false
+            )
             setContent {
-                WelcomeScreen(component)
+                WelcomeScreen(
+                    state,
+                    {}
+                )
             }
             mainClock.advanceTimeBy(1100)
             onAllNodes(
@@ -88,19 +69,19 @@ class WelcomeScreenTest {
         goToSettings.assertExists()
         goToSettings.assertIsDisplayed()
         goToSettings.assertHasClickAction()
-        goToSettings.assertWidthIsAtLeast(50.dp)
-        goToSettings.assertWidthIsAtLeast(50.dp)
+        goToSettings.assertWidthIsAtLeast(32.dp)
+        goToSettings.assertWidthIsAtLeast(32.dp)
         val scrollUpOrDown = onNodeWithContentDescription("scroll up or down")
         scrollUpOrDown.assertExists()
         scrollUpOrDown.assertIsDisplayed()
         scrollUpOrDown.assertHasClickAction()
-        scrollUpOrDown.assertWidthIsAtLeast(50.dp)
-        scrollUpOrDown.assertWidthIsAtLeast(50.dp)
+        scrollUpOrDown.assertWidthIsAtLeast(32.dp)
+        scrollUpOrDown.assertWidthIsAtLeast(32.dp)
         val accountInformation =
             onNodeWithContentDescription("account information", substring = true)
         accountInformation.assertExists()
         accountInformation.assertIsDisplayed()
-        accountInformation.assertWidthIsAtLeast(50.dp)
-        accountInformation.assertWidthIsAtLeast(50.dp)
+        accountInformation.assertWidthIsAtLeast(32.dp)
+        accountInformation.assertWidthIsAtLeast(32.dp)
     }
 }

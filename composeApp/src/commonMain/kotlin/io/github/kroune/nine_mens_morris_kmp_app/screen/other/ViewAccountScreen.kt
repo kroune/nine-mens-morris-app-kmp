@@ -15,7 +15,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,11 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.rating
 import org.jetbrains.compose.resources.stringResource
@@ -37,18 +37,20 @@ fun ViewAccountScreen(
     onEvent: (ViewAccountScreenEvent) -> Unit,
     state: ViewAccountScreenState
 ) {
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     with(state) {
         Scaffold(
             modifier = Modifier
-                .padding(10.dp)
                 .fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             }
-        ) { _ ->
+        ) { padding ->
             Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = padding2)
+                    .padding(top = padding2),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(
@@ -64,7 +66,6 @@ fun ViewAccountScreen(
                             pictureByteArray = accountPictureResult,
                             onReload = { onEvent(ViewAccountScreenEvent.ReloadIcon) },
                             onClick = {},
-                            scope = scope,
                             snackbarHostState = snackbarHostState
                         )
                     }
@@ -81,7 +82,6 @@ fun ViewAccountScreen(
                         },
                         accountName = accountLoginResult,
                         onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
-                        scope = scope,
                         snackbarHostState = snackbarHostState
                     )
                 }
@@ -97,16 +97,15 @@ fun ViewAccountScreen(
                     },
                     accountRating = accountRatingResult,
                     onReload = { onEvent(ViewAccountScreenEvent.ReloadRating) },
-                    scope = scope,
                     snackbarHostState = snackbarHostState
                 )
                 DrawAccountCreationDate(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .height(30.dp),
-                    text = { (first, second, third) ->
+                    onSuccess = { (first, second, third) ->
                         Text(
-                            "$first-$second-$third",
+                            "$first.$second.$third",
                             fontSize = 20.sp
                         )
                     },
@@ -114,7 +113,7 @@ fun ViewAccountScreen(
                     onReload = {
                         onEvent(ViewAccountScreenEvent.ReloadCreationDate)
                     },
-                    scope = scope, snackbarHostState = snackbarHostState
+                    snackbarHostState = snackbarHostState
                 )
             }
         }

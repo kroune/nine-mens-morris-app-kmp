@@ -2,14 +2,14 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.ViewOwnAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewOwnAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,12 +66,13 @@ class ViewOwnAccountScreenComponent(
                     accountPictureResult = result
                 )
             }
-        }
+        },
+        scope = componentScope
     )
 
     fun onEvent(event: ViewOwnAccountScreenEvent) {
         when (event) {
-            ViewOwnAccountScreenEvent.Logout -> {
+            ViewOwnAccountScreenEvent.OnLogoutPressed -> {
                 jwtTokenInteractor.logout()
                 onNavigationBack()
             }
@@ -92,7 +93,7 @@ class ViewOwnAccountScreenComponent(
                 accountInfoUseCase.reloadRating()
             }
 
-            ViewOwnAccountScreenEvent.Back -> {
+            ViewOwnAccountScreenEvent.OnBackPressed -> {
                 onNavigationBack()
             }
 
@@ -115,7 +116,7 @@ class ViewOwnAccountScreenComponent(
     }
 
     override fun onBackPressed() {
-        onEvent(ViewOwnAccountScreenEvent.Back)
+        onEvent(ViewOwnAccountScreenEvent.OnBackPressed)
     }
 }
 

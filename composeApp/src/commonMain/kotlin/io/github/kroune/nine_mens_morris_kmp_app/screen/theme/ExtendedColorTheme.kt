@@ -21,6 +21,8 @@ fun lightExtendedColors(): ExtendedColorScheme {
         shimmerColor = Color.DarkGray,
         animationScreenBackground = Color.White,
         animationScreenForeground = Color.DarkGray,
+        colorPiece1 = Color.Black,
+        colorPiece2 = Color.White,
     )
 }
 
@@ -35,6 +37,8 @@ fun darkExtendedColors(): ExtendedColorScheme {
         shimmerColor = Color.LightGray,
         animationScreenBackground = Color.Gray,
         animationScreenForeground = Color.Black,
+        colorPiece1 = Color.Black,
+        colorPiece2 = Color.White,
     )
 }
 
@@ -43,7 +47,9 @@ data class ExtendedColorScheme(
     val linkColors: ButtonColors,
     val shimmerColor: Color,
     val animationScreenBackground: Color,
-    val animationScreenForeground: Color
+    val animationScreenForeground: Color,
+    val colorPiece1: Color,
+    val colorPiece2: Color,
 )
 
 internal val LocalColorScheme = staticCompositionLocalOf { lightExtendedColors() }

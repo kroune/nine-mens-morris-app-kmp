@@ -6,13 +6,13 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.game.OnlineGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
@@ -76,7 +76,7 @@ class OnlineGameComponent(
     private var ownAccountId: Long? = null
 
     private val gameUseCase = GameBoardUseCase(
-        pos = {
+        getPosition = {
             _state.value.position
         },
         onPositionChange = { value ->
@@ -93,9 +93,7 @@ class OnlineGameComponent(
                 )
             }
         },
-        selectedButton = {
-            _state.value.selectedButton
-        },
+        selectedButton = { _state.value.selectedButton },
         onSelectedButtonUpdate = { value ->
             _state.update {
                 it.copy(
@@ -172,7 +170,8 @@ class OnlineGameComponent(
                                 ownAccountPictureResult = result
                             )
                         }
-                    }
+                    },
+                    scope = componentScope
                 )
                 enemyAccountId = enemyId
                 enemyAccountInfoUseCase = AccountInfoUseCase(
@@ -197,7 +196,8 @@ class OnlineGameComponent(
                                 enemyAccountPictureResult = result
                             )
                         }
-                    }
+                    },
+                    scope = componentScope
                 )
                 while (!gameEnded.isCompleted) {
                     val moveResult = channelToReceiveMoves.receiveCatching()

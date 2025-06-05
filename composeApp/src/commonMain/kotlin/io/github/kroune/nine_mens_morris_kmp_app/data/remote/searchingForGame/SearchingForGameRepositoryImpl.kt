@@ -5,7 +5,8 @@ import io.github.kroune.nine_mens_morris_kmp_app.common.network
 import io.github.kroune.nine_mens_morris_kmp_app.common.wsApi
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
-import io.github.kroune.nine_mens_morris_kmp_app.model.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.onNetworkError
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.parameter
 import io.ktor.http.appendPathSegments
@@ -25,61 +26,66 @@ class SearchingForGameRepositoryImpl : SearchingForGameRepositoryI {
             appendPathSegments("search-for-game")
         }.toString()
         var result: SearchingForGameResponse = SearchingForGameResponse.UnknownError()
-        network.wss(
-            route,
-            {
-                parameter("jwtToken", jwtToken)
-            }
-        ) {
-            while (true) {
-                incoming.receiveCatching()
-                    .onSuccess {
-                        if (it !is Frame.Binary) {
-                            println("not a binary")
-                            return@onSuccess
-                        }
-                        val (data, metadata) = it.decodeServerEvent<Long, String>()
-                        when (metadata) {
-                            "waiting_time" -> {
-                                val waitingTime = data
-                                channel.send(waitingTime)
+        runCatching {
+            network.wss(
+                route,
+                {
+                    parameter("jwtToken", jwtToken)
+                }
+            ) {
+                while (true) {
+                    incoming.receiveCatching()
+                        .onSuccess {
+                            if (it !is Frame.Binary) {
+                                println("not a binary")
+                                return@onSuccess
                             }
+                            val (data, metadata) = it.decodeServerEvent<Long, String>()
+                            when (metadata) {
+                                "waiting_time" -> {
+                                    val waitingTime = data
+                                    channel.send(waitingTime)
+                                }
 
-                            "game_id" -> {
-                                result = SearchingForGameResponse.Success(data)
-                                break
-                            }
+                                "game_id" -> {
+                                    result = SearchingForGameResponse.Success(data)
+                                    break
+                                }
 
-                            else -> {
-                                log(
-                                    "unknown metadata - $metadata, data - $data",
-                                    severity = Severity.INFO
-                                )
-                                println("FUCK")
-                                metadata
+                                else -> {
+                                    log(
+                                        "unknown metadata - $metadata, data - $data",
+                                        severity = Severity.INFO
+                                    )
+                                    println("FUCK")
+                                    metadata
+                                }
                             }
                         }
-                    }
-                    .onClosed {
-                        log("websocket closed", it, Severity.INFO)
-                        result = if (it is IOException) {
-                            SearchingForGameResponse.NetworkError()
-                        } else {
-                            SearchingForGameResponse.UnknownError()
+                        .onClosed {
+                            log("websocket closed", it, Severity.INFO)
+                            result = if (it is IOException) {
+                                SearchingForGameResponse.NetworkError()
+                            } else {
+                                SearchingForGameResponse.UnknownError()
+                            }
+                            break
                         }
-                        break
-                    }
-                    .onFailure {
-                        log(
-                            "error when using websocket ${
+                        .onFailure {
+                            val message = "error when using websocket ${
                                 closeReason.await()
                                     .let { "reason - ${it?.knownReason}, code - ${it?.code}" }
-                            }", it, Severity.ERROR
-                        )
-                        result = SearchingForGameResponse.UnknownError()
-                        break
-                    }
+                            }"
+                            log(
+                                message, it, Severity.ERROR
+                            )
+                            result = SearchingForGameResponse.UnknownError()
+                            break
+                        }
+                }
             }
+        }.onNetworkError {
+            return SearchingForGameResponse.NetworkError()
         }
         return result
     }

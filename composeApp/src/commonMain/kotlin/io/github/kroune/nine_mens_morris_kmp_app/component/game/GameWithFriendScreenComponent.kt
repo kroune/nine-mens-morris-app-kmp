@@ -7,7 +7,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.game.GameWithFriendEvent
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameAnalyzeUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.concurrent.Volatile
 
 class GameWithFriendScreenComponent(
     private val onNavigationBack: () -> Unit,
@@ -50,9 +53,7 @@ class GameWithFriendScreenComponent(
     )
 
     private val gameUseCase = GameBoardUseCase(
-        {
-            _state.value.position
-        },
+        { _state.value.position },
         onPositionChange = { value ->
             _state.update {
                 it.copy(
@@ -74,9 +75,7 @@ class GameWithFriendScreenComponent(
                 )
             }
         },
-        selectedButton = {
-            _state.value.selectedButton
-        },
+        selectedButton = { _state.value.selectedButton },
         onSelectedButtonUpdate = { value ->
             _state.update {
                 it.copy(
@@ -86,56 +85,76 @@ class GameWithFriendScreenComponent(
         }
     )
 
+    @Volatile
     var analyzeJob: Job? = null
+    val analyzeJobLock = Mutex()
 
-    fun onEvent(event: GameWithFriendEvent) {
+    fun onGameAnalyzeEvent(event: GameWithFriendScreenEvent.GameAnalyzeEvent) {
         when (event) {
-            GameWithFriendEvent.StartAnalyze -> {
-                analyzeJob?.cancel()
-                analyzeJob = componentScope.launch {
-                    _state.value.gameAnalyzePositions.clear()
-                    gameAnalyzeUseCase.startAnalyze(_state.value.position).collect {
-                        _state.value.gameAnalyzePositions.add(it)
-                    }
-                }
-            }
-
-            GameWithFriendEvent.DecreaseAnalyzeDepth -> {
+            GameWithFriendScreenEvent.GameAnalyzeEvent.DecreaseAnalyzeDepth -> {
                 gameAnalyzeUseCase.decreaseDepth()
             }
 
-            GameWithFriendEvent.IncreaseAnalyzeDepth -> {
+            GameWithFriendScreenEvent.GameAnalyzeEvent.IncreaseAnalyzeDepth -> {
                 gameAnalyzeUseCase.increaseDepth()
             }
 
-            is GameWithFriendEvent.OnPieceClick -> {
+            GameWithFriendScreenEvent.GameAnalyzeEvent.StartAnalyze -> {
+                if (analyzeJob?.isActive == true)
+                    return
+                // double check lock
+                componentScope.launch {
+                    analyzeJobLock.withLock {
+                        if (analyzeJob?.isActive == true)
+                            return@launch
+
+                        analyzeJob = launch {
+                            _state.value.gameAnalyzePositions.clear()
+                            gameAnalyzeUseCase.startAnalyze(_state.value.position).collect {
+                                _state.value.gameAnalyzePositions.add(it)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onEvent(event: GameWithFriendScreenEvent) {
+        when (event) {
+            is GameWithFriendScreenEvent.GameAnalyzeEvent -> {
+                onGameAnalyzeEvent(event)
+            }
+
+            is GameWithFriendScreenEvent.OnPieceClick -> {
                 with(gameUseCase) {
                     gameUseCase.defaultOnClick(event.index)
                 }
             }
 
-            GameWithFriendEvent.Redo -> {
+            GameWithFriendScreenEvent.Redo -> {
                 with(gameUseCase) {
                     gameUseCase.onRedo()
                 }
             }
 
-            GameWithFriendEvent.Undo -> {
+            GameWithFriendScreenEvent.Undo -> {
                 with(gameUseCase) {
                     gameUseCase.onUndo()
                 }
             }
 
-            GameWithFriendEvent.Back -> {
+            GameWithFriendScreenEvent.Back -> {
                 onNavigationBack()
             }
         }
     }
 
     override fun onBackPressed() {
-        onEvent(GameWithFriendEvent.Back)
+        onEvent(GameWithFriendScreenEvent.Back)
     }
 }
+
 
 @Immutable
 data class GameWithFriendScreenState(

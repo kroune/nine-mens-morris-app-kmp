@@ -11,6 +11,5 @@ actual fun getScreenIntSize(): IntSize {
     return LocalWindowInfo.current.containerSize
 }
 
-actual fun <T> Result<T>.recoverNativeNetworkError(networkException: T): Result<T> {
-    return this
+actual inline fun <T> Result<T>.onNativeNetworkError(lambda: (Throwable) -> Unit) {
 }

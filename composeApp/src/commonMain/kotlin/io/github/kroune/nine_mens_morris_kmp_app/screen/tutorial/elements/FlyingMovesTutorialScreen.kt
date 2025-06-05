@@ -14,8 +14,8 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.GREEN
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.RenderGameBoard
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.RenderPieceCount
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCount
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.tutorial_fly_condition
 import ninemensmorrisappkmp.composeapp.generated.resources.tutorial_fly_highlighting

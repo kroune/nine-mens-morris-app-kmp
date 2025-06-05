@@ -1,23 +1,24 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.Settings
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.model.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.concurrent.Volatile
 
 class WelcomeScreenComponent(
     componentContext: ComponentContext,
@@ -27,30 +28,52 @@ class WelcomeScreenComponent(
     private val onNavigationToLeaderboardScreen: () -> Unit,
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
     private val onNavigationToAuthScreen: () -> Unit,
+    private val onNavigationToAboutScreen: () -> Unit,
     private val onNavigationBack: () -> Unit
-) : ComponentContext by componentContext, ComponentContextWithBackHandle, WelcomeScreenComponentI {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val componentScope = componentCoroutineScope()
 
-    private val _accountIdFailure = mutableStateOf<AccountIdByJwtTokenApiResponses?>(null)
-    override val accountIdFailure by _accountIdFailure
+    private val initialStateValue
+        get() = WelcomeScreenState(
+            null,
+            null,
+            Settings().getBoolean("hasSeenTutorial", false)
+        )
 
-    override val isInAccount = flowOf<CheckJwtTokenApiResponses?>().onStart {
-        emit(null)
-        emit(jwtTokenInteractor.checkJwtToken())
-    }.stateIn(
-        componentScope,
-        SharingStarted.WhileSubscribed(),
-        null
+    private val _state = MutableStateFlow(
+        initialStateValue
     )
+    val state
+        get() = _state
 
-    private var _hasSeenTutorial = mutableStateOf(
-        Settings().getBoolean("hasSeenTutorial", false)
-    )
-    override val hasSeenTutorial by _hasSeenTutorial
+    @Volatile
+    private var accountCheckingJob: Job? = null
+    private val accountCheckingLock = Mutex()
 
-    override fun onEvent(event: WelcomeScreenEvent) {
+    init {
+        doOnStart {
+            if (accountCheckingJob?.isActive == true)
+                return@doOnStart
+
+            componentScope.launch {
+                accountCheckingLock.withLock {
+                    if (accountCheckingJob?.isActive == true)
+                        return@withLock
+                    accountCheckingJob = launch {
+                        _state.update {
+                            it.copy(
+                                isInAccount = jwtTokenInteractor.checkJwtToken()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onEvent(event: WelcomeScreenEvent) {
         fun isInAccount(): Boolean {
-            val isInAccountState = isInAccount.value
+            val isInAccountState = state.value.isInAccount
             return isInAccountState is CheckJwtTokenApiResponses.Success && isInAccountState.result
         }
         when (event) {
@@ -71,7 +94,11 @@ class WelcomeScreenComponent(
                             onNavigationToAccountViewScreen(accountIdResult.accountId)
                         }
                     }
-                    _accountIdFailure.value = accountIdResult
+                    _state.update {
+                        it.copy(
+                            accountIdFailure = accountIdResult
+                        )
+                    }
                 }
             }
 
@@ -89,8 +116,12 @@ class WelcomeScreenComponent(
             }
 
             WelcomeScreenEvent.CloseTutorial -> {
-                _hasSeenTutorial.value = true
                 Settings().putBoolean("hasSeenTutorial", true)
+                _state.update {
+                    it.copy(
+                        hasSeenTutorial = true
+                    )
+                }
             }
 
             WelcomeScreenEvent.NavigateBack -> {
@@ -105,6 +136,10 @@ class WelcomeScreenComponent(
                 }
                 onNavigationToLeaderboardScreen()
             }
+
+            WelcomeScreenEvent.NavigateToAboutScreen -> {
+                onNavigationToAboutScreen()
+            }
         }
     }
 
@@ -112,3 +147,9 @@ class WelcomeScreenComponent(
         onEvent(WelcomeScreenEvent.NavigateBack)
     }
 }
+
+data class WelcomeScreenState(
+    val isInAccount: CheckJwtTokenApiResponses?,
+    val accountIdFailure: AccountIdByJwtTokenApiResponses?,
+    val hasSeenTutorial: Boolean
+)
