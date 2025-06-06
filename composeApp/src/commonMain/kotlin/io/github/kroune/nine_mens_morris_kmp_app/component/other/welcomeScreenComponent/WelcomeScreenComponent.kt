@@ -4,11 +4,11 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.Settings
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.accountId.AccountIdRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.jwtToken.JwtTokenRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,7 +29,9 @@ class WelcomeScreenComponent(
     private val onNavigationToAccountViewScreen: (accountId: Long) -> Unit,
     private val onNavigationToAuthScreen: () -> Unit,
     private val onNavigationToAboutScreen: () -> Unit,
-    private val onNavigationBack: () -> Unit
+    private val onNavigationBack: () -> Unit,
+    private val accountIdRepository: AccountIdRepositoryI,
+    private val jwtTokenInteractor: JwtTokenRepositoryI,
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val componentScope = componentCoroutineScope()
 
@@ -88,7 +90,7 @@ class WelcomeScreenComponent(
                     return
                 }
                 componentScope.launch {
-                    val accountIdResult = accountIdInteractor.getAccountId()
+                    val accountIdResult = accountIdRepository.getAccountId()
                     if (accountIdResult is AccountIdByJwtTokenApiResponses.Success) {
                         withContext(Dispatchers.Main) {
                             onNavigationToAccountViewScreen(accountIdResult.accountId)

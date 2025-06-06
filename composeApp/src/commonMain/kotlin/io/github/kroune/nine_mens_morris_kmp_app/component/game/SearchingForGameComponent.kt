@@ -4,8 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.searchingForGame.SearchingForGameRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.SearchingForGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.searchingForGameInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,8 @@ import kotlinx.coroutines.withContext
 
 class SearchingForGameComponent(
     onGameFind: (Long) -> Unit,
-    val onGoingToWelcomeScreen: () -> Unit,
+    private val onGoingToWelcomeScreen: () -> Unit,
+    private val searchingForGameRepository: SearchingForGameRepositoryI,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val scope = componentCoroutineScope()
@@ -27,7 +28,7 @@ class SearchingForGameComponent(
     init {
         with(scope) {
             launch {
-                val result = searchingForGameInteractor.searchForGame(expectedWaitingTime)
+                val result = searchingForGameRepository.searchForGame(expectedWaitingTime)
                 if (result is SearchingForGameResponse.Success) {
                     println("found game, id = ${result.gameId}")
                     withContext(Dispatchers.Main) {

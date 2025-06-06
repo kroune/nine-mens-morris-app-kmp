@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsSourceMapNamesPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-import org.jetbrains.kotlin.gradle.targets.js.binaryen.BinaryenRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -107,6 +106,7 @@ kotlin {
             implementation(libs.multiplatform.settings.no.arg)
             implementation(libs.ninemensmorris)
             implementation(libs.filekit.compose)
+            implementation(libs.koin.core)
 //            implementation(compose.components.uiToolingPreview)
         }
         iosMain.dependencies {
@@ -287,8 +287,4 @@ compose.desktop {
             licenseFile = project.file("LICENSE")
         }
     }
-}
-
-rootProject.configure<BinaryenRootExtension> {
-    version = "123"
 }

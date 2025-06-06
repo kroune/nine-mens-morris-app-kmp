@@ -1,26 +1,27 @@
 package io.github.kroune.nine_mens_morris_kmp_app.useCases
 
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.accountInfo.AccountInfoRepositoryI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class AccountInfoUseCase(
-    val accountId: Long,
+    private val accountId: Long,
     private val onLoginResult: ((LoginByIdApiResponses) -> Unit)? = null,
     private val onRatingResult: ((RatingByIdApiResponses) -> Unit)? = null,
     private val needCreationDate: ((CreationDateByIdApiResponses) -> Unit)? = null,
     private val needPicture: ((AccountPictureByIdApiResponses) -> Unit)? = null,
     private val scope: CoroutineScope,
+    private val accountInfoRepository: AccountInfoRepositoryI,
 ) {
     fun reloadName() {
         if (onLoginResult == null)
             return
         scope.launch {
-            onLoginResult(accountInfoInteractor.getAccountLoginById(accountId))
+            onLoginResult(accountInfoRepository.getAccountLoginById(accountId))
         }
     }
 
@@ -28,7 +29,7 @@ class AccountInfoUseCase(
         if (onRatingResult == null)
             return
         scope.launch {
-            onRatingResult(accountInfoInteractor.getAccountRatingById(accountId))
+            onRatingResult(accountInfoRepository.getAccountRatingById(accountId))
         }
     }
 
@@ -36,7 +37,7 @@ class AccountInfoUseCase(
         if (needCreationDate == null)
             return
         scope.launch {
-            needCreationDate(accountInfoInteractor.getAccountCreationDateById(accountId))
+            needCreationDate(accountInfoRepository.getAccountCreationDateById(accountId))
         }
     }
 
@@ -44,7 +45,7 @@ class AccountInfoUseCase(
         if (needPicture == null)
             return
         scope.launch {
-            needPicture(accountInfoInteractor.getAccountPictureById(accountId))
+            needPicture(accountInfoRepository.getAccountPictureById(accountId))
         }
     }
 

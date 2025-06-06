@@ -35,11 +35,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
     componentContext: ComponentContext,
-) : ComponentContext by componentContext, WebNavigationOwner {
+) : ComponentContext by componentContext, WebNavigationOwner, KoinComponent {
 
     private val navigation = StackNavigation<Configuration>()
 
@@ -151,7 +153,9 @@ class RootComponent(
                             navigation.pushToFront(
                                 Configuration.AppStartAnimation()
                             )
-                        }
+                        },
+                        accountIdRepository = get(),
+                        jwtTokenInteractor = get(),
                     )
                 )
             }
@@ -163,7 +167,9 @@ class RootComponent(
                             popOrFallbackScreen(config.animation)
                         },
                         accountId = config.accountId,
-                        componentContext = context
+                        componentContext = context,
+                        accountInfoRepository = get(),
+                        jwtTokenInteractor = get()
                     )
                 )
             }
@@ -175,7 +181,8 @@ class RootComponent(
                             popOrFallbackScreen(config.animation)
                         },
                         accountId = config.accountId,
-                        componentContext = context
+                        componentContext = context,
+                        jwtTokenInteractor = get(),
                     )
                 )
             }
@@ -198,7 +205,9 @@ class RootComponent(
                         onSuccessfulAuth = {
                             popOrFallbackScreen(config.animation)
                         },
-                        componentContext = context
+                        componentContext = context,
+                        accountIdRepository = get(),
+                        authRepository = get(),
                     )
                 )
             }
@@ -219,7 +228,9 @@ class RootComponent(
                         onSuccessfulAuth = {
                             popOrFallbackScreen(config.animation)
                         },
-                        componentContext = context
+                        componentContext = context,
+                        accountIdRepository = get(),
+                        authRepository = get(),
                     )
                 )
             }
@@ -261,7 +272,8 @@ class RootComponent(
                         onGoingToWelcomeScreen = {
                             popOrFallbackScreen(config.animation)
                         },
-                        context
+                        searchingForGameRepository = get(),
+                        context,
                     )
                 )
             }
@@ -279,6 +291,8 @@ class RootComponent(
                         onNavigationToWelcomeScreen = {
                             navigation.pushToFront(Configuration.WelcomeScreen())
                         },
+                        onlineGameRepository = get(),
+                        accountIdRepository = get(),
                         componentContext = context
                     )
                 )
@@ -293,6 +307,7 @@ class RootComponent(
                         {
                             popOrFallbackScreen(config.animation)
                         },
+                        accountInfoRepository = get(),
                         context
                     )
                 )

@@ -2,23 +2,26 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewAccountScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.jwtTokenInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.jwtToken.JwtTokenRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class ViewAccountScreenComponent(
     private val onNavigationBack: () -> Unit,
     accountId: Long,
+    private val jwtTokenInteractor: JwtTokenRepositoryI,
     componentContext: ComponentContext
-) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle, KoinComponent {
     private val componentScope = componentCoroutineScope()
 
     private val _state = MutableStateFlow(
@@ -62,7 +65,8 @@ class ViewAccountScreenComponent(
                 )
             }
         },
-        scope = componentScope
+        scope = componentScope,
+        get()
     )
 
     fun onEvent(event: ViewAccountScreenEvent) {

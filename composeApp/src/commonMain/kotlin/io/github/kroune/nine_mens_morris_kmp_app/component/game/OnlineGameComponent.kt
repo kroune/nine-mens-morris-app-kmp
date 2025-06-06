@@ -6,13 +6,13 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.OnlineGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.onlineGameInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.OnlineGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.accountId.AccountIdRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.onlineGame.OnlineGameRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,8 +36,10 @@ class OnlineGameComponent(
     private val onNavigationToViewOwnAccountScreen: (Long) -> Unit,
     private val gameId: Long,
     private val onNavigationToWelcomeScreen: () -> Unit,
+    private val onlineGameRepository: OnlineGameRepositoryI,
+    private val accountIdRepository: AccountIdRepositoryI,
     componentContext: ComponentContext,
-) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle, KoinComponent {
     private val _state = MutableStateFlow(
         OnlineGameScreenState(
             position = Position(
@@ -131,7 +135,7 @@ class OnlineGameComponent(
                 val gameEnded: CompletableDeferred<Boolean>
                 // TODO: handle errors
                 val enemyId: Long
-                onlineGameInteractor.connect(gameId, channelToSendMoves, channelToReceiveMoves)
+                onlineGameRepository.connect(gameId, channelToSendMoves, channelToReceiveMoves)
                     .let { value ->
                         state.update {
                             it.copy(
@@ -143,7 +147,7 @@ class OnlineGameComponent(
                         onGiveClose = value.second
                         gameEnded = value.first.gameEnded
                     }
-                val accountIdResult = accountIdInteractor.getAccountId()
+                val accountIdResult = accountIdRepository.getAccountId()
                 if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
                     error("accountId is not success")
                 }
@@ -171,7 +175,8 @@ class OnlineGameComponent(
                             )
                         }
                     },
-                    scope = componentScope
+                    scope = componentScope,
+                    accountInfoRepository = get()
                 )
                 enemyAccountId = enemyId
                 enemyAccountInfoUseCase = AccountInfoUseCase(
@@ -197,7 +202,8 @@ class OnlineGameComponent(
                             )
                         }
                     },
-                    scope = componentScope
+                    scope = componentScope,
+                    accountInfoRepository = get()
                 )
                 while (!gameEnded.isCompleted) {
                     val moveResult = channelToReceiveMoves.receiveCatching()
