@@ -3,11 +3,11 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp
 import androidx.compose.runtime.Immutable
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountIdInteractor
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.authRepositoryInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.event.auth.SignUpScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.accountId.AccountIdRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.auth.AuthRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +17,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SignUpScreenComponent(
-    val onNavigationBack: () -> Unit,
-    val onNavigationToSignInScreen: () -> Unit,
-    val onSuccessfulAuth: () -> Unit,
+    private val onNavigationBack: () -> Unit,
+    private val onNavigationToSignInScreen: () -> Unit,
+    private val onSuccessfulAuth: () -> Unit,
+    private val accountIdRepository: AccountIdRepositoryI,
+    private val authRepository: AuthRepositoryI,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val componentScope = componentCoroutineScope()
@@ -42,14 +44,14 @@ class SignUpScreenComponent(
     private fun updateUsername(newUsername: String) {
         _state.value = _state.value.copy(
             username = newUsername,
-            isUsernameValid = authRepositoryInteractor.loginValidator(newUsername)
+            isUsernameValid = authRepository.loginValidator(newUsername)
         )
     }
 
     private fun updatePassword(newPassword: String) {
         _state.value = _state.value.copy(
             password = newPassword,
-            isPasswordValid = authRepositoryInteractor.passwordValidator(newPassword),
+            isPasswordValid = authRepository.passwordValidator(newPassword),
             isPasswordRepeatedValid = (state.value.passwordRepeated == newPassword)
         )
     }
@@ -68,13 +70,13 @@ class SignUpScreenComponent(
             )
         }
         componentScope.launch {
-            val registerResult = authRepositoryInteractor.register(
+            val registerResult = authRepository.register(
                 state.value.username,
                 state.value.password
             )
             var accountId: AccountIdByJwtTokenApiResponses? = null
             if (registerResult is RegisterApiResponses.Success) {
-                accountId = accountIdInteractor.getAccountId()
+                accountId = accountIdRepository.getAccountId()
                 if (accountId is AccountIdByJwtTokenApiResponses.Success) {
                     withContext(Dispatchers.Main) {
                         onSuccessfulAuth()

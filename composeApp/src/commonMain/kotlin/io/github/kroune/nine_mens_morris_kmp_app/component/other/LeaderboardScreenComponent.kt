@@ -4,25 +4,28 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.interactors.accountInfoInteractor
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LeaderboardApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.LeaderboardEvent
+import io.github.kroune.nine_mens_morris_kmp_app.repositories.accountInfo.AccountInfoRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class LeaderboardScreenComponent(
     private val onNavigationToAccountView: (Long) -> Unit,
     private val onNavigationBack: () -> Unit,
+    private val accountInfoRepository: AccountInfoRepositoryI,
     componentContext: ComponentContext
-) : ComponentContext by componentContext, ComponentContextWithBackHandle {
+) : ComponentContext by componentContext, ComponentContextWithBackHandle, KoinComponent {
     private val componentScope = componentCoroutineScope()
 
     private val leaderboardSize = 10
@@ -41,7 +44,7 @@ class LeaderboardScreenComponent(
 
     init {
         componentScope.launch {
-            val localLeaderboardData = accountInfoInteractor.getLeaderboard(leaderboardSize)
+            val localLeaderboardData = accountInfoRepository.getLeaderboard(leaderboardSize)
             leaderboardData = localLeaderboardData
             if (localLeaderboardData is LeaderboardApiResponses.Success) {
                 val size = localLeaderboardData.leaderboard.size
@@ -74,7 +77,8 @@ class LeaderboardScreenComponent(
                                         picture = result
                                     )
                             },
-                            scope = componentScope
+                            scope = componentScope,
+                            accountInfoRepository = get()
                         )
                     )
                 }
