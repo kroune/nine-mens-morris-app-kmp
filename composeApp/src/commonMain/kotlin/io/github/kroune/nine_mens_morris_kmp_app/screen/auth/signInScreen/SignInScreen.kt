@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.auth.SignInScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.auth.SignInScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation1
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme

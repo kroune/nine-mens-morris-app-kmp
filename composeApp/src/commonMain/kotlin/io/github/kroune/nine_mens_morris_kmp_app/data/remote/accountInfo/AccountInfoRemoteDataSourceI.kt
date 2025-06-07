@@ -1,12 +1,12 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LeaderboardApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LeaderboardApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.UploadPictureApiResponses
 
 interface AccountInfoRemoteDataSourceI {
     suspend fun getAccountRatingById(id: Long, jwtToken: String): RatingByIdApiResponses

@@ -58,4 +58,7 @@
     <string name="source_code_link">Link to source code</string>
     <string name="creator_telegram_link">Link to creator's telegram</string>
     <string name="report_an_issue">Report an issue</string>
+    <string name="new_update">A new update was released</string>
+    <string name="required_update">It has critical changes, so if you keep using current version some functionality might not work</string>
+    <string name="update">Update</string>
 </resources>

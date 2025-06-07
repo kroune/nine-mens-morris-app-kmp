@@ -4,12 +4,12 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.Settings
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.repositories.accountId.AccountIdRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.repositories.jwtToken.JwtTokenRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,7 +92,7 @@ class WelcomeScreenComponent(
                 componentScope.launch {
                     val accountIdResult = accountIdRepository.getAccountId()
                     if (accountIdResult is AccountIdByJwtTokenApiResponses.Success) {
-                        withContext(Dispatchers.Main) {
+                        withContext(Dispatchers.Main.immediate) {
                             onNavigationToAccountViewScreen(accountIdResult.accountId)
                         }
                     }

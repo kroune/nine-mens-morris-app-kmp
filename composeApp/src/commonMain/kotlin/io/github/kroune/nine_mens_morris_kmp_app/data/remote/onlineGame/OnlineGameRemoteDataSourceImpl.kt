@@ -2,13 +2,13 @@ package io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame
 
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
-import io.github.kroune.nine_mens_morris_kmp_app.common.network
-import io.github.kroune.nine_mens_morris_kmp_app.common.receiveDeserialized
-import io.github.kroune.nine_mens_morris_kmp_app.common.receiveDeserializedCatching
-import io.github.kroune.nine_mens_morris_kmp_app.common.sendSerializedCatching
-import io.github.kroune.nine_mens_morris_kmp_app.common.wsApi
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
+import io.github.kroune.nine_mens_morris_kmp_app.data.network
+import io.github.kroune.nine_mens_morris_kmp_app.data.receiveDeserialized
+import io.github.kroune.nine_mens_morris_kmp_app.data.receiveDeserializedCatching
+import io.github.kroune.nine_mens_morris_kmp_app.data.sendSerializedCatching
+import io.github.kroune.nine_mens_morris_kmp_app.data.wsApi
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.log
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.parameter
@@ -40,7 +40,7 @@ class OnlineGameRemoteDataSourceImpl : OnlineGameRemoteDataSourceI {
         val gameEnded: CompletableDeferred<Boolean> = CompletableDeferred()
         CoroutineScope(Dispatchers.Default).launch {
             val route = wsApi {
-                appendPathSegments("game")
+                appendPathSegments("game", "game")
             }.toString()
             network.wss(
                 route,

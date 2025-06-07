@@ -1,16 +1,16 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
-import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
-import io.github.kroune.nine_mens_morris_kmp_app.common.network
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountIdByJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LeaderboardApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.data.network
+import io.github.kroune.nine_mens_morris_kmp_app.data.httpApi
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.logOnFailure
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountIdByJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LeaderboardApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -25,7 +25,7 @@ import kotlinx.serialization.json.Json
 class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
     override suspend fun getAccountRatingById(id: Long, jwtToken: String): RatingByIdApiResponses {
         val route = httpApi {
-            appendPathSegments("get-rating-by-id")
+            appendPathSegments("user", "get-rating-by-id")
         }
         return runCatching {
             val request = network.get(route) {
@@ -67,7 +67,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         jwtToken: String,
     ): CreationDateByIdApiResponses {
         val route = httpApi {
-            appendPathSegments("get-creation-date-by-id")
+            appendPathSegments("user", "get-creation-date-by-id")
         }
         return runCatching {
             val request = network.get(route) {
@@ -106,7 +106,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
 
     override suspend fun getAccountLoginById(id: Long, jwtToken: String): LoginByIdApiResponses {
         val route = httpApi {
-            appendPathSegments("get-login-by-id")
+            appendPathSegments("user", "get-login-by-id")
         }
         return runCatching {
             val request = network.get(route) {
@@ -146,7 +146,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         jwtToken: String
     ): AccountPictureByIdApiResponses {
         val route = httpApi {
-            appendPathSegments("get-picture-by-id")
+            appendPathSegments("user", "get-picture-by-id")
         }
         return runCatching {
             val request = network.get(route) {
@@ -185,7 +185,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
 
     override suspend fun getAccountIdByJwtToken(jwtToken: String): AccountIdByJwtTokenApiResponses {
         val route = httpApi {
-            appendPathSegments("get-id-by-jwt-token")
+            appendPathSegments("user", "get-id-by-jwt-token")
         }
         return runCatching {
             val request = network.get(route) {
@@ -223,7 +223,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
 
     override suspend fun getLeaderboard(amount: Int, jwtToken: String): LeaderboardApiResponses {
         val route = httpApi {
-            appendPathSegments("leaderboard")
+            appendPathSegments("user", "leaderboard")
         }
         return runCatching {
             val request = network.get(route) {
@@ -265,7 +265,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         jwtToken: String
     ): UploadPictureApiResponses {
         val route = httpApi {
-            appendPathSegments("upload-picture")
+            appendPathSegments("user", "upload-picture")
             parameters["jwtToken"] = jwtToken
         }
         return runCatching {

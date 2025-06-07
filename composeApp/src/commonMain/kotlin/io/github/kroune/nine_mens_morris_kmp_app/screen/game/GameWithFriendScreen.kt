@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithFriendScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCount
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderUndoRedo

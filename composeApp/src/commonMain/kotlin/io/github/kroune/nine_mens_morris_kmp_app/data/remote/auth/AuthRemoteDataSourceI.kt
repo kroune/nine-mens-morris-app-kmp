@@ -1,8 +1,8 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginApiResponse
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RegisterApiResponses
 
 interface AuthRemoteDataSourceI {
     suspend fun checkJwtToken(jwtToken: String): CheckJwtTokenApiResponses

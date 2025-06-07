@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.aboutScreenComponent.AboutScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.AboutScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.AboutScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation2

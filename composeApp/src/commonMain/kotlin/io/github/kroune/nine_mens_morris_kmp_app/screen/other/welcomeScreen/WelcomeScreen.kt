@@ -42,11 +42,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

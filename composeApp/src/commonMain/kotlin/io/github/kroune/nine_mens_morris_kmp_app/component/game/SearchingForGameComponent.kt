@@ -4,10 +4,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.repositories.searchingForGame.SearchingForGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.SearchingForGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
-import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.SearchingForGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel

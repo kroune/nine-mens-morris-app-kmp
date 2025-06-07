@@ -14,12 +14,16 @@ inline fun AppTheme(crossinline content: @Composable () -> Unit) {
             primary = Color.Black,
             background = Color(255, 255, 255),
             secondaryContainer = Color(0, 0, 0, 80),
-            surface = Color.Black
+            surface = Color.Black,
+            inversePrimary = Color.White,
         )
+
         true -> darkColorScheme(
-            onPrimary = Color.White,
+            primary = Color.White,
+            onPrimary = Color.Black,
             background = Color(red = 58, green = 58, blue = 58),
-            primary = Color.Black,
+            surface = Color.White,
+            inversePrimary = Color.Black,
         )
     }
     val extendedColorScheme = when (isSystemInDarkTheme()) {

@@ -13,7 +13,7 @@ import com.kroune.nineMensMorrisLib.BLUE_
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.GREEN
 import com.kroune.nineMensMorrisLib.Position
-import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCount
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
