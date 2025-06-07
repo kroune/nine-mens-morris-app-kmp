@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 val appVersion: String = "1.0.1"
-val appVersionInt: Int = 100
+val appVersionInt: Int = 101
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)

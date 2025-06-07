@@ -32,9 +32,9 @@ import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.customSlide
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -102,14 +102,14 @@ class RootComponent(
     // version check
     init {
         with(componentScope) {
-            async {
+            launch {
                 _state.update {
                     it.copy(
                         lastVersion = appVersionRepository.getLastAppVersion()
                     )
                 }
             }
-            async {
+            launch {
                 _state.update {
                     it.copy(
                         requiredVersion = appVersionRepository.getRequiredVersion()
