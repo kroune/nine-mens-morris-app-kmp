@@ -61,16 +61,17 @@ class BaselineProfileGenerator {
             repeat(4) {
                 val start: UiObject2 = device.findObject(By.text("Press to start"))
                 start.click()
-                val scrollUpOrDownSelector = By.desc("scroll up or down")
-                device.wait(Until.hasObject(scrollUpOrDownSelector), 1000)!!
+                device.wait(Until.hasObject(By.text("Each circle at the top")), 5000)!!
                 device.waitForIdle()
+                val scrollUpOrDownSelector = By.desc("scroll up or down")
                 device.findObject(scrollUpOrDownSelector).click()
+                device.waitForIdle()
                 val playWithFriendSelector = By.text("Play with friend")
-                device.wait(Until.hasObject(playWithFriendSelector), 1000)!!
+                device.wait(Until.hasObject(playWithFriendSelector), 5000)!!
                 device.waitForIdle()
                 device.findObject(playWithFriendSelector).click()
                 val analyzeSelector = By.text("Analyze")
-                device.wait(Until.hasObject(analyzeSelector), 1000)!!
+                device.wait(Until.hasObject(analyzeSelector), 5000)!!
                 device.waitForIdle()
                 device.pressBack()
                 device.waitForIdle()
