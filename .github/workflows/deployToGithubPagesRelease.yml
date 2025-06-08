@@ -36,10 +36,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
-      - name: Set up JDK 21
+      - name: Set up JDK 23
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 23
           distribution: 'zulu'
 
       - name: Setup gradle
@@ -116,10 +116,10 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Set up JDK 21
+      - name: Set up JDK 23
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 23
           distribution: 'zulu'
 
       - name: Setup gradle
@@ -184,10 +184,10 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Set up JDK 21
+      - name: Set up JDK 23
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 23
           distribution: 'zulu'
 
       - name: Setup gradle
