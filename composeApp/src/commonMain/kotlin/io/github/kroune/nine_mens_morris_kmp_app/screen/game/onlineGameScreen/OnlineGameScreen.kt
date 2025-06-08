@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.OnlineGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.LimitSize
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.OnlineGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 import ninemensmorrisappkmp.composeapp.generated.resources.Res

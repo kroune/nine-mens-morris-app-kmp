@@ -1,12 +1,12 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth
 
-import io.github.kroune.nine_mens_morris_kmp_app.common.network
-import io.github.kroune.nine_mens_morris_kmp_app.common.httpApi
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CheckJwtTokenApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginApiResponse
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.RegisterApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.logOnFailure
+import io.github.kroune.nine_mens_morris_kmp_app.data.network
+import io.github.kroune.nine_mens_morris_kmp_app.data.httpApi
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CheckJwtTokenApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RegisterApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -20,7 +20,7 @@ import kotlinx.serialization.json.Json
 class AuthRemoteDataSourceImpl : AuthRemoteDataSourceI {
     override suspend fun register(login: String, password: String): RegisterApiResponses {
         val route = httpApi {
-            appendPathSegments("reg")
+            appendPathSegments("auth", "reg")
         }
         return runCatching {
             val request = network.post(route) {
@@ -59,7 +59,7 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSourceI {
 
     override suspend fun login(login: String, password: String): LoginApiResponse {
         val route = httpApi {
-            appendPathSegments("login")
+            appendPathSegments("auth", "login")
             parameters["login"] = login
             parameters["password"] = password
         }
@@ -95,7 +95,7 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSourceI {
 
     override suspend fun checkJwtToken(jwtToken: String): CheckJwtTokenApiResponses {
         val route = httpApi {
-            appendPathSegments("check-jwt-token")
+            appendPathSegments("auth", "check-jwt-token")
             parameters["jwtToken"] = jwtToken
         }
         return runCatching {

@@ -37,7 +37,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
-import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation2
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
@@ -259,7 +258,7 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
     ) {
         IconButton(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 2f),
+                .size(70.dp),
             onClick = {
                 handleUndo()
             },
@@ -271,7 +270,7 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
         }
         IconButton(
             modifier = Modifier
-                .size(GAME_BOARD_BUTTON_WIDTH * 2f),
+                .size(70.dp),
             onClick = {
                 handleRedo()
             }) {

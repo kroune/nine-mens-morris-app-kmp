@@ -7,15 +7,12 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.active
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.childStackWebNavigation
 import com.arkivanov.decompose.router.stack.pushToFront
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.router.webhistory.WebNavigation
 import com.arkivanov.decompose.router.webhistory.WebNavigationOwner
-import io.github.kroune.nine_mens_morris_kmp_app.common.customSlide
-import io.github.kroune.nine_mens_morris_kmp_app.common.pop
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithBotScreenComponent
@@ -28,22 +25,30 @@ import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountS
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.aboutScreenComponent.AboutScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.appStartAnimationComponent.AppStartAnimationComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenComponent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AppLastVersionApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RequiredVersionApiResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.appVersion.AppVersionRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Child
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.Configuration
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.customSlide
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
+    @Suppress("LocalVariableName")
+    _appVersionRepository: AppVersionRepositoryI? = null,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, WebNavigationOwner, KoinComponent {
+    private val appVersionRepository: AppVersionRepositoryI =
+        _appVersionRepository ?: get<AppVersionRepositoryI>()
+    private val componentScope = componentCoroutineScope()
 
-    private val navigation = StackNavigation<Configuration>()
+    private val navigation: StackNavigation<Configuration> = StackNavigation<Configuration>()
 
     val childStack = childStack(
         source = navigation,
@@ -69,25 +74,47 @@ class RootComponent(
             }
         )
 
-    private fun popOrFallbackScreen(
-        customAnimation: StackAnimator,
-        fallBackScreen: Configuration = Configuration.WelcomeScreen(customAnimation)
+
+    private fun popWithRootFallback(
+        customAnimation: StackAnimator = fade(),
+        fallBackScreen: Configuration = Configuration.AppStartAnimation()
     ) {
-        navigation.pop(animation = customAnimation) {
-            if (!it) {
-                navigation.replaceCurrent(fallBackScreen)
+        navigation.popWithFallback(customAnimation, fallBackScreen)
+    }
+
+    init {
+        childStack.subscribe { childStack ->
+            BackHandler.setCallbackAction {
+                childStack.active.instance.component.onBackPressed()
             }
         }
     }
 
+    private val _state = MutableStateFlow(
+        RootScreenState(
+            null,
+            null
+        )
+    )
+    val state
+        get() = _state
+
+    // version check
     init {
-        // TODO: fix this absolute garbage
-        CoroutineScope(Dispatchers.Default).launch {
-            while (true) {
-                BackHandler.setCallbackAction {
-                    childStack.active.instance.component.onBackPressed()
+        with(componentScope) {
+            launch {
+                _state.update {
+                    it.copy(
+                        lastVersion = appVersionRepository.getLastAppVersion()
+                    )
                 }
-                delay(300L)
+            }
+            launch {
+                _state.update {
+                    it.copy(
+                        requiredVersion = appVersionRepository.getRequiredVersion()
+                    )
+                }
             }
         }
     }
@@ -95,7 +122,7 @@ class RootComponent(
     /**
      * Child factory
      */
-    fun createChild(
+    private fun createChild(
         config: Configuration,
         context: ComponentContext
     ): Child {
@@ -164,7 +191,7 @@ class RootComponent(
                 Child.ViewOwnAccountScreenChild(
                     ViewOwnAccountScreenComponent(
                         onNavigationBack = {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         accountId = config.accountId,
                         componentContext = context,
@@ -178,7 +205,7 @@ class RootComponent(
                 Child.ViewAccountScreenChild(
                     ViewAccountScreenComponent(
                         onNavigationBack = {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         accountId = config.accountId,
                         componentContext = context,
@@ -191,7 +218,7 @@ class RootComponent(
                 Child.SignUpScreenChild(
                     SignUpScreenComponent(
                         onNavigationBack = {
-                            popOrFallbackScreen(
+                            popWithRootFallback(
                                 customSlide(invertDirection = true)
                             )
                         },
@@ -203,7 +230,7 @@ class RootComponent(
                             )
                         },
                         onSuccessfulAuth = {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         componentContext = context,
                         accountIdRepository = get(),
@@ -216,7 +243,7 @@ class RootComponent(
                 Child.SignInScreenChild(
                     SignInScreenComponent(
                         onNavigationBack = {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         onNavigationToSignUpScreen = {
                             navigation.replaceCurrent(
@@ -226,7 +253,7 @@ class RootComponent(
                             )
                         },
                         onSuccessfulAuth = {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         componentContext = context,
                         accountIdRepository = get(),
@@ -239,7 +266,7 @@ class RootComponent(
                 Child.GameWithFriendChild(
                     GameWithFriendScreenComponent(
                         {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         context
                     )
@@ -250,7 +277,7 @@ class RootComponent(
                 Child.GameWithBotChild(
                     GameWithBotScreenComponent(
                         {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         context
                     )
@@ -261,7 +288,7 @@ class RootComponent(
                 Child.SearchingForGameChild(
                     SearchingForGameComponent(
                         onGameFind = { gameId ->
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                             navigation.pushToFront(
                                 Configuration.OnlineGameScreen(
                                     gameId,
@@ -270,7 +297,7 @@ class RootComponent(
                             )
                         },
                         onGoingToWelcomeScreen = {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         searchingForGameRepository = get(),
                         context,
@@ -305,7 +332,7 @@ class RootComponent(
                             navigation.pushToFront(Configuration.ViewAccountScreen(it, scale()))
                         },
                         {
-                            popOrFallbackScreen(config.animation)
+                            popWithRootFallback(config.customAnimation)
                         },
                         accountInfoRepository = get(),
                         context
@@ -317,7 +344,7 @@ class RootComponent(
                 Child.AboutChild(
                     AboutScreenComponent(
                         {
-                            popOrFallbackScreen(customSlide(invertDirection = true))
+                            popWithRootFallback(customSlide(invertDirection = true))
                         },
                         context
                     )
@@ -326,3 +353,8 @@ class RootComponent(
         }
     }
 }
+
+data class RootScreenState(
+    val lastVersion: AppLastVersionApiResponse?,
+    val requiredVersion: RequiredVersionApiResponse?
+)

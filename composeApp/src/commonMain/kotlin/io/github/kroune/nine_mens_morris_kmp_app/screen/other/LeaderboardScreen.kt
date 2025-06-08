@@ -27,10 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.PlayerInfo
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.LeaderboardEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.LeaderboardEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard

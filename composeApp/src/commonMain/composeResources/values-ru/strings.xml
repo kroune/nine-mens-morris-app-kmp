@@ -57,4 +57,7 @@
     <string name="view_own_account">Мой профиль</string>
     <string name="source_code_link">Ссылка на исходный код</string>
     <string name="report_an_issue">Сообщить об ошибке</string>
+    <string name="new_update">Появилось новое обновление</string>
+    <string name="required_update">В нем есть критические изменения, поэтому если продолжите использовать эту версию, то что-то может не работать</string>
+    <string name="update">Обновиться</string>
 </resources>

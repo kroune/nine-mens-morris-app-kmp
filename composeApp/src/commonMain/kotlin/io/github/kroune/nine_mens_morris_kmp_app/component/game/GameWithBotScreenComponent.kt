@@ -6,9 +6,9 @@ import com.kroune.nineMensMorrisLib.GameState
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.GameWithBotScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
-import io.github.kroune.nine_mens_morris_kmp_app.useCases.GameBoardUseCase
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithBotScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameBoardUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

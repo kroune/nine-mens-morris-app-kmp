@@ -6,6 +6,7 @@ import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,17 +55,28 @@ class BaselineProfileGenerator {
             // optimizing for app startup. But you can also navigate and scroll through your most important UI.
 
             // Start default activity for your app
-            pressHome()
             startActivityAndWait()
 
             device.waitForIdle()
-            repeat(4) {
-                val start: UiObject2 = device.findObject(By.text("Press to start"))
-                start.click()
-                device.waitForIdle()
-                device.pressBack()
-                device.waitForIdle()
-            }
+            val start: UiObject2 = device.findObject(By.text("Press to start"))
+            start.click()
+            device.waitForIdle()
+            device.wait(Until.hasObject(By.text("Each circle at the top")), 5000)!!
+            device.waitForIdle()
+            val scrollUpOrDownSelector = By.desc("scroll up or down")
+            device.findObject(scrollUpOrDownSelector).click()
+            device.waitForIdle()
+            val playWithFriendSelector = By.text("Play with friend")
+            device.wait(Until.hasObject(playWithFriendSelector), 5000)!!
+            device.waitForIdle()
+            device.findObject(playWithFriendSelector).click()
+            val analyzeSelector = By.text("Analyze")
+            device.wait(Until.hasObject(analyzeSelector), 5000)!!
+            device.waitForIdle()
+            device.pressBack()
+            device.waitForIdle()
+            device.pressBack()
+            device.waitForIdle()
         }
     }
 }

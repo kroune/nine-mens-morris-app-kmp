@@ -17,8 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.kroune.nine_mens_morris_kmp_app.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LoadingCircle
 import kotlinx.coroutines.flow.receiveAsFlow
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.game_expected_waiting_time

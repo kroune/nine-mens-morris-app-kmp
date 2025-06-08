@@ -10,6 +10,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.di.koinModule
+import io.github.kroune.nine_mens_morris_kmp_app.screen.RootScreen
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
@@ -36,13 +37,13 @@ fun main() {
     val lifecycle = LifecycleRegistry()
     val root = withWebHistory { stateKeeper, _ ->
         val component = DefaultComponentContext(lifecycle, stateKeeper)
-        RootComponent(component)
+        RootComponent(componentContext = component)
     }
     ComposeViewport(document.body!!) {
         LaunchedEffect(Unit) {
             onLoadFinished()
         }
-        App(root)
+        RootScreen(root)
     }
     // start fetching all resources asynchronously
     with(CoroutineScope(Dispatchers.Default)) {

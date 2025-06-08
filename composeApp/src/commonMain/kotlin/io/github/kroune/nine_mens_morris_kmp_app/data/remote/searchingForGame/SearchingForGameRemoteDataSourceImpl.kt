@@ -1,11 +1,11 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame
 
-import io.github.kroune.nine_mens_morris_kmp_app.common.decodeServerEvent
-import io.github.kroune.nine_mens_morris_kmp_app.common.network
-import io.github.kroune.nine_mens_morris_kmp_app.common.wsApi
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.logging.log
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.data.decodeServerEvent
+import io.github.kroune.nine_mens_morris_kmp_app.data.network
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.log
+import io.github.kroune.nine_mens_morris_kmp_app.data.wsApi
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
 import io.github.kroune.nine_mens_morris_kmp_app.onNetworkError
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.parameter
@@ -23,7 +23,7 @@ class SearchingForGameRemoteDataSourceImpl : SearchingForGameRemoteDataSourceI {
         jwtToken: String
     ): SearchingForGameResponse {
         val route = wsApi {
-            appendPathSegments("search-for-game")
+            appendPathSegments("game", "search-for-game")
         }.toString()
         var result: SearchingForGameResponse = SearchingForGameResponse.UnknownError()
         runCatching {

@@ -1,5 +1,6 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsSourceMapNamesPolicy
@@ -19,21 +20,56 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.baseline.profile)
+    alias(libs.plugins.build.konfig)
 //    alias(libs.plugins.compose.compiler.report.generator)
 //    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
 //    alias(libs.plugins.storytale)
 }
 
-composeCompiler {
-    featureFlags = setOf(
-        ComposeFeatureFlag.OptimizeNonSkippingGroups,
-        ComposeFeatureFlag.PausableComposition
-    )
+buildscript {
+    dependencies {
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.buildkonfig.gradle.plugin)
+    }
+}
+
+buildkonfig {
+    packageName = "io.github.kroune.nine_mens_morris_kmp_app"
+
+    defaultConfigs {
+        buildConfigField(STRING, "distribution", "")
+        buildConfigField(STRING, "version", appVersion)
+        buildConfigField(INT, "versionInt", appVersionInt.toString())
+    }
+    targetConfigs {
+        create("android") {
+            buildConfigField(STRING, "distribution", "Android")
+        }
+        create("ios") {
+            buildConfigField(STRING, "distribution", "Ios")
+        }
+        create("iosSimulatorArm64") {
+            buildConfigField(STRING, "distribution", "IosSimulatorArm64")
+        }
+        create("iosArm64") {
+            buildConfigField(STRING, "distribution", "IosArm64")
+        }
+        create("iosX64") {
+            buildConfigField(STRING, "distribution", "IosX64")
+        }
+        create("desktop") {
+            buildConfigField(STRING, "distribution", "Desktop")
+        }
+        create("wasmJs") {
+            buildConfigField(STRING, "distribution", "WasmJs")
+        }
+    }
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xnon-local-break-continue")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     @OptIn(ExperimentalWasmDsl::class)

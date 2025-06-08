@@ -13,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 import com.kroune.nineMensMorrisLib.Position
-import io.github.kroune.nine_mens_morris_kmp_app.common.GAME_BOARD_BUTTON_WIDTH
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation2
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 
@@ -46,7 +46,7 @@ fun RenderPieceCountElement(
     Box(
         modifier = Modifier
             .shadow(shadowElevation2, CircleShape)
-            .size(GAME_BOARD_BUTTON_WIDTH * 1.5f * if (shouldMove) 1f else 0.6f)
+            .size(52.dp * if (shouldMove) 1f else 0.6f)
             .alpha(if (shouldMove) 1f else 0.6f)
             .background(backgroundColor, CircleShape),
         Alignment.Center

@@ -4,6 +4,7 @@ android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
 androidx-activityCompose = "1.10.1"
+buildKonfig = "0.17.1"
 compose-plugin = "1.8.0"
 filekitCompose = "0.8.8"
 kotlin = "2.2.0-RC2"
@@ -30,8 +31,10 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-ui-test = { module = "androidx.compose.ui:ui-test", version.ref = "uiTestJunit4Android" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestJunit4Android" }
 
+buildkonfig-gradle-plugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "buildKonfig" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCompose" }
 
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
@@ -71,5 +74,6 @@ storytale = { id = "org.jetbrains.compose.storytale", version.ref = "storytale" 
 android-test = { id = "com.android.test", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 baseline-profile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 compose-compiler-report-generator = { id = "dev.shreyaspatil.compose-compiler-report-generator", version.ref = "compose-compiler-report-generator" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}

@@ -16,12 +16,8 @@ android {
     compileSdk = 35
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
+        sourceCompatibility = JavaVersion.VERSION_23
+        targetCompatibility = JavaVersion.VERSION_23
     }
 
     defaultConfig {
@@ -59,7 +55,9 @@ androidComponents {
         v.instrumentationRunnerArguments.put(
             "targetAppId",
             @Suppress("UnstableApiUsage")
-            v.testedApks.map { artifactsLoader.load(it)?.applicationId }
+            v.testedApks.map<String?> {
+                artifactsLoader.load(it)?.applicationId
+            }
         )
     }
 }

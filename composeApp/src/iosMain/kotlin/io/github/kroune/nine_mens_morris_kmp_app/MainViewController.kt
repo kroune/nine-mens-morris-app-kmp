@@ -6,6 +6,7 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.di.koinModule
+import io.github.kroune.nine_mens_morris_kmp_app.screen.RootScreen
 import org.koin.core.context.startKoin
 
 @Suppress("unused", "FunctionName")
@@ -14,7 +15,7 @@ fun MainViewController() = ComposeUIViewController {
         modules(koinModule)
     }
     val root = remember {
-        RootComponent(DefaultComponentContext(LifecycleRegistry()))
+        RootComponent(componentContext = DefaultComponentContext(LifecycleRegistry()))
     }
-    App(root)
+    RootScreen(root)
 }

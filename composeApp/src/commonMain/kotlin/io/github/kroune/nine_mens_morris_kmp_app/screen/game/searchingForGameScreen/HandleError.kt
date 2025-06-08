@@ -3,7 +3,7 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.game.searchingForGameSc
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.image_was_updated
 import ninemensmorrisappkmp.composeapp.generated.resources.network_error

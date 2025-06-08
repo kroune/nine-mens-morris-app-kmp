@@ -25,11 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewOwnAccountScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawAccountCreationDate
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.ViewOwnAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawAccountCreationDate
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher

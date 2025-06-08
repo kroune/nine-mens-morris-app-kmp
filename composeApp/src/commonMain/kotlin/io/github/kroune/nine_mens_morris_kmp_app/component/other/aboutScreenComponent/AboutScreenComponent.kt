@@ -2,8 +2,8 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other.aboutScreenCom
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.AppInfo
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.AboutScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.AppInfo
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.AboutScreenEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class AboutScreenComponent(

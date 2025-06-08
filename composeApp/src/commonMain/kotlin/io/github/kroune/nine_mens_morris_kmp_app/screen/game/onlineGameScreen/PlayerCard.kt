@@ -19,13 +19,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kroune.nineMensMorrisLib.Position
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.game.OnlineGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawIcon
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.DrawRating
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.OnlineGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
 
 @Composable

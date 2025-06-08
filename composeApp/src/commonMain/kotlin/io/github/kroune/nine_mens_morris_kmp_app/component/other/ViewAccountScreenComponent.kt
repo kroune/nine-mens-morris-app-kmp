@@ -2,14 +2,14 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.AccountPictureByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.CreationDateByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.LoginByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.api.RatingByIdApiResponses
-import io.github.kroune.nine_mens_morris_kmp_app.model.event.other.ViewAccountScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.repositories.jwtToken.JwtTokenRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.screen.componentCoroutineScope
-import io.github.kroune.nine_mens_morris_kmp_app.useCases.AccountInfoUseCase
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.ViewAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
