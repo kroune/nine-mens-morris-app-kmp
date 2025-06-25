@@ -1,35 +1,54 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent.GameAnalyzeEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
+import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.analyze
 import ninemensmorrisappkmp.composeapp.generated.resources.depth
+import ninemensmorrisappkmp.composeapp.generated.resources.minus
+import ninemensmorrisappkmp.composeapp.generated.resources.plus
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
  * Renders game analysis
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderGameAnalyzeScreen(
     modifier: Modifier = Modifier,
@@ -42,7 +61,8 @@ fun RenderGameAnalyzeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            modifier = Modifier.padding(bottom = 5.dp),
+            modifier = Modifier
+                .padding(bottom = 5.dp),
             onClick = {
                 onEvent(GameAnalyzeEvent.StartAnalyze)
             },
@@ -55,68 +75,93 @@ fun RenderGameAnalyzeScreen(
             )
         ) {
             Column(
+                modifier = Modifier,
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(stringResource(Res.string.analyze))
                 Row(
+                    modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Button(
+                    Box(
                         modifier = Modifier
-                            .weight(1f),
-                        onClick = {
-                            onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth)
-                        },
-                        colors = ButtonColors(
-                            containerColor = Color.DarkGray.copy(alpha = 0.2f),
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.DarkGray.copy(alpha = 0.1f),
-                            disabledContentColor = Color.White.copy(alpha = 0.5f)
-                        )
+                            .weight(1f)
+                            .wrapContentSize()
                     ) {
-                        // may be it is a bit better to use some icons
-                        // but I will leave it like this for now
-                        Text("-", fontSize = 30.sp)
+                        Icon(
+                            painter = painterResource(Res.drawable.minus),
+                            "minus",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable {
+                                    onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth)
+                                }
+                        )
                     }
                     Text("${stringResource(Res.string.depth)} - $depth", fontSize = 13.sp)
-                    Button(
+                    Box(
                         modifier = Modifier
-                            .weight(1f),
-                        onClick = {
-                            onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth)
-                        },
-                        colors = ButtonColors(
-                            containerColor = Color.DarkGray.copy(alpha = 0.2f),
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.DarkGray.copy(alpha = 0.1f),
-                            disabledContentColor = Color.White.copy(alpha = 0.5f)
-                        )
+                            .weight(1f)
+                            .wrapContentSize()
                     ) {
-                        // may be it is a bit better to use some icons
-                        // but I will leave it like this for now
-                        Text("+", fontSize = 22.sp)
+                        Icon(
+                            painter = painterResource(Res.drawable.plus),
+                            "plus",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable {
+                                    onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth)
+                                }
+                        )
                     }
                 }
             }
         }
-        if (positions.isNotEmpty()) {
-            LazyColumn(
+    }
+    val scope = rememberCoroutineScope()
+    val bottomSheet =
+        rememberStandardBottomSheetState(SheetValue.Hidden, skipHiddenState = false)
+    if (positions.isNotEmpty()) {
+        BoxWithConstraints {
+            val minSide = min(this.maxWidth, this.maxHeight)
+            ModalBottomSheet(
+                {
+                    onEvent(GameAnalyzeEvent.CloseAnalyze)
+                    scope.launch {
+                        bottomSheet.hide()
+                    }
+                },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.DarkGray, RoundedCornerShape(5)),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .width(minSide + 20.dp),
+                sheetState = bottomSheet
             ) {
-                items(positions) {
-                    RenderGameBoard(
-                        modifier = Modifier
-                            .padding(10.dp),
-                        pos = it,
-                        selectedButton = null,
-                        moveHints = setOf(),
-                        onClick = {}
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(positions) {
+                        RenderGameBoard(
+                            modifier = Modifier
+                                .sizeIn(maxWidth = minSide, maxHeight = minSide)
+                                .padding(10.dp),
+                            pos = it,
+                            selectedButton = null,
+                            moveHints = setOf(),
+                            onClick = {}
+                        )
+                    }
+                }
+            }
+        }
+        LaunchedEffect(bottomSheet.isVisible) {
+            if (!bottomSheet.isVisible) {
+                scope.launch {
+                    bottomSheet.expand()
                 }
             }
         }

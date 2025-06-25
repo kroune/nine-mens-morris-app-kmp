@@ -1,5 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,11 +14,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -56,16 +55,13 @@ fun RenderGameBoard(
     moveHints: Set<Int>,
     onClick: (Int) -> Unit,
 ) {
-    BoxWithConstraints(contentAlignment = Alignment.TopCenter) {
+    BoxWithConstraints(
+        modifier = modifier,
+        contentAlignment = Alignment.TopCenter,
+    ) {
         val heightBigger = derivedStateOf { maxHeight > maxWidth }
         Box(
-            modifier = modifier
-                .then(
-                    if (!heightBigger.value)
-                        Modifier.fillMaxHeight()
-                    else
-                        Modifier.fillMaxWidth()
-                )
+            modifier = Modifier
                 .aspectRatio(1f, !heightBigger.value)
                 .clip(RoundedCornerShape3)
                 .background(Color(0xFF8F8F8F))
@@ -148,16 +144,15 @@ private fun ColumnScope.RowOfCircles(
                 modifier = Modifier
                     .fillMaxSize().weight(padding.toFloat())
             )
-        range.forEach { i ->
+        range.forEach { index ->
             CircledButton(
-                elementIndex = i,
-                pos = pos,
-                selectedButton = selectedButton,
-                moveHints = moveHints
+                pieceColor = pos.positions[index],
+                isSelected = selectedButton == index,
+                isHinted = index in moveHints
             ) {
-                onClick(i)
+                onClick(index)
             }
-            if (gap > 0 && i != range.last)
+            if (gap > 0 && index != range.last)
                 Spacer(
                     modifier = Modifier
                         .fillMaxSize().weight(gap.toFloat())
@@ -174,16 +169,15 @@ private fun ColumnScope.RowOfCircles(
 
 /**
  * draws a circles button
- * @param elementIndex index of this circle
+ * @param pieceColor index of this circle
  * @param onClick function we execute on click
  */
 @Composable
 fun RowScope.CircledButton(
-    elementIndex: Int,
-    pos: Position,
-    selectedButton: Int?,
-    moveHints: Set<Int>,
-    onClick: (Int) -> Unit
+    pieceColor: Boolean?,
+    isSelected: Boolean,
+    isHinted: Boolean,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -191,56 +185,95 @@ fun RowScope.CircledButton(
             .weight(1f)
             .wrapContentSize()
     ) {
-        Button(
-            modifier = Modifier
-                .then(
-                    if (pos.positions[elementIndex] != null) {
-                        Modifier
-                            .shadow(shadowElevation2, CircleShape)
-                    } else {
-                        Modifier
+        AnimatedContent(pieceColor) { pieceColor ->
+            Button(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .then(
+                        if (pieceColor != null) {
+                            Modifier
+                                .shadow(shadowElevation2, CircleShape)
+                        } else {
+                            Modifier
+                        }
+                    )
+                    .fillMaxSize(if (isSelected) 0.7f else 0.9f)
+                    .background(Color.Transparent, CircleShape)
+                    .semantics {
+                        contentDescription =
+                            "game piece element with $pieceColor value"
                     }
-                )
-                .clip(CircleShape)
-                .fillMaxSize(if (selectedButton == elementIndex) 0.7f else 0.9f)
-                .background(Color.Transparent)
-                .semantics {
-                    contentDescription =
-                        "game piece element with ${pos.positions[elementIndex]} value"
-                }
-                .border(
-                    if (!moveHints.contains(elementIndex))
-                        BorderStroke(
-                            0.dp,
+                    .then(
+                        if (isHinted)
+                            Modifier.border(
+                                BorderStroke(
+                                    6.dp,
+                                    Color.DarkGray
+                                ),
+                                CircleShape
+                            )
+                        else
+                            Modifier
+                    ),
+                shape = CircleShape,
+                elevation = null,
+//            enabled = isHinted,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = when (pieceColor) {
+                        null -> {
                             Color.Transparent
-                        )
-                    else
-                        BorderStroke(
-                            6.dp,
-                            Color.DarkGray
-                        ), CircleShape
+                        }
+
+                        true -> {
+                            ExtendedColorTheme.colorScheme.colorPiece1
+                        }
+
+                        false -> {
+                            ExtendedColorTheme.colorScheme.colorPiece2
+                        }
+                    },
+                    disabledContainerColor = Color.Transparent
                 ),
-            elevation = null,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = when (pos.positions[elementIndex]) {
-                    null -> {
-                        Color.Transparent
-                    }
+                onClick = {
+                    onClick()
+                }
+            ) {}
+        }
+    }
+}
 
-                    true -> {
-                        ExtendedColorTheme.colorScheme.colorPiece1
-                    }
+@Composable
+fun RenderUndo(
+    handleUndo: () -> Unit
+) {
+    IconButton(
+        modifier = Modifier
+            .requiredSize(70.dp),
+        onClick = {
+            handleUndo()
+        },
+    ) {
+        Icon(
+            painter = painterResource(Res.drawable.undo_move), "undo",
+            tint = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
 
-                    false -> {
-                        ExtendedColorTheme.colorScheme.colorPiece2
-                    }
-                },
-                disabledContainerColor = Color.Transparent
-            ),
-            onClick = {
-                onClick(elementIndex)
-            }
-        ) {}
+@Composable
+fun RenderRedo(
+    handleRedo: () -> Unit
+) {
+    IconButton(
+        modifier = Modifier
+            .requiredSize(70.dp),
+        onClick = {
+            handleRedo()
+        }) {
+        Icon(
+            painter = painterResource(Res.drawable.redo_move), "redo",
+            tint = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
 
@@ -256,28 +289,7 @@ fun RenderUndoRedo(handleUndo: () -> Unit, handleRedo: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
-        IconButton(
-            modifier = Modifier
-                .size(70.dp),
-            onClick = {
-                handleUndo()
-            },
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.undo_move), "undo",
-                tint = MaterialTheme.colorScheme.onBackground
-            )
-        }
-        IconButton(
-            modifier = Modifier
-                .size(70.dp),
-            onClick = {
-                handleRedo()
-            }) {
-            Icon(
-                painter = painterResource(Res.drawable.redo_move), "redo",
-                tint = MaterialTheme.colorScheme.onBackground
-            )
-        }
+        RenderUndo(handleUndo)
+        RenderRedo(handleRedo)
     }
 }

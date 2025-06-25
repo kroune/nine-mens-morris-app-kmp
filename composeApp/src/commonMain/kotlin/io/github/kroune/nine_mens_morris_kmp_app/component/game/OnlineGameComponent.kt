@@ -97,7 +97,7 @@ class OnlineGameComponent(
                 )
             }
         },
-        selectedButton = { _state.value.selectedButton },
+        getSelectedButton = { _state.value.selectedButton },
         onSelectedButtonUpdate = { value ->
             _state.update {
                 it.copy(
@@ -113,6 +113,7 @@ class OnlineGameComponent(
             }
         }
     )
+
     private val channelToSendMoves: Channel<Movement> = Channel()
     private val channelToReceiveMoves: Channel<Movement> = Channel()
     val onGiveUp: suspend () -> Unit = {
@@ -222,7 +223,7 @@ class OnlineGameComponent(
                         }
                     }
                     val move = moveResult.getOrThrow()
-                    gameUseCase.processMove(move)
+                    gameUseCase.processMovement(move)
                 }
                 _state.update {
                     it.copy(
@@ -264,7 +265,7 @@ class OnlineGameComponent(
                 if (_state.value.isGreen == _state.value.position.pieceToMove) {
                     val move = gameUseCase.handleClick(event.index)
                     if (move != null) {
-                        gameUseCase.processMove(move)
+                        gameUseCase.processMovement(move)
                         _state.update {
                             it.copy(
                                 moveHints = setOf()

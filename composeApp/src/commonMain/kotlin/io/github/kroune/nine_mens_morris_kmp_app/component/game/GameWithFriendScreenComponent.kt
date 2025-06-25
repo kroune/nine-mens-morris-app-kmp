@@ -75,7 +75,7 @@ class GameWithFriendScreenComponent(
                 )
             }
         },
-        selectedButton = { _state.value.selectedButton },
+        getSelectedButton = { _state.value.selectedButton },
         onSelectedButtonUpdate = { value ->
             _state.update {
                 it.copy(
@@ -84,6 +84,9 @@ class GameWithFriendScreenComponent(
             }
         }
     )
+    init {
+        gameUseCase.handleHighLighting()
+    }
 
     @Volatile
     var analyzeJob: Job? = null
@@ -116,6 +119,10 @@ class GameWithFriendScreenComponent(
                         }
                     }
                 }
+            }
+
+            GameWithFriendScreenEvent.GameAnalyzeEvent.CloseAnalyze -> {
+                state.value.gameAnalyzePositions.clear()
             }
         }
     }
