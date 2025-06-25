@@ -201,7 +201,13 @@ fun RowScope.CircledButton(
                     .background(Color.Transparent, CircleShape)
                     .semantics {
                         contentDescription =
-                            "game piece element with $pieceColor value"
+                            "game piece element with ${
+                                when (pieceColor) {
+                                    null -> "empty slot"
+                                    true -> "white piece"
+                                    false -> "black piece"
+                                }
+                            } value"
                     }
                     .then(
                         if (isHinted)
