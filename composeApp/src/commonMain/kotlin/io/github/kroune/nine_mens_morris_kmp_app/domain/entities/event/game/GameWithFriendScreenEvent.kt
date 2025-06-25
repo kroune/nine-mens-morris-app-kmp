@@ -5,6 +5,7 @@ sealed interface GameWithFriendScreenEvent {
         data object StartAnalyze: GameAnalyzeEvent
         data object IncreaseAnalyzeDepth: GameAnalyzeEvent
         data object DecreaseAnalyzeDepth: GameAnalyzeEvent
+        data object CloseAnalyze: GameAnalyzeEvent
     }
     data class OnPieceClick(val index: Int): GameWithFriendScreenEvent
     data object Undo: GameWithFriendScreenEvent

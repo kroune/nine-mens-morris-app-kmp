@@ -1,10 +1,10 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.GameWithFriendScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCount
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderUndoRedo
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderRedo
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderUndo
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 
 /**
@@ -41,16 +41,38 @@ fun GameWithFriendScreen(
             }
         )
     }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        RenderPieceCount(pos = state.position)
-        LimitSize(
-            0.8f
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            RenderPieceCountElement(
+                true,
+                state.position.pieceToMove,
+                state.position.freeGreenPieces
+            )
+            RenderUndo(
+                {
+                    if (!state.gameEnded)
+                        onEvent(GameWithFriendScreenEvent.Undo)
+                }
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             RenderGameBoard(
-                modifier = Modifier,
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .weight(1f),
                 pos = state.position,
                 selectedButton = state.selectedButton,
                 moveHints = state.moveHints,
@@ -58,29 +80,28 @@ fun GameWithFriendScreen(
                     onEvent(GameWithFriendScreenEvent.OnPieceClick(it))
                 },
             )
-        }
-        Box(
-            modifier = Modifier
-                .padding(top = 5.dp),
-            contentAlignment = Alignment.TopCenter
-        ) {
             RenderGameAnalyzeScreen(
                 modifier = Modifier
                     .padding(
-                        horizontal = 10.dp,
-                    )
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.8f),
+                        horizontal = 10.dp, vertical = 10.dp
+                    ),
                 positions = state.gameAnalyzePositions,
                 depth = state.depth,
                 onEvent = { onEvent(it) }
             )
-            RenderUndoRedo(
-                handleUndo = {
-                    if (!state.gameEnded)
-                        onEvent(GameWithFriendScreenEvent.Undo)
-                },
-                handleRedo = {
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            RenderPieceCountElement(
+                false,
+                !state.position.pieceToMove,
+                state.position.freeBluePieces
+            )
+            RenderRedo(
+                {
                     if (!state.gameEnded)
                         onEvent(GameWithFriendScreenEvent.Redo)
                 }

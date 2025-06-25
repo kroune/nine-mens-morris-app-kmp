@@ -38,7 +38,7 @@ class GameWithBotScreenComponent(
         if (_state.value.position.pieceToMove) {
             val move = gameUseCase.handleClick(index)
             if (move != null) {
-                gameUseCase.processMove(move)
+                gameUseCase.processMovement(move)
             }
             gameUseCase.handleHighLighting()
             botJob = componentScope.launch {
@@ -97,7 +97,7 @@ class GameWithBotScreenComponent(
                 )
             }
         },
-        selectedButton = {
+        getSelectedButton = {
             _state.value.selectedButton
         },
         onGameEnd = {
@@ -110,8 +110,8 @@ class GameWithBotScreenComponent(
     )
 
     private fun GameBoardUseCase.botMove() {
-        val bestMove = _state.value.position.findBestMove(4u)
-        processMove(bestMove!!)
+        val bestMove = _state.value.position.findBestMove(5u)
+        processMovement(bestMove!!)
     }
 
     fun onEvent(event: GameWithBotScreenEvent) {
@@ -142,9 +142,7 @@ class GameWithBotScreenComponent(
 
     private fun GameBoardUseCase.canBotMove(): Boolean {
         val position = _state.value.position
-        val canMove = position.generateMoves()
-            .isNotEmpty()
-        return !position.pieceToMove && position.gameState() != GameState.End && canMove
+        return !position.pieceToMove && position.gameState() != GameState.End
     }
 
     override fun onBackPressed() {
