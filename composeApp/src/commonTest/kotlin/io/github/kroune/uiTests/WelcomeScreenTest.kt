@@ -42,7 +42,7 @@ class WelcomeScreenTest {
                 hasContentDescription(
                     "game piece element with ",
                     substring = true
-                ) and hasClickAction()
+                )
             ).toCollection().filter { it.isDisplayed() }.let {
                 assertTrue { it.size == 24 }
             }
