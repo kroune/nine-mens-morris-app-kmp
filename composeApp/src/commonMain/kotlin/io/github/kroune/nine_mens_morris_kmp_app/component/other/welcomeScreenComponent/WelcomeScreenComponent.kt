@@ -52,24 +52,28 @@ class WelcomeScreenComponent(
     private var accountCheckingJob: Job? = null
     private val accountCheckingLock = Mutex()
 
-    init {
-        doOnStart {
-            if (accountCheckingJob?.isActive == true)
-                return@doOnStart
+    fun startJwtTokenCheckJob() {
+        if (accountCheckingJob?.isActive == true)
+            return
 
-            componentScope.launch {
-                accountCheckingLock.withLock {
-                    if (accountCheckingJob?.isActive == true)
-                        return@withLock
-                    accountCheckingJob = launch {
-                        _state.update {
-                            it.copy(
-                                isInAccount = jwtTokenRepository.checkJwtToken()
-                            )
-                        }
+        componentScope.launch {
+            accountCheckingLock.withLock {
+                if (accountCheckingJob?.isActive == true)
+                    return@withLock
+                accountCheckingJob = launch {
+                    _state.update {
+                        it.copy(
+                            isInAccount = jwtTokenRepository.checkJwtToken()
+                        )
                     }
                 }
             }
+        }
+    }
+    init {
+        startJwtTokenCheckJob()
+        doOnStart {
+            startJwtTokenCheckJob()
         }
     }
 
