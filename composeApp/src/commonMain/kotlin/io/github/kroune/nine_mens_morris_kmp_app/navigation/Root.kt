@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalDecomposeApi::class)
+
 package io.github.kroune.nine_mens_morris_kmp_app.navigation
 
-import com.arkivanov.decompose.extensions.compose.stack.animation.StackAnimator
-import com.arkivanov.decompose.extensions.compose.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.stack.animation.plus
-import com.arkivanov.decompose.extensions.compose.stack.animation.scale
-import com.arkivanov.decompose.extensions.compose.stack.animation.slide
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.StackAnimator
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.plus
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.scale
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.slide
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenComponent
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenComponent
@@ -22,54 +25,54 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 
-sealed class Child(open val component: ComponentContextWithBackHandle) {
+sealed class RootChild(open val component: ComponentContextWithBackHandle) {
     data class AppStartAnimationScreenChild(
         override val component: AppStartAnimationComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class WelcomeScreenChild(
         override val component: WelcomeScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class ViewOwnAccountScreenChild(
         override val component: ViewOwnAccountScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class ViewAccountScreenChild(
         override val component: ViewAccountScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class SignUpScreenChild(
         override val component: SignUpScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class SignInScreenChild(
         override val component: SignInScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class GameWithFriendChild(
         override val component: GameWithFriendScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class GameWithBotChild(
         override val component: GameWithBotScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class SearchingForGameChild(
         override val component: SearchingForGameComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class OnlineGameChild(
         override val component: OnlineGameComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class LeaderboardChild(
         override val component: LeaderboardScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 
     data class AboutChild(
         override val component: AboutScreenComponent
-    ) : Child(component)
+    ) : RootChild(component)
 }
 
 @Serializable
@@ -81,8 +84,8 @@ sealed class Configuration(
     @Serializable
     data class AppStartAnimation(
         @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("", scale() + fade())
+        override var customAnimation: StackAnimator = scale() + fade()
+    ) : Configuration("", customAnimation)
 
     @Serializable
     data class WelcomeScreen(

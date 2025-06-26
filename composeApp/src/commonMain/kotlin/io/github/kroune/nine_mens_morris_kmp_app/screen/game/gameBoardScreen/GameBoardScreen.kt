@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -19,8 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +52,7 @@ fun RenderGameBoard(
     pos: Position,
     selectedButton: Int?,
     moveHints: Set<Int>,
-    onClick: (Int) -> Unit,
+    onClick: ((Int) -> Unit)?,
 ) {
     BoxWithConstraints(
         modifier = modifier,
@@ -82,7 +81,7 @@ private fun BoxScope.DrawCircles(
     pos: Position,
     selectedButton: Int?,
     moveHints: Set<Int>,
-    onClick: (Int) -> Unit
+    onClick: ((Int) -> Unit)?
 ) {
     Column(
         modifier = Modifier
@@ -130,7 +129,7 @@ private fun ColumnScope.RowOfCircles(
     pos: Position,
     selectedButton: Int?,
     moveHints: Set<Int>,
-    onClick: (Int) -> Unit
+    onClick: ((Int) -> Unit)?
 ) {
     Row(
         modifier = Modifier
@@ -148,10 +147,9 @@ private fun ColumnScope.RowOfCircles(
             CircledButton(
                 pieceColor = pos.positions[index],
                 isSelected = selectedButton == index,
-                isHinted = index in moveHints
-            ) {
-                onClick(index)
-            }
+                isHinted = index in moveHints,
+                onClick = onClick?.let { { onClick(index) } }
+            )
             if (gap > 0 && index != range.last)
                 Spacer(
                     modifier = Modifier
@@ -177,7 +175,7 @@ fun RowScope.CircledButton(
     pieceColor: Boolean?,
     isSelected: Boolean,
     isHinted: Boolean,
-    onClick: () -> Unit
+    onClick: (() -> Unit)?
 ) {
     Box(
         modifier = Modifier
@@ -186,7 +184,7 @@ fun RowScope.CircledButton(
             .wrapContentSize()
     ) {
         AnimatedContent(pieceColor) { pieceColor ->
-            Button(
+            Box(
                 modifier = Modifier
                     .clip(CircleShape)
                     .then(
@@ -220,30 +218,33 @@ fun RowScope.CircledButton(
                             )
                         else
                             Modifier
-                    ),
-                shape = CircleShape,
-                elevation = null,
-//            enabled = isHinted,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = when (pieceColor) {
-                        null -> {
-                            Color.Transparent
-                        }
+                    )
+                    .background(
+                        when (pieceColor) {
+                            null -> {
+                                Color.Transparent
+                            }
 
-                        true -> {
-                            ExtendedColorTheme.colorScheme.colorPiece1
-                        }
+                            true -> {
+                                ExtendedColorTheme.colorScheme.colorPiece1
+                            }
 
-                        false -> {
-                            ExtendedColorTheme.colorScheme.colorPiece2
+                            false -> {
+                                ExtendedColorTheme.colorScheme.colorPiece2
+                            }
                         }
-                    },
-                    disabledContainerColor = Color.Transparent
-                ),
-                onClick = {
-                    onClick()
-                }
-            ) {}
+                    )
+                    .then(
+                        if (onClick != null) {
+                            Modifier
+                                .clickable {
+                                    onClick()
+                                }
+                        } else {
+                            Modifier
+                        }
+                    )
+            )
         }
     }
 }

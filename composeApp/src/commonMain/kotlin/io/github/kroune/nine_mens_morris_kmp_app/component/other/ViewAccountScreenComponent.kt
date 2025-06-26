@@ -26,6 +26,7 @@ class ViewAccountScreenComponent(
 
     private val _state = MutableStateFlow(
         ViewAccountScreenState(
+            accountId,
             null,
             null,
             null,
@@ -104,6 +105,7 @@ class ViewAccountScreenComponent(
 }
 
 data class ViewAccountScreenState(
+    val accountId: Long,
     val accountLoginResult: LoginByIdApiResponses?,
     val accountRatingResult: RatingByIdApiResponses?,
     val accountCreationDateResult: CreationDateByIdApiResponses?,

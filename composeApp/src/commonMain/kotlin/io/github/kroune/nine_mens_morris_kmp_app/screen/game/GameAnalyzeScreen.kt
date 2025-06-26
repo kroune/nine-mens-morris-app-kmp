@@ -3,12 +3,10 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +21,6 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +31,10 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent.GameAnalyzeEvent
+import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.analyze
@@ -123,45 +122,50 @@ fun RenderGameAnalyzeScreen(
         }
     }
     val scope = rememberCoroutineScope()
-    val bottomSheet =
-        rememberStandardBottomSheetState(SheetValue.Hidden, skipHiddenState = false)
     if (positions.isNotEmpty()) {
-        BoxWithConstraints {
-            val minSide = min(this.maxWidth, this.maxHeight)
-            ModalBottomSheet(
-                {
+        val bottomSheet =
+            rememberStandardBottomSheetState(SheetValue.Hidden, skipHiddenState = false)
+        val (screenWidth, screenHeight) = getScreenDpSize()
+        val minSide = min(screenWidth, screenHeight)
+        ModalBottomSheet(
+            {
+                scope.launch {
+                    bottomSheet.hide()
                     onEvent(GameAnalyzeEvent.CloseAnalyze)
-                    scope.launch {
-                        bottomSheet.hide()
-                    }
-                },
+                }
+            },
+            modifier = Modifier
+                .width(minSide)
+                .padding(horizontal = 20.dp),
+            sheetState = bottomSheet
+        ) {
+            LazyColumn(
                 modifier = Modifier
-                    .width(minSide + 20.dp),
-                sheetState = bottomSheet
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    items(positions) {
+                items(positions) {
+                    Row {
+                        RenderPieceCountElement(
+                            true,
+                            it.pieceToMove,
+                            it.freeGreenPieces
+                        )
                         RenderGameBoard(
                             modifier = Modifier
-                                .sizeIn(maxWidth = minSide, maxHeight = minSide)
+                                .weight(1f)
                                 .padding(10.dp),
                             pos = it,
                             selectedButton = null,
                             moveHints = setOf(),
-                            onClick = {}
+                            onClick = null
+                        )
+                        RenderPieceCountElement(
+                            false,
+                            !it.pieceToMove,
+                            it.freeBluePieces
                         )
                     }
-                }
-            }
-        }
-        LaunchedEffect(bottomSheet.isVisible) {
-            if (!bottomSheet.isVisible) {
-                scope.launch {
-                    bottomSheet.expand()
                 }
             }
         }

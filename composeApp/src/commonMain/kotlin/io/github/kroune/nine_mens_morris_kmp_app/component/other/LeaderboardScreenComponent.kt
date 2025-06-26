@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LeaderboardApiResponses
@@ -11,7 +12,6 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdAp
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.LeaderboardEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountInfo.AccountInfoRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +32,7 @@ class LeaderboardScreenComponent(
     private val _state = MutableStateFlow(
         LeaderboardScreenState(
             SnapshotStateList(leaderboardSize) {
-                PlayerInfo(null, null, null, null)
+                LeaderBoardPlayerInfo(null, null, null, null, null)
             }
         )
     )
@@ -42,46 +42,57 @@ class LeaderboardScreenComponent(
     private var leaderboardData: LeaderboardApiResponses? = null
     private val useCases = mutableListOf<AccountInfoUseCase>()
 
+    private fun startLoadingAccountsInfo(leaderboardData: List<Long>) {
+        leaderboardData.forEachIndexed { index, accountId ->
+            useCases.add(
+                AccountInfoUseCase(
+                    accountId = accountId,
+                    onLoginResult = { result ->
+                        _state.value.leaderboard[index] =
+                            _state.value.leaderboard[index].copy(
+                                loginResult = result
+                            )
+                    },
+                    onRatingResult = { result ->
+                        _state.value.leaderboard[index] =
+                            _state.value.leaderboard[index].copy(
+                                ratingResult = result
+                            )
+                    },
+                    needPicture = { result ->
+                        _state.value.leaderboard[index] =
+                            _state.value.leaderboard[index].copy(
+                                picture = result
+                            )
+                    },
+                    scope = componentScope,
+                    accountInfoRepository = get()
+                )
+            )
+        }
+    }
+
     init {
         componentScope.launch {
-            val localLeaderboardData = accountInfoRepository.getLeaderboard(leaderboardSize)
-            leaderboardData = localLeaderboardData
-            if (localLeaderboardData is LeaderboardApiResponses.Success) {
-                val size = localLeaderboardData.leaderboard.size
+            val leaderboardDataState = accountInfoRepository.getLeaderboard(leaderboardSize)
+            leaderboardData = leaderboardDataState
+            // success -> load other data
+            if (leaderboardDataState is LeaderboardApiResponses.Success) {
+                val leaderboardSize = leaderboardDataState.leaderboard.size
                 _state.update {
                     it.copy(
-                        leaderboard = SnapshotStateList(size) {
-                            PlayerInfo(null, null, null, null)
+                        leaderboard = SnapshotStateList(leaderboardSize) {
+                            LeaderBoardPlayerInfo(
+                                leaderboardDataState.leaderboard[it],
+                                null,
+                                null,
+                                null,
+                                null
+                            )
                         }
                     )
                 }
-                localLeaderboardData.leaderboard.forEachIndexed { index, id ->
-                    useCases.add(
-                        AccountInfoUseCase(
-                            accountId = id,
-                            onLoginResult = { result ->
-                                _state.value.leaderboard[index] =
-                                    _state.value.leaderboard[index].copy(
-                                        loginResult = result
-                                    )
-                            },
-                            onRatingResult = { result ->
-                                _state.value.leaderboard[index] =
-                                    _state.value.leaderboard[index].copy(
-                                        ratingResult = result
-                                    )
-                            },
-                            needPicture = { result ->
-                                _state.value.leaderboard[index] =
-                                    _state.value.leaderboard[index].copy(
-                                        picture = result
-                                    )
-                            },
-                            scope = componentScope,
-                            accountInfoRepository = get()
-                        )
-                    )
-                }
+                startLoadingAccountsInfo(leaderboardDataState.leaderboard)
             }
         }
     }
@@ -89,15 +100,15 @@ class LeaderboardScreenComponent(
     fun onEvent(event: LeaderboardEvent) {
         when (event) {
             is LeaderboardEvent.ReloadIcon -> {
-                useCases[event.index].reloadPicture()
+                useCases.getOrNull(event.index)?.reloadPicture()
             }
 
             is LeaderboardEvent.ReloadName -> {
-                useCases[event.index].reloadName()
+                useCases.getOrNull(event.index)?.reloadName()
             }
 
             is LeaderboardEvent.ReloadRating -> {
-                useCases[event.index].reloadRating()
+                useCases.getOrNull(event.index)?.reloadRating()
             }
 
             LeaderboardEvent.Back -> {
@@ -107,10 +118,10 @@ class LeaderboardScreenComponent(
             is LeaderboardEvent.NavigateToAccountView -> {
                 val leaderboardDataState = leaderboardData
                 if (leaderboardDataState is LeaderboardApiResponses.Success) {
-                    val element = leaderboardDataState.leaderboard.getOrElse(event.index) {
+                    val accountId = leaderboardDataState.leaderboard.getOrElse(event.index) {
                         return
                     }
-                    onNavigationToAccountView(element)
+                    onNavigationToAccountView(accountId)
                 }
             }
         }
@@ -121,7 +132,9 @@ class LeaderboardScreenComponent(
     }
 }
 
-data class PlayerInfo(
+@Immutable
+data class LeaderBoardPlayerInfo(
+    val accountId: Long?,
     val loginResult: LoginByIdApiResponses?,
     val ratingResult: RatingByIdApiResponses?,
     val creationDate: CreationDateByIdApiResponses?,
@@ -130,5 +143,5 @@ data class PlayerInfo(
 
 @Immutable
 data class LeaderboardScreenState(
-    val leaderboard: SnapshotStateList<PlayerInfo>
+    val leaderboard: SnapshotStateList<LeaderBoardPlayerInfo>
 )

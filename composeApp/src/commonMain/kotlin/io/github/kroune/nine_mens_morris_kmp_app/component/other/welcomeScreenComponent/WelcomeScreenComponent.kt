@@ -31,7 +31,7 @@ class WelcomeScreenComponent(
     private val onNavigationToAboutScreen: () -> Unit,
     private val onNavigationBack: () -> Unit,
     private val accountIdRepository: AccountIdRepositoryI,
-    private val jwtTokenInteractor: JwtTokenRepositoryI,
+    private val jwtTokenRepository: JwtTokenRepositoryI,
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val componentScope = componentCoroutineScope()
 
@@ -52,24 +52,28 @@ class WelcomeScreenComponent(
     private var accountCheckingJob: Job? = null
     private val accountCheckingLock = Mutex()
 
-    init {
-        doOnStart {
-            if (accountCheckingJob?.isActive == true)
-                return@doOnStart
+    fun startJwtTokenCheckJob() {
+        if (accountCheckingJob?.isActive == true)
+            return
 
-            componentScope.launch {
-                accountCheckingLock.withLock {
-                    if (accountCheckingJob?.isActive == true)
-                        return@withLock
-                    accountCheckingJob = launch {
-                        _state.update {
-                            it.copy(
-                                isInAccount = jwtTokenInteractor.checkJwtToken()
-                            )
-                        }
+        componentScope.launch {
+            accountCheckingLock.withLock {
+                if (accountCheckingJob?.isActive == true)
+                    return@withLock
+                accountCheckingJob = launch {
+                    _state.update {
+                        it.copy(
+                            isInAccount = jwtTokenRepository.checkJwtToken()
+                        )
                     }
                 }
             }
+        }
+    }
+    init {
+        startJwtTokenCheckJob()
+        doOnStart {
+            startJwtTokenCheckJob()
         }
     }
 

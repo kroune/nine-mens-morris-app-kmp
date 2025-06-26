@@ -70,6 +70,7 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xnon-local-break-continue")
         freeCompilerArgs.add("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi")
     }
 
     @OptIn(ExperimentalWasmDsl::class)
@@ -131,8 +132,10 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+
             implementation(libs.decompose)
-            implementation(libs.decompose.jetbrains)
+            implementation(libs.decompose.animations)
+
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.serialization.protobuf)
             implementation(libs.ktor.client.core)
@@ -291,6 +294,7 @@ compose.desktop {
             optimize.set(true)
         }
         mainClass = "io.github.kroune.nine_mens_morris_kmp_app.MainKt"
+
 
         nativeDistributions {
             macOS {
