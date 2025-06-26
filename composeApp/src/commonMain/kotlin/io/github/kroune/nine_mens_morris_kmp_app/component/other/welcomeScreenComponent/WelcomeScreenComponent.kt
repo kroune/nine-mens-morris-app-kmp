@@ -31,7 +31,7 @@ class WelcomeScreenComponent(
     private val onNavigationToAboutScreen: () -> Unit,
     private val onNavigationBack: () -> Unit,
     private val accountIdRepository: AccountIdRepositoryI,
-    private val jwtTokenInteractor: JwtTokenRepositoryI,
+    private val jwtTokenRepository: JwtTokenRepositoryI,
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val componentScope = componentCoroutineScope()
 
@@ -64,7 +64,7 @@ class WelcomeScreenComponent(
                     accountCheckingJob = launch {
                         _state.update {
                             it.copy(
-                                isInAccount = jwtTokenInteractor.checkJwtToken()
+                                isInAccount = jwtTokenRepository.checkJwtToken()
                             )
                         }
                     }

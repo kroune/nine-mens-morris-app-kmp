@@ -1,4 +1,4 @@
--optimizationpasses 10
+-optimizationpasses 5
 -flattenpackagehierarchy ''
 -repackageclasses ''
 -dontskipnonpubliclibraryclasses

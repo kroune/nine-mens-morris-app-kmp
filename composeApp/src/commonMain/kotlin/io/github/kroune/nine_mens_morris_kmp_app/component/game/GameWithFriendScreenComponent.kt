@@ -7,8 +7,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameAnalyzeUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameBoardUseCase
 import kotlinx.coroutines.Job
@@ -84,6 +84,7 @@ class GameWithFriendScreenComponent(
             }
         }
     )
+
     init {
         gameUseCase.handleHighLighting()
     }
@@ -105,7 +106,7 @@ class GameWithFriendScreenComponent(
             GameWithFriendScreenEvent.GameAnalyzeEvent.StartAnalyze -> {
                 if (analyzeJob?.isActive == true)
                     return
-                // double check lock
+                // double-checked lock
                 componentScope.launch {
                     analyzeJobLock.withLock {
                         if (analyzeJob?.isActive == true)
@@ -134,9 +135,8 @@ class GameWithFriendScreenComponent(
             }
 
             is GameWithFriendScreenEvent.OnPieceClick -> {
-                with(gameUseCase) {
-                    gameUseCase.defaultOnClick(event.index)
-                }
+                gameUseCase.defaultOnClick(event.index)
+                _state.value.gameAnalyzePositions.clear()
             }
 
             GameWithFriendScreenEvent.Redo -> {

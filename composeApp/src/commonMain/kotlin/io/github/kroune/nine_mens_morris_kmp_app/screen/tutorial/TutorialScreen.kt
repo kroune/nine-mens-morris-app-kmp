@@ -3,7 +3,16 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollScope
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
+import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderFlyingMovesTutorialScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderIndicatorsTutorialScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements.RenderLoseTutorialScreen
@@ -64,7 +74,7 @@ private val tutorialScreens: List<@Composable () -> Unit> = listOf(
 
 @Composable
 fun TutorialScreen() {
-    val coroutine = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val currentScreenIndex = remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
 
@@ -82,7 +92,7 @@ fun TutorialScreen() {
                     currentScreenIndex.intValue++
                 }
             }
-            coroutine.launch {
+            scope.launch {
                 listState.animateScrollToItem(currentScreenIndex.intValue)
             }
             return 0f
@@ -96,7 +106,7 @@ fun TutorialScreen() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
-            coroutine.launch {
+            scope.launch {
                 currentScreenIndex.intValue =
                     (currentScreenIndex.intValue + tutorialScreens.size - 1) % tutorialScreens.size
                 listState.animateScrollToItem(currentScreenIndex.intValue)
@@ -108,7 +118,7 @@ fun TutorialScreen() {
             )
         }
         IconButton(onClick = {
-            coroutine.launch {
+            scope.launch {
                 currentScreenIndex.intValue =
                     (currentScreenIndex.intValue + 1) % tutorialScreens.size
                 listState.animateScrollToItem(currentScreenIndex.intValue)
@@ -120,25 +130,23 @@ fun TutorialScreen() {
             )
         }
     }
-    BoxWithConstraints {
-        LazyRow(
-            modifier = Modifier
-                .fillMaxSize(),
-            state = listState,
-            flingBehavior = CustomFlingBehaviour(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            itemsIndexed(
-                items = tutorialScreens,
-            ) { _, screen ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(this@BoxWithConstraints.maxWidth),
-                    contentAlignment = Alignment.Center
-                ) {
-                    screen()
-                }
+    LazyRow(
+        modifier = Modifier
+            .fillMaxSize(),
+        state = listState,
+        flingBehavior = CustomFlingBehaviour(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        itemsIndexed(
+            items = tutorialScreens,
+        ) { _, screen ->
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(getScreenDpSize().width),
+                contentAlignment = Alignment.Center
+            ) {
+                screen()
             }
         }
     }

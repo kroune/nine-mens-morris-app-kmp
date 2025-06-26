@@ -1,5 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.other
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,13 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderBoardPlayerInfo
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.component.other.PlayerInfo
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.LeaderboardEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
-import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
 import ninemensmorrisappkmp.composeapp.generated.resources.rating
@@ -42,6 +44,8 @@ import org.jetbrains.compose.resources.stringResource
 fun LeaderboardScreen(
     onEvent: (LeaderboardEvent) -> Unit,
     state: LeaderboardScreenState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -73,7 +77,9 @@ fun LeaderboardScreen(
                     player = player,
                     onEvent = { onEvent(it) },
                     snackbarHostState,
-                    index
+                    index,
+                    sharedTransitionScope,
+                    animatedVisibilityScope
                 )
             }
         }
@@ -85,10 +91,12 @@ fun LeaderboardScreen(
  */
 @Composable
 fun LeaderboardItem(
-    player: PlayerInfo,
+    player: LeaderBoardPlayerInfo,
     onEvent: (LeaderboardEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
-    index: Int
+    index: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Card(
         modifier = Modifier
@@ -100,52 +108,94 @@ fun LeaderboardItem(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            DrawIcon(
-                modifier = Modifier
-                    .size(80.dp)
-                    .padding(10.dp),
-                pictureByteArray = player.picture,
-                onReload = {
-                    onEvent(LeaderboardEvent.ReloadIcon(index))
-                },
-                onClick = {
-                    onEvent(LeaderboardEvent.NavigateToAccountView(index))
-                },
-                snackbarHostState = snackbarHostState
-            )
+            with(sharedTransitionScope) {
+                DrawIcon(
+                    modifier = Modifier
+                        .then(
+                            if (player.accountId != null) {
+                                val key =
+                                    rememberSharedContentState(key = "icon-${player.accountId}")
+                                Modifier
+                                    .sharedElement(
+                                        key,
+                                        animatedVisibilityScope = animatedVisibilityScope
+                                    )
+                            } else
+                                Modifier
+                        )
+                        .size(80.dp)
+                        .padding(10.dp),
+                    pictureByteArray = player.picture,
+                    onReload = {
+                        onEvent(LeaderboardEvent.ReloadIcon(index))
+                    },
+                    onClick = {
+                        onEvent(LeaderboardEvent.NavigateToAccountView(index))
+                    },
+                    snackbarHostState = snackbarHostState
+                )
+            }
             Column(
                 modifier = Modifier
                     .padding(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                DrawName(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(20.dp),
-                    onSuccess = @Composable {
-                        Text(
-                            it,
-                            fontSize = 18.sp
-                        )
-                    },
-                    accountName = player.loginResult,
-                    onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
-                    snackbarHostState = snackbarHostState
-                )
-                DrawRating(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(20.dp),
-                    onSuccess = {
-                        Text(
-                            text = "${stringResource(Res.string.rating)}: $it",
-                            fontWeight = FontWeight.W300
-                        )
-                    },
-                    accountRating = player.ratingResult,
-                    onReload = { onEvent(LeaderboardEvent.ReloadRating(index)) },
-                    snackbarHostState = snackbarHostState
-                )
+                with(sharedTransitionScope) {
+                    DrawName(
+                        modifier = Modifier
+                            .then(
+                                if (player.accountId != null) {
+                                    val key =
+                                        rememberSharedContentState(key = "name-${player.accountId}")
+                                    Modifier
+                                        .sharedElement(
+                                            key,
+                                            animatedVisibilityScope = animatedVisibilityScope
+                                        )
+                                } else
+                                    Modifier
+                            )
+                            .fillMaxWidth()
+                            .heightIn(20.dp),
+                        onSuccess = {
+                            Text(
+                                it,
+                                fontSize = 18.sp
+                            )
+                        },
+                        accountName = player.loginResult,
+                        onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
+                with(sharedTransitionScope) {
+                    DrawRating(
+                        modifier = Modifier
+                            .then(
+                                if (player.accountId != null) {
+                                    val key =
+                                        rememberSharedContentState(key = "rating-${player.accountId}")
+                                    Modifier
+                                        .sharedElement(
+                                            key,
+                                            animatedVisibilityScope = animatedVisibilityScope
+                                        )
+                                } else
+                                    Modifier
+                            )
+                            .fillMaxWidth()
+                            .heightIn(20.dp),
+                        onSuccess = {
+                            Text(
+                                text = "${stringResource(Res.string.rating)}: $it",
+                                fontWeight = FontWeight.W300
+                            )
+                        },
+                        accountRating = player.ratingResult,
+                        onReload = { onEvent(LeaderboardEvent.ReloadRating(index)) },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
             }
         }
     }
