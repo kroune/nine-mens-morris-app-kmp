@@ -9,10 +9,12 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Sev
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
 import io.ktor.client.call.body
+import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
 
@@ -25,6 +27,7 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSourceI {
             val request = network.post(route) {
                 parameter("login", login)
                 parameter("password", password)
+                accept(ContentType.Application.ProtoBuf)
             }
             registerResult(request)
         }
@@ -64,7 +67,9 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSourceI {
             parameters["password"] = password
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                accept(ContentType.Application.ProtoBuf)
+            }
             loginResult(request)
         }
             .recoverNetworkError(LoginApiResponse.NetworkError())
@@ -100,7 +105,9 @@ class AuthRemoteDataSourceImpl : AuthRemoteDataSourceI {
             parameters["jwtToken"] = jwtToken
         }
         return runCatching {
-            val request = network.get(route)
+            val request = network.get(route) {
+                accept(ContentType.Application.ProtoBuf)
+            }
             checkJwtTokenResult(request)
         }
             .recoverNetworkError(CheckJwtTokenApiResponses.NetworkError())

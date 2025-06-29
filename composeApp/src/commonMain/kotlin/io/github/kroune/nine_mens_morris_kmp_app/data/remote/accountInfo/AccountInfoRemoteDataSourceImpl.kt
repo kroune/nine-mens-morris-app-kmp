@@ -36,6 +36,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountRatingByIdResult(request)
         }
@@ -79,6 +80,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountCreationDateByIdResult(request)
         }
@@ -119,7 +121,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
-                accept(ContentType.Application.Json)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountLoginByIdResult(request)
         }
@@ -203,7 +205,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         return runCatching {
             val request = network.get(route) {
                 parameter("jwtToken", jwtToken)
-                accept(ContentType.Application.Json)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountIdByJwtTokenResult(request)
         }
@@ -244,6 +246,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("jwtToken", jwtToken)
                 parameter("amount", amount)
+                accept(ContentType.Application.ProtoBuf)
             }
             leaderboardResult(request)
         }
@@ -287,6 +290,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         return runCatching {
             val request = network.post(route) {
                 setBody<ByteArray>(picture)
+                accept(ContentType.Application.ProtoBuf)
             }
             uploadPictureResult(request)
         }

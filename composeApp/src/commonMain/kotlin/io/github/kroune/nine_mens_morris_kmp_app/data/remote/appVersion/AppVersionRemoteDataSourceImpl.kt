@@ -12,10 +12,8 @@ import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
-import kotlinx.serialization.json.Json
 
 class AppVersionRemoteDataSourceImpl : AppVersionRemoteDataSourceI {
     override suspend fun getLastAppVersion(): AppLastVersionApiResponse {
@@ -25,6 +23,7 @@ class AppVersionRemoteDataSourceImpl : AppVersionRemoteDataSourceI {
         return runCatching {
             val request = network.get(route) {
                 parameter("distribution", BuildKonfig.distribution)
+                accept(ContentType.Application.ProtoBuf)
             }
             AppLastVersionApiResponse.Success(
                 request.body<Int?>()
@@ -45,10 +44,11 @@ class AppVersionRemoteDataSourceImpl : AppVersionRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("distribution", BuildKonfig.distribution)
                 parameter("version", BuildKonfig.versionInt)
-                accept(ContentType.Application.Json)
+                accept(ContentType.Application.ProtoBuf)
             }
-            val body = request.bodyAsText()
-            RequiredVersionApiResponse.Success(Json.decodeFromString(body))
+            RequiredVersionApiResponse.Success(
+                request.body()
+            )
         }
             .recoverNetworkError(RequiredVersionApiResponse.NetworkError())
             .logOnFailure("exception in $route", severity = Severity.ERROR)
