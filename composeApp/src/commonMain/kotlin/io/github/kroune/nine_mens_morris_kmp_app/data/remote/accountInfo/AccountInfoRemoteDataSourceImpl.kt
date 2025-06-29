@@ -1,9 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.accountInfo
 
-import io.github.kroune.nine_mens_morris_kmp_app.data.network
 import io.github.kroune.nine_mens_morris_kmp_app.data.httpApi
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.logOnFailure
+import io.github.kroune.nine_mens_morris_kmp_app.data.network
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
@@ -11,16 +9,23 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.Leaderboard
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.UploadPictureApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.logOnFailure
 import io.github.kroune.nine_mens_morris_kmp_app.recoverNetworkError
+import io.ktor.client.call.body
+import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 
 class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
     override suspend fun getAccountRatingById(id: Long, jwtToken: String): RatingByIdApiResponses {
@@ -31,6 +36,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountRatingByIdResult(request)
         }
@@ -56,8 +62,9 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
 
             else -> {
-                val result = Json.decodeFromString<Long>(request.bodyAsText())
-                RatingByIdApiResponses.Success(result)
+                RatingByIdApiResponses.Success(
+                    request.body<Long>()
+                )
             }
         }
     }
@@ -73,6 +80,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountCreationDateByIdResult(request)
         }
@@ -94,8 +102,9 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
 
             HttpStatusCode.OK -> {
-                val decodedText = Json.decodeFromString<Triple<Int, Int, Int>>(request.bodyAsText())
-                CreationDateByIdApiResponses.Success(decodedText)
+                CreationDateByIdApiResponses.Success(
+                    request.body<Triple<Int, Int, Int>>()
+                )
             }
 
             else -> {
@@ -112,6 +121,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountLoginByIdResult(request)
         }
@@ -131,8 +141,9 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
 
             HttpStatusCode.OK -> {
-                val result = Json.decodeFromString<String>(request.bodyAsText())
-                LoginByIdApiResponses.Success(result)
+                LoginByIdApiResponses.Success(
+                    request.body<String>()
+                )
             }
 
             else -> {
@@ -152,6 +163,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("id", id)
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountPictureByIdResult(request)
         }
@@ -162,6 +174,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     private suspend fun accountPictureByIdResult(request: HttpResponse): AccountPictureByIdApiResponses {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
@@ -173,7 +186,9 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
 
             HttpStatusCode.OK -> {
-                val decodedMessage = Json.decodeFromString<ByteArray>(request.bodyAsText())
+                // FIXME
+                // https://youtrack.jetbrains.com/issue/KTOR-8626/Content-Negotiation-doesnt-work-properly-with-ByteArray
+                val decodedMessage = ProtoBuf.decodeFromByteArray<ByteArray>(request.body())
                 AccountPictureByIdApiResponses.Success(decodedMessage)
             }
 
@@ -190,6 +205,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         return runCatching {
             val request = network.get(route) {
                 parameter("jwtToken", jwtToken)
+                accept(ContentType.Application.ProtoBuf)
             }
             accountIdByJwtTokenResult(request)
         }
@@ -211,8 +227,9 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
 
             HttpStatusCode.OK -> {
-                val result = Json.decodeFromString<Long>(request.bodyAsText())
-                AccountIdByJwtTokenApiResponses.Success(result)
+                AccountIdByJwtTokenApiResponses.Success(
+                    request.body<Long>()
+                )
             }
 
             else -> {
@@ -229,6 +246,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("jwtToken", jwtToken)
                 parameter("amount", amount)
+                accept(ContentType.Application.ProtoBuf)
             }
             leaderboardResult(request)
         }
@@ -250,8 +268,9 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
             }
 
             HttpStatusCode.OK -> {
-                val decodedMessage = Json.decodeFromString<List<Long>>(request.bodyAsText())
-                LeaderboardApiResponses.Success(decodedMessage)
+                LeaderboardApiResponses.Success(
+                    request.body<List<Long>>()
+                )
             }
 
             else -> {
@@ -271,6 +290,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
         return runCatching {
             val request = network.post(route) {
                 setBody<ByteArray>(picture)
+                accept(ContentType.Application.ProtoBuf)
             }
             uploadPictureResult(request)
         }

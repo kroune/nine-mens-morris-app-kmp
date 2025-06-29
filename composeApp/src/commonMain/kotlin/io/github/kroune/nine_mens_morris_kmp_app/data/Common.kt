@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.pingInterval
@@ -12,6 +13,8 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.serialization.kotlinx.protobuf.protobuf
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -27,6 +30,7 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalSerializationApi::class)
 val network = HttpClient {
     install(HttpRequestRetry) {
         // retry on timeout
@@ -37,6 +41,12 @@ val network = HttpClient {
             exception is HttpRequestTimeoutException
         }
         exponentialDelay()
+    }
+    install(ContentNegotiation) {
+        removeIgnoredType<ByteArray>()
+        removeIgnoredType<String>()
+        json()
+        protobuf()
     }
     install(HttpTimeout) {
         this.requestTimeoutMillis = 10 * 1000
