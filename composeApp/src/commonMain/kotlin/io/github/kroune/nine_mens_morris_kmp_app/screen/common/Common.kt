@@ -32,8 +32,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -147,7 +149,7 @@ fun DrawRating(
 
                             is RatingByIdApiResponses.Success -> return@LaunchedEffect
                         }
-                        var retryText = getString(Res.string.retry)
+                        val retryText = getString(Res.string.retry)
                         snackbarHostState.showSnackbar(errorText, retryText)
                             .let { snackbarResult ->
                                 if (snackbarResult == SnackbarResult.ActionPerformed) {
@@ -242,12 +244,14 @@ fun DrawAccountCreationDate(
 
 @Composable
 fun Modifier.shimmerLoading(
-    durationMillis: Int = 1000,
+    durationMillis: Int = 2000,
 ): Modifier {
     val transition = rememberInfiniteTransition(label = "")
+    var targetValue by remember { mutableStateOf(500f) }
+    val shimmerWidth = 400f
     val translateAnimation by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 500f,
+        initialValue = -shimmerWidth,
+        targetValue = targetValue + shimmerWidth,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = durationMillis,
@@ -260,15 +264,25 @@ fun Modifier.shimmerLoading(
 
     val shimmerColor = ExtendedColorTheme.colorScheme.shimmerColor
     return drawBehind {
+        if (this.size.width != targetValue)
+            targetValue = this.size.width
         drawRect(
             brush = Brush.linearGradient(
                 colors = listOf(
+                    shimmerColor.copy(alpha = 0.1f),
+                    shimmerColor.copy(alpha = 0.1f),
                     shimmerColor.copy(alpha = 0.2f),
-                    shimmerColor.copy(alpha = 1.0f),
                     shimmerColor.copy(alpha = 0.2f),
+                    shimmerColor.copy(alpha = 0.5f),
+                    shimmerColor.copy(alpha = 0.7f),
+                    shimmerColor.copy(alpha = 0.5f),
+                    shimmerColor.copy(alpha = 0.2f),
+                    shimmerColor.copy(alpha = 0.2f),
+                    shimmerColor.copy(alpha = 0.1f),
+                    shimmerColor.copy(alpha = 0.1f),
                 ),
                 start = Offset(x = translateAnimation, y = translateAnimation),
-                end = Offset(x = translateAnimation + 100f, y = translateAnimation + 100f),
+                end = Offset(x = translateAnimation + shimmerWidth, y = translateAnimation),
             )
         )
     }

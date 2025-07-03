@@ -12,14 +12,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
+import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LoadingCircle
-import kotlinx.coroutines.flow.receiveAsFlow
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.game_expected_waiting_time
 import ninemensmorrisappkmp.composeapp.generated.resources.searching_for_game
@@ -27,7 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SearchingForGameScreen(
-    component: SearchingForGameComponent
+    state: SearchingForGameScreenState
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -50,18 +48,16 @@ fun SearchingForGameScreen(
                 modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                val waitingTime =
-                    component.expectedWaitingTime.receiveAsFlow().collectAsState(null).value
-                if (waitingTime == null) {
+                if (state.expectedWaitingTime == null) {
                     LoadingCircle()
                 } else {
                     Text(
-                        "${stringResource(Res.string.game_expected_waiting_time)} $waitingTime",
+                        "${stringResource(Res.string.game_expected_waiting_time)} ${state.expectedWaitingTime}",
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
         }
-        HandleSearchingForGameError(component.searchingForGameError.value, snackbarHostState)
+        HandleSearchingForGameError(state.searchingForGameError, snackbarHostState)
     }
 }

@@ -42,8 +42,8 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LeaderboardScreen(
-    onEvent: (LeaderboardEvent) -> Unit,
     state: LeaderboardScreenState,
+    onEvent: (LeaderboardEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {

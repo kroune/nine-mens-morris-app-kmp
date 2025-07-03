@@ -26,7 +26,7 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     listOf(wasmJs()).forEach {
         with(it) {
-            outputModuleName = "NineMensMorrisApp"
+            outputModuleName = "NineMensMorrisApp2"
             browser {
                 val rootDirPath = project.rootDir.path
                 val projectDirPath = project.projectDir.path

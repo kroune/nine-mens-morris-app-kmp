@@ -1,7 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.Immutable
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
@@ -11,6 +10,9 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.game.GameRe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -22,20 +24,40 @@ class SearchingForGameComponent(
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val scope = componentCoroutineScope()
 
-    val searchingForGameError: MutableState<SearchingForGameResponse?> = mutableStateOf(null)
-    val expectedWaitingTime = Channel<Long>(10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _state = MutableStateFlow(
+        SearchingForGameScreenState(
+            searchingForGameError = null,
+            expectedWaitingTime = null
+        )
+    )
+    val state
+        get() = _state
 
     init {
         with(scope) {
+            val expectedWaitingTimeChannel = Channel<Long>(10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
             launch {
-                val result = gameRepository.searchForGame(expectedWaitingTime)
+                expectedWaitingTimeChannel.consumeEach { expectedWaitingTime ->
+                    _state.update {
+                        it.copy(
+                            expectedWaitingTime = expectedWaitingTime
+                        )
+                    }
+                }
+            }
+            launch {
+                val result = gameRepository.searchForGame(expectedWaitingTimeChannel)
                 if (result is SearchingForGameResponse.Success) {
                     println("found game, id = ${result.gameId}")
                     withContext(Dispatchers.Main) {
                         onGameFind(result.gameId)
                     }
                 }
-                searchingForGameError.value = result
+                _state.update {
+                    it.copy(
+                        searchingForGameError = result
+                    )
+                }
             }
         }
     }
@@ -52,3 +74,9 @@ class SearchingForGameComponent(
         onEvent(SearchingForGameScreenEvent.Back)
     }
 }
+
+@Immutable
+data class SearchingForGameScreenState(
+    val searchingForGameError: SearchingForGameResponse?,
+    val expectedWaitingTime: Long?
+)

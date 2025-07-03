@@ -14,7 +14,7 @@ inline fun AppTheme(crossinline content: @Composable () -> Unit) {
             primary = Color(48, 48, 48),
             onPrimary = Color.White,
             primaryContainer = Color.Black,
-            secondaryContainer = Color(90, 90, 90),
+            secondaryContainer = Color(90, 90, 90, 255),
             onSecondaryContainer = Color(223, 223, 223),
             background = Color(255, 255, 255),
             surface = Color.Black,

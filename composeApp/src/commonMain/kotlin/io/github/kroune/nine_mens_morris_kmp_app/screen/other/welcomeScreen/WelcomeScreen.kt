@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -46,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.WelcomeScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.delay
@@ -210,7 +210,7 @@ fun WelcomeScreen(
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
@@ -255,10 +255,8 @@ fun WelcomeScreen(
                         state = scrollState, flingBehavior = CustomFlingBehaviour()
                     )
             ) {
-                val screenSize = getScreenDpSize()
-                val height =
-                    screenSize.height - padding.calculateBottomPadding() - padding.calculateTopPadding()
-                val width = screenSize.width
+                val height = this@BoxWithConstraints.maxHeight - padding.calculateBottomPadding() - padding.calculateTopPadding()
+                val width = this@BoxWithConstraints.maxWidth
                 Box(
                     modifier = Modifier
                         .requiredHeight(height)
@@ -311,12 +309,11 @@ fun RenderMainScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
-    val screenSize = getScreenDpSize()
-    val height = screenSize.height
-    Box(
+    BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val height = this.maxHeight
         Column(
             modifier = Modifier
                 .fillMaxHeight()

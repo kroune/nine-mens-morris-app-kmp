@@ -176,14 +176,18 @@ fun RootScreen(component: RootComponent) {
                             }
 
                             is RootChild.SearchingForGameChild -> {
-                                SearchingForGameScreen(instance.component)
+                                with(instance.component) {
+                                    SearchingForGameScreen(
+                                        state.collectValue()
+                                    )
+                                }
                             }
 
                             is RootChild.OnlineGameChild -> {
                                 with(instance.component) {
                                     OnlineGameScreen(
-                                        { onEvent(it) },
-                                        state.collectValue()
+                                        state.collectValue(),
+                                        { onEvent(it) }
                                     )
                                 }
                             }
@@ -191,8 +195,8 @@ fun RootScreen(component: RootComponent) {
                             is RootChild.LeaderboardChild -> {
                                 with(instance.component) {
                                     LeaderboardScreen(
-                                        { onEvent(it) },
                                         state.collectValue(),
+                                        { onEvent(it) },
                                         this@SharedTransitionLayout,
                                         this@ChildStack
                                     )

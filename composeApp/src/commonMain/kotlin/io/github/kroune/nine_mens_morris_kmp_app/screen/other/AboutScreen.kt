@@ -1,16 +1,18 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.other
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -76,20 +78,25 @@ fun AboutScreen(
             verticalArrangement = Arrangement.spacedBy(padding2)
         ) {
             val uriHandler = LocalUriHandler.current
-            Surface(
+            Button(
                 modifier = Modifier
-                    .padding(horizontal = padding2)
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(AboutScreenEvent.OnNavigationToReportAnIssue)
-                        uriHandler.openUri(state.githubIssue.webLink)
-                    },
+                    .padding(horizontal = padding2),
+                contentPadding = PaddingValues(0.dp),
+                onClick = {
+                    onEvent(AboutScreenEvent.OnNavigationToReportAnIssue)
+                    uriHandler.openUri(state.githubIssue.webLink)
+                },
                 shape = RoundedCornerShape3,
-                shadowElevation = shadowElevation2
+                elevation = ButtonDefaults
+                    .buttonElevation(shadowElevation2),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(padding2),
+                        .padding(padding2)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(padding2)
                 ) {
                     Icon(
@@ -101,20 +108,25 @@ fun AboutScreen(
                     Text(stringResource(Res.string.report_an_issue))
                 }
             }
-            Surface(
+            Button(
                 modifier = Modifier
-                    .padding(horizontal = padding2)
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(AboutScreenEvent.OnNavigationToSourceCode)
-                        uriHandler.openUri(state.github.webLink)
-                    },
+                    .padding(horizontal = padding2),
+                contentPadding = PaddingValues(0.dp),
                 shape = RoundedCornerShape3,
-                shadowElevation = shadowElevation2
+                elevation = ButtonDefaults
+                    .elevatedButtonElevation(shadowElevation2),
+                onClick = {
+                    onEvent(AboutScreenEvent.OnNavigationToSourceCode)
+                    uriHandler.openUri(state.github.webLink)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(padding2),
+                        .padding(padding2)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(padding2)
                 ) {
                     Icon(
@@ -126,20 +138,24 @@ fun AboutScreen(
                     Text(stringResource(Res.string.source_code_link))
                 }
             }
-            Surface(
+            Button(
                 modifier = Modifier
-                    .padding(horizontal = padding2)
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(AboutScreenEvent.OnNavigationToCreatorTelegram)
-                        uriHandler.openUri(state.telegram.webLink)
-                    },
+                    .padding(horizontal = padding2),
+                contentPadding = PaddingValues(0.dp),
                 shape = RoundedCornerShape3,
-                shadowElevation = shadowElevation2
+                elevation = ButtonDefaults.buttonElevation(shadowElevation2),
+                onClick = {
+                    onEvent(AboutScreenEvent.OnNavigationToCreatorTelegram)
+                    uriHandler.openUri(state.telegram.webLink)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(padding2),
+                        .padding(padding2)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(padding2)
                 ) {
                     Icon(

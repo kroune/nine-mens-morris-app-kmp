@@ -21,9 +21,7 @@ plugins {
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.baseline.profile)
     alias(libs.plugins.build.konfig)
-//    alias(libs.plugins.compose.compiler.report.generator)
 //    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
-//    alias(libs.plugins.storytale)
 }
 
 buildscript {
@@ -145,7 +143,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.no.arg)
-            implementation(libs.ninemensmorris)
+            api(libs.ninemensmorris)
             implementation(libs.filekit.compose)
             implementation(libs.koin.core)
 //            implementation(compose.components.uiToolingPreview)

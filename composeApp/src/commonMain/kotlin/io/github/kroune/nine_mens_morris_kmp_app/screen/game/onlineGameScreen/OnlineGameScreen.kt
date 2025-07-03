@@ -36,8 +36,8 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun OnlineGameScreen(
-    onEvent: (OnlineGameScreenEvent) -> Unit,
-    state: OnlineGameScreenState
+    state: OnlineGameScreenState,
+    onEvent: (OnlineGameScreenEvent) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
