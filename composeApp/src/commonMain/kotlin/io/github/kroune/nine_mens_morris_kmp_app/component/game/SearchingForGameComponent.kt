@@ -4,10 +4,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.SearchingForGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
 import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.SearchingForGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.game.GameRepositoryI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 class SearchingForGameComponent(
     onGameFind: (Long) -> Unit,
     private val onGoingToWelcomeScreen: () -> Unit,
-    private val searchingForGameRepository: SearchingForGameRepositoryI,
+    private val gameRepository: GameRepositoryI,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle {
     private val scope = componentCoroutineScope()
@@ -28,7 +28,7 @@ class SearchingForGameComponent(
     init {
         with(scope) {
             launch {
-                val result = searchingForGameRepository.searchForGame(expectedWaitingTime)
+                val result = gameRepository.searchForGame(expectedWaitingTime)
                 if (result is SearchingForGameResponse.Success) {
                     println("found game, id = ${result.gameId}")
                     withContext(Dispatchers.Main) {

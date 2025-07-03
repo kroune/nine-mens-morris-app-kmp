@@ -8,4 +8,7 @@ sealed interface ViewOwnAccountScreenEvent {
     data object ReloadName: ViewOwnAccountScreenEvent
     data object ReloadRating: ViewOwnAccountScreenEvent
     data object ReloadCreationDate: ViewOwnAccountScreenEvent
+    data object NextPage: ViewOwnAccountScreenEvent
+    data object PreviousPage: ViewOwnAccountScreenEvent
+    data class NavigateToViewPastGame(val gameId: Long): ViewOwnAccountScreenEvent
 }

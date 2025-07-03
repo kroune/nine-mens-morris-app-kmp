@@ -13,9 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -25,7 +26,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
@@ -66,12 +66,9 @@ fun RenderGameAnalyzeScreen(
                 onEvent(GameAnalyzeEvent.StartAnalyze)
             },
             shape = RoundedCornerShape3,
-            colors = ButtonColors(
-                containerColor = Color.DarkGray,
-                contentColor = Color.White,
-                disabledContainerColor = Color.DarkGray.copy(alpha = 0.5f),
-                disabledContentColor = Color.White.copy(alpha = 0.5f)
-            )
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            ),
         ) {
             Column(
                 modifier = Modifier,
@@ -92,7 +89,7 @@ fun RenderGameAnalyzeScreen(
                         Icon(
                             painter = painterResource(Res.drawable.minus),
                             "minus",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .clickable {
@@ -109,7 +106,7 @@ fun RenderGameAnalyzeScreen(
                         Icon(
                             painter = painterResource(Res.drawable.plus),
                             "plus",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .clickable {

@@ -198,7 +198,8 @@ class RootComponent(
                         accountId = config.accountId,
                         componentContext = context,
                         accountInfoRepository = get(),
-                        jwtTokenInteractor = get()
+                        jwtTokenInteractor = get(),
+                        gameRepository = get(),
                     )
                 )
             }
@@ -212,6 +213,8 @@ class RootComponent(
                         accountId = config.accountId,
                         componentContext = context,
                         jwtTokenInteractor = get(),
+                        gameRepository = get(),
+                        accountInfoRepository = get(),
                     )
                 )
             }
@@ -301,7 +304,7 @@ class RootComponent(
                         onGoingToWelcomeScreen = {
                             popWithRootFallback(config.customAnimation)
                         },
-                        searchingForGameRepository = get(),
+                        gameRepository = get(),
                         context,
                     )
                 )
@@ -320,7 +323,7 @@ class RootComponent(
                         onNavigationToWelcomeScreen = {
                             navigation.pushToFront(Configuration.WelcomeScreen())
                         },
-                        onlineGameRepository = get(),
+                        gameRepository = get(),
                         accountIdRepository = get(),
                         componentContext = context
                     )

@@ -61,4 +61,5 @@
     <string name="new_update">A new update was released</string>
     <string name="required_update">It has critical changes, so if you keep using current version some functionality might not work</string>
     <string name="update">Update</string>
+    <string name="past_games_players">Players</string>
 </resources>

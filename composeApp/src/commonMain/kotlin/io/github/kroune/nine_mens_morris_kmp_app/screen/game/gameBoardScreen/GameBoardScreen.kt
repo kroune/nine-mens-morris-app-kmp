@@ -262,7 +262,7 @@ fun RenderUndo(
     ) {
         Icon(
             painter = painterResource(Res.drawable.undo_move), "undo",
-            tint = MaterialTheme.colorScheme.onBackground
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -279,7 +279,7 @@ fun RenderRedo(
         }) {
         Icon(
             painter = painterResource(Res.drawable.redo_move), "redo",
-            tint = MaterialTheme.colorScheme.onBackground
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }

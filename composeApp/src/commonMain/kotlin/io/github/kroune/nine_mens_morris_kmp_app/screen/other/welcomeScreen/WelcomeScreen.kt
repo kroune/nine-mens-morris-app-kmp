@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,9 +44,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.welcomeScreenComponent.WelcomeScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CheckJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.WelcomeScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LoadingCircle
 import io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.TutorialScreen
 import kotlinx.coroutines.delay
@@ -329,6 +330,9 @@ fun RenderMainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 onClick = {
                     onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
                 },
@@ -344,6 +348,9 @@ fun RenderMainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 onClick = {
                     onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
                 },
@@ -359,6 +366,9 @@ fun RenderMainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 onClick = {
                     if (state.isInAccount == null) {
                         scope.launch {
@@ -382,6 +392,9 @@ fun RenderMainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 onClick = {
                     if (state.isInAccount == null) {
                         scope.launch {

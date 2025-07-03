@@ -41,3 +41,4 @@ plugins {
 
 include(":composeApp")
 include(":baselineprofile")
+include(":storytale")

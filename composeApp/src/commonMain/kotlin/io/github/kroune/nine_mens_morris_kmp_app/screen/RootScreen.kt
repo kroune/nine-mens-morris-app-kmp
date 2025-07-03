@@ -47,8 +47,8 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.game.searchingForGameScr
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AboutScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.AppStartAnimationScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.LeaderboardScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.ViewAccountScreen
-import io.github.kroune.nine_mens_morris_kmp_app.screen.other.viewOwnAccountScreen.ViewOwnAccountScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.account.ViewAccountScreen
+import io.github.kroune.nine_mens_morris_kmp_app.screen.other.account.viewOwnAccountScreen.ViewOwnAccountScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.welcomeScreen.WelcomeScreen
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.AppTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res

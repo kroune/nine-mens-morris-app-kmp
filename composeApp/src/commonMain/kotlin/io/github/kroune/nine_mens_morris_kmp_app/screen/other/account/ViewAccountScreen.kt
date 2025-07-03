@@ -1,9 +1,7 @@
-package io.github.kroune.nine_mens_morris_kmp_app.screen.other
+package io.github.kroune.nine_mens_morris_kmp_app.screen.other.account
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -21,9 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenState
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.PastGamesApiResponse
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.ViewAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawAccountCreationDate
@@ -50,19 +50,18 @@ fun ViewAccountScreen(
                 SnackbarHost(hostState = snackbarHostState)
             }
         ) { padding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(padding)
                     .padding(horizontal = padding2)
                     .padding(top = padding2),
                 horizontalAlignment = Alignment.Start
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    BoxWithConstraints {
-                        val size = min(this.maxWidth, this.maxHeight) / 2
+                item {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Top
+                    ) {
                         with(sharedTransitionScope) {
                             val key = rememberSharedContentState(key = "icon-${state.accountId}")
                             DrawIcon(
@@ -71,7 +70,7 @@ fun ViewAccountScreen(
                                         key,
                                         animatedVisibilityScope = animatedVisibilityScope
                                     )
-                                    .size(size)
+                                    .size(120.dp)
                                     .aspectRatio(1f, true),
                                 pictureByteArray = accountPictureResult,
                                 onReload = { onEvent(ViewAccountScreenEvent.ReloadIcon) },
@@ -79,67 +78,97 @@ fun ViewAccountScreen(
                                 snackbarHostState = snackbarHostState
                             )
                         }
+                        with(sharedTransitionScope) {
+                            val key = rememberSharedContentState(key = "name-${state.accountId}")
+                            DrawName(
+                                modifier = Modifier
+                                    .sharedElement(
+                                        key,
+                                        animatedVisibilityScope = animatedVisibilityScope
+                                    )
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                onSuccess = @Composable {
+                                    Text(
+                                        it,
+                                        fontSize = 30.sp,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                accountName = accountLoginResult,
+                                onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
+                                snackbarHostState = snackbarHostState
+                            )
+                        }
                     }
+                }
+                item {
                     with(sharedTransitionScope) {
-                        val key = rememberSharedContentState(key = "name-${state.accountId}")
-                        DrawName(
+                        val key = rememberSharedContentState(key = "rating-${state.accountId}")
+                        DrawRating(
                             modifier = Modifier
                                 .sharedElement(
                                     key,
                                     animatedVisibilityScope = animatedVisibilityScope
                                 )
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            onSuccess = @Composable {
+                                .fillMaxWidth(0.5f)
+                                .height(30.dp),
+                            onSuccess = {
                                 Text(
-                                    it,
-                                    fontSize = 30.sp,
-                                    overflow = TextOverflow.Ellipsis
+                                    "${stringResource(Res.string.rating)}: $it",
+                                    fontSize = 20.sp
                                 )
                             },
-                            accountName = accountLoginResult,
-                            onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
+                            accountRating = accountRatingResult,
+                            onReload = { onEvent(ViewAccountScreenEvent.ReloadRating) },
                             snackbarHostState = snackbarHostState
                         )
                     }
                 }
-                with(sharedTransitionScope) {
-                    val key = rememberSharedContentState(key = "rating-${state.accountId}")
-                    DrawRating(
+                item {
+                    DrawAccountCreationDate(
                         modifier = Modifier
-                            .sharedElement(
-                                key,
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
                             .fillMaxWidth(0.5f)
                             .height(30.dp),
-                        onSuccess = {
+                        onSuccess = { (first, second, third) ->
                             Text(
-                                "${stringResource(Res.string.rating)}: $it",
+                                "$first.$second.$third",
                                 fontSize = 20.sp
                             )
                         },
-                        accountRating = accountRatingResult,
-                        onReload = { onEvent(ViewAccountScreenEvent.ReloadRating) },
+                        accountCreationDate = accountCreationDateResult,
+                        onReload = {
+                            onEvent(ViewAccountScreenEvent.ReloadCreationDate)
+                        },
                         snackbarHostState = snackbarHostState
                     )
                 }
-                DrawAccountCreationDate(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(30.dp),
-                    onSuccess = { (first, second, third) ->
-                        Text(
-                            "$first.$second.$third",
-                            fontSize = 20.sp
-                        )
-                    },
-                    accountCreationDate = accountCreationDateResult,
-                    onReload = {
-                        onEvent(ViewAccountScreenEvent.ReloadCreationDate)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
+                when (state.playedGamesList) {
+                    is PastGamesApiResponse.CredentialsError -> TODO()
+                    is PastGamesApiResponse.NetworkError -> TODO()
+                    is PastGamesApiResponse.ServerError -> TODO()
+                    is PastGamesApiResponse.Success -> {
+                        items(
+                            state.playedGamesList.playedGames
+                        ) {
+                            DrawPlayedGameItem(
+                                it,
+                                {
+                                    onEvent(
+                                        ViewAccountScreenEvent.NavigateToViewPastGame(
+                                            it.gameId
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    is PastGamesApiResponse.UnknownError -> TODO()
+                    null -> {
+
+                    }
+                }
             }
         }
     }

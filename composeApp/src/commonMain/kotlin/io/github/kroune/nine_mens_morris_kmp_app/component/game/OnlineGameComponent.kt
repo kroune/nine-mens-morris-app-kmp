@@ -6,14 +6,14 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.game.GameRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameBoardUseCase
 import kotlinx.coroutines.CompletableDeferred
@@ -36,7 +36,7 @@ class OnlineGameComponent(
     private val onNavigationToViewOwnAccountScreen: (Long) -> Unit,
     private val gameId: Long,
     private val onNavigationToWelcomeScreen: () -> Unit,
-    private val onlineGameRepository: OnlineGameRepositoryI,
+    private val gameRepository: GameRepositoryI,
     private val accountIdRepository: AccountIdRepositoryI,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ComponentContextWithBackHandle, KoinComponent {
@@ -136,7 +136,7 @@ class OnlineGameComponent(
                 val gameEnded: CompletableDeferred<Boolean>
                 // TODO: handle errors
                 val enemyId: Long
-                onlineGameRepository.connect(gameId, channelToSendMoves, channelToReceiveMoves)
+                gameRepository.connect(gameId, channelToSendMoves, channelToReceiveMoves)
                     .let { value ->
                         state.update {
                             it.copy(

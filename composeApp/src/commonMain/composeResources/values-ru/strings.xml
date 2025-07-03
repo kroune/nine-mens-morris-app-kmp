@@ -60,4 +60,5 @@
     <string name="new_update">Появилось новое обновление</string>
     <string name="required_update">В нем есть критические изменения, поэтому если продолжите использовать эту версию, то что-то может не работать</string>
     <string name="update">Обновиться</string>
+    <string name="past_games_players">Игроки</string>
 </resources>

@@ -6,5 +6,8 @@ sealed interface ViewAccountScreenEvent {
     data object ReloadIcon: ViewAccountScreenEvent
     data object ReloadName: ViewAccountScreenEvent
     data object ReloadRating: ViewAccountScreenEvent
+    data object NextPage: ViewAccountScreenEvent
+    data object PreviousPage: ViewAccountScreenEvent
     data object ReloadCreationDate: ViewAccountScreenEvent
+    data class NavigateToViewPastGame(val gameId: Long): ViewAccountScreenEvent
 }

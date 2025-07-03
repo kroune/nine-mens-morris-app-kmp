@@ -1,4 +1,4 @@
-package io.github.kroune.nine_mens_morris_kmp_app.screen.other.viewOwnAccountScreen
+package io.github.kroune.nine_mens_morris_kmp_app.screen.other.account.viewOwnAccountScreen
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable

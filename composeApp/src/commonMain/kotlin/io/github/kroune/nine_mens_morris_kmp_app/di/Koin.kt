@@ -10,10 +10,8 @@ import io.github.kroune.nine_mens_morris_kmp_app.data.remote.appVersion.AppVersi
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.appVersion.AppVersionRemoteDataSourceImpl
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRemoteDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.auth.AuthRemoteDataSourceImpl
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame.OnlineGameRemoteDataSourceI
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame.OnlineGameRemoteDataSourceImpl
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame.SearchingForGameRemoteDataSourceI
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame.SearchingForGameRemoteDataSourceImpl
+import io.github.kroune.nine_mens_morris_kmp_app.data.remote.game.GameRemoteDataSourceI
+import io.github.kroune.nine_mens_morris_kmp_app.data.remote.game.GameRemoteDataSourceImpl
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryImpl
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountInfo.AccountInfoRepositoryI
@@ -22,19 +20,14 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.appVersion.
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.appVersion.AppVersionRepositoryImpl
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.auth.AuthRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.auth.AuthRepositoryImpl
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.game.GameRepositoryI
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.game.GameRepositoryImpl
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryImpl
 import org.koin.dsl.module
 
 val koinModule = module {
-    single<SearchingForGameRepositoryI> {
-        SearchingForGameRepositoryImpl(get(), get())
-    }
-    single<SearchingForGameRemoteDataSourceI> { SearchingForGameRemoteDataSourceImpl() }
+    single<GameRemoteDataSourceI> { GameRemoteDataSourceImpl() }
 
     single<AccountInfoRemoteDataSourceI> { AccountInfoRemoteDataSourceImpl() }
     single<AccountInfoRepositoryI> {
@@ -49,8 +42,8 @@ val koinModule = module {
         AccountIdRepositoryImpl(get(), get(), get())
     }
 
-    single<OnlineGameRemoteDataSourceI> { OnlineGameRemoteDataSourceImpl() }
-    single<OnlineGameRepositoryI> { OnlineGameRepositoryImpl(get(), get()) }
+    single<GameRemoteDataSourceI> { GameRemoteDataSourceImpl() }
+    single<GameRepositoryI> { GameRepositoryImpl(get(), get()) }
 
     single<AuthRemoteDataSourceI> { AuthRemoteDataSourceImpl() }
     single<AuthRepositoryI> {
@@ -60,7 +53,7 @@ val koinModule = module {
     single<AppVersionRemoteDataSourceI> {
         AppVersionRemoteDataSourceImpl()
     }
-        single<AppVersionRepositoryI> {
+    single<AppVersionRepositoryI> {
         AppVersionRepositoryImpl(get())
     }
 }
