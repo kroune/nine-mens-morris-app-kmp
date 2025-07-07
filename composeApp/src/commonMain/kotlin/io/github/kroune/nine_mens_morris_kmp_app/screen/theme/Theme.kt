@@ -24,7 +24,10 @@ inline fun AppTheme(crossinline content: @Composable () -> Unit) {
         true -> darkColorScheme(
             primary = Color.White,
             onPrimary = Color.Black,
-            background = Color(red = 58, green = 58, blue = 58),
+            primaryContainer = Color.White,
+            secondaryContainer = Color(204, 204, 204),
+            onSecondaryContainer = Color(44, 44, 44),
+            background = Color(58, 58, 58),
             surface = Color.White,
             inversePrimary = Color.Black,
         )

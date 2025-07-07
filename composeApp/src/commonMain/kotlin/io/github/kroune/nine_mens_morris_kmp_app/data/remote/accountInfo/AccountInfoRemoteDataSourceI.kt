@@ -12,7 +12,7 @@ interface AccountInfoRemoteDataSourceI {
     suspend fun getAccountRatingById(id: Long, jwtToken: String): RatingByIdApiResponses
     suspend fun getAccountCreationDateById(id: Long, jwtToken: String): CreationDateByIdApiResponses
     suspend fun getAccountLoginById(id: Long, jwtToken: String): LoginByIdApiResponses
-    suspend fun getAccountPictureById(id: Long, jwtToken: String): AccountPictureByIdApiResponses
+    suspend fun getAccountPictureById(id: Long, jwtToken: String): AccountPictureByIdApiResponses<ByteArray>
     suspend fun getAccountIdByJwtToken(jwtToken: String): AccountIdByJwtTokenApiResponses
     suspend fun getLeaderboard(amount: Int, jwtToken: String): LeaderboardApiResponses
     suspend fun uploadPicture(picture: ByteArray, jwtToken: String): UploadPictureApiResponses

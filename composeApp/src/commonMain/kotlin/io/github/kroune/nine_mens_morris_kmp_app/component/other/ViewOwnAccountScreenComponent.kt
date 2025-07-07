@@ -1,5 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
@@ -17,6 +18,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.game.GameRe
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -40,14 +42,14 @@ class ViewOwnAccountScreenComponent(
 
     private val _state = MutableStateFlow(
         ViewOwnAccountScreenState(
-            false,
             null,
             null,
             null,
             null,
             null,
             1,
-            null
+            null,
+            false,
         )
     )
     val state: StateFlow<ViewOwnAccountScreenState>
@@ -67,6 +69,7 @@ class ViewOwnAccountScreenComponent(
             pastGamesJobLock.withLock {
                 getPastGamesJob?.cancel()
                 getPastGamesJob = launch {
+                    delay(5000)
                     val pastGames = gameRepository.getPastGames(
                         accountId,
                         10,
@@ -208,12 +211,12 @@ class ViewOwnAccountScreenComponent(
 }
 
 data class ViewOwnAccountScreenState(
-    val isUploadingNewPictureInProgress: Boolean,
     val uploadingNewPictureResult: UploadPictureApiResponses?,
     val accountLoginResult: LoginByIdApiResponses?,
     val accountRatingResult: RatingByIdApiResponses?,
     val accountCreationDateResult: CreationDateByIdApiResponses?,
-    val accountPictureResult: AccountPictureByIdApiResponses?,
+    val accountPictureResult: AccountPictureByIdApiResponses<ImageBitmap>?,
     val playedGamesListPage: Int,
     val playedGamesList: PastGamesApiResponse<List<PastGamesUiModel>>?,
+    val isUploadingNewPictureInProgress: Boolean,
 )

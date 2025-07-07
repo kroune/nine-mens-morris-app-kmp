@@ -12,7 +12,7 @@ interface AccountInfoRepositoryI {
     suspend fun getAccountRatingById(id: Long): RatingByIdApiResponses
     suspend fun getAccountCreationDateById(id: Long): CreationDateByIdApiResponses
     suspend fun getAccountLoginById(id: Long): LoginByIdApiResponses
-    suspend fun getAccountPictureById(id: Long): AccountPictureByIdApiResponses
+    suspend fun getAccountPictureById(id: Long): AccountPictureByIdApiResponses<ByteArray>
     suspend fun getOwnAccountId(): AccountIdByJwtTokenApiResponses
     suspend fun getLeaderboard(amount: Int): LeaderboardApiResponses
     suspend fun uploadPicture(picture: ByteArray): UploadPictureApiResponses

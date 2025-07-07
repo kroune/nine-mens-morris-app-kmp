@@ -1,14 +1,12 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
@@ -26,12 +25,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent.GameAnalyzeEvent
 import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
@@ -65,6 +66,10 @@ fun RenderGameAnalyzeScreen(
             onClick = {
                 onEvent(GameAnalyzeEvent.StartAnalyze)
             },
+            contentPadding = PaddingValues(
+                horizontal = Dp.Hairline,
+                vertical = UiConstants.padding2
+            ),
             shape = RoundedCornerShape3,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
@@ -79,12 +84,14 @@ fun RenderGameAnalyzeScreen(
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Box(
+                    IconButton(
+                        {
+                            onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth)
+                        },
                         modifier = Modifier
-                            .weight(1f)
-                            .wrapContentSize()
+                            .padding(horizontal = UiConstants.padding3)
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.minus),
@@ -92,16 +99,15 @@ fun RenderGameAnalyzeScreen(
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .clickable {
-                                    onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth)
-                                }
                         )
                     }
                     Text("${stringResource(Res.string.depth)} - $depth", fontSize = 13.sp)
-                    Box(
+                    IconButton(
+                        onClick = {
+                            onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth)
+                        },
                         modifier = Modifier
-                            .weight(1f)
-                            .wrapContentSize()
+                            .padding(horizontal = UiConstants.padding3)
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.plus),
@@ -109,9 +115,6 @@ fun RenderGameAnalyzeScreen(
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .clickable {
-                                    onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth)
-                                }
                         )
                     }
                 }

@@ -255,7 +255,7 @@ fun WelcomeScreen(
                         state = scrollState, flingBehavior = CustomFlingBehaviour()
                     )
             ) {
-                val height = this@BoxWithConstraints.maxHeight - padding.calculateBottomPadding() - padding.calculateTopPadding()
+                val height = this@BoxWithConstraints.maxHeight
                 val width = this@BoxWithConstraints.maxWidth
                 Box(
                     modifier = Modifier

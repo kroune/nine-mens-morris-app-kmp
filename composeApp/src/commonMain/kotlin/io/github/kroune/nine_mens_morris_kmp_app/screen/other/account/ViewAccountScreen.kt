@@ -1,7 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.other.account
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,17 +17,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewAccountScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.PastGamesApiResponse
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.ViewAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LocalNavAnimatedVisibilityScope
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LocalSharedTransitionScope
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.CustomDrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.rating
 import org.jetbrains.compose.resources.stringResource
@@ -38,8 +39,6 @@ import org.jetbrains.compose.resources.stringResource
 fun ViewAccountScreen(
     onEvent: (ViewAccountScreenEvent) -> Unit,
     state: ViewAccountScreenState,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     with(state) {
@@ -62,13 +61,13 @@ fun ViewAccountScreen(
                         Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.Top
                     ) {
-                        with(sharedTransitionScope) {
+                        with(LocalSharedTransitionScope.current!!) {
                             val key = rememberSharedContentState(key = "icon-${state.accountId}")
                             DrawIcon(
                                 Modifier
                                     .sharedElement(
                                         key,
-                                        animatedVisibilityScope = animatedVisibilityScope
+                                        animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current!!
                                     )
                                     .size(120.dp)
                                     .aspectRatio(1f, true),
@@ -78,17 +77,15 @@ fun ViewAccountScreen(
                                 snackbarHostState = snackbarHostState
                             )
                         }
-                        with(sharedTransitionScope) {
+                        with(LocalSharedTransitionScope.current!!) {
                             val key = rememberSharedContentState(key = "name-${state.accountId}")
                             DrawName(
                                 modifier = Modifier
                                     .sharedElement(
                                         key,
-                                        animatedVisibilityScope = animatedVisibilityScope
-                                    )
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                onSuccess = @Composable {
+                                        animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current!!
+                                    ),
+                                onSuccess = {
                                     Text(
                                         it,
                                         fontSize = 30.sp,
@@ -97,19 +94,23 @@ fun ViewAccountScreen(
                                 },
                                 accountName = accountLoginResult,
                                 onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
+                                placeholderStyle = TextStyle(
+                                    fontSize = 30.sp
+                                ),
+                                placeholderText = "some random name 123",
                                 snackbarHostState = snackbarHostState
                             )
                         }
                     }
                 }
                 item {
-                    with(sharedTransitionScope) {
+                    with(LocalSharedTransitionScope.current!!) {
                         val key = rememberSharedContentState(key = "rating-${state.accountId}")
-                        DrawRating(
+                        CustomDrawRating(
                             modifier = Modifier
                                 .sharedElement(
                                     key,
-                                    animatedVisibilityScope = animatedVisibilityScope
+                                    animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current!!
                                 )
                                 .fillMaxWidth(0.5f)
                                 .height(30.dp),
@@ -121,6 +122,7 @@ fun ViewAccountScreen(
                             },
                             accountRating = accountRatingResult,
                             onReload = { onEvent(ViewAccountScreenEvent.ReloadRating) },
+                            placeholderText = "${stringResource(Res.string.rating)}: 12345",
                             snackbarHostState = snackbarHostState
                         )
                     }
@@ -140,6 +142,7 @@ fun ViewAccountScreen(
                         onReload = {
                             onEvent(ViewAccountScreenEvent.ReloadCreationDate)
                         },
+                        placeholderText = "11.11.1111",
                         snackbarHostState = snackbarHostState
                     )
                 }

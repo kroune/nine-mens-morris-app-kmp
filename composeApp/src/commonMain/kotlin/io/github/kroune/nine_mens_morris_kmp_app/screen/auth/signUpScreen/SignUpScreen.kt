@@ -1,5 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.auth.signUpScreen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,19 +16,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.auth.SignUpScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation1
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
@@ -63,16 +65,18 @@ fun SignUpScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(stringResource(Res.string.have_account_question_mark))
-                    TextButton(
-                        modifier = Modifier,
-                        onClick = {
-                            onEvent(SignUpScreenEvent.SwitchToSignInScreen)
-                        },
-                        colors = ExtendedColorTheme.colorScheme.linkColors
-                    ) {
-                        Text(stringResource(Res.string.sign_in))
-                    }
+                    Text(stringResource(Res.string.have_account_question_mark) + " ")
+                    Text(
+                        text = stringResource(Res.string.sign_in),
+                        modifier = Modifier
+                            .clip(UiConstants.RoundedCornerShape1)
+                            .clickable(
+                                onClick = {
+                                    onEvent(SignUpScreenEvent.SwitchToSignInScreen)
+                                }
+                            ),
+                        color = ExtendedColorTheme.colorScheme.linkColors
+                    )
                 }
             }
         ) { contentPadding ->

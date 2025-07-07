@@ -18,6 +18,20 @@ val welcomeLoggedIn by story {
     }
 }
 
+// Story for a user who is logged in and has seen the tutorial
+val welcomeLoading by story {
+    AppTheme {
+        WelcomeScreen(
+            state = WelcomeScreenState(
+                isInAccount = null,
+                accountIdFailure = null,
+                hasSeenTutorial = true
+            ),
+            onEvent = {}
+        )
+    }
+}
+
 // Story for a user who is not logged in and has not seen the tutorial
 val welcomeNotLoggedIn by story {
     AppTheme {

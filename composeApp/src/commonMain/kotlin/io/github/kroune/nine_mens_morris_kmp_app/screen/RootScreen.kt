@@ -1,7 +1,9 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -57,12 +61,19 @@ import ninemensmorrisappkmp.composeapp.generated.resources.required_update
 import ninemensmorrisappkmp.composeapp.generated.resources.update
 import org.jetbrains.compose.resources.stringResource
 
+val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
+val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
+
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
     ExperimentalDecomposeApi::class
 )
 @Composable
 fun RootScreen(component: RootComponent) {
+//    ImageLoader.Builder(
+//        LocalPlatformContext.current
+//    )
+//        .build()
     val stackAnimation = stackAnimation<Configuration, RootChild>(
         selector = { child,
                      otherChild,
@@ -95,126 +106,126 @@ fun RootScreen(component: RootComponent) {
                 val childStack: ChildStack<Configuration, RootChild> =
                     component.childStack.subscribeAsState().value
                 SharedTransitionLayout {
-                    com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack<Configuration, RootChild>(
-                        stack = childStack,
-                        modifier = Modifier,
-                        animation = stackAnimation,
-                    ) { child ->
-                        val instance = child.instance
-                        when (instance) {
-                            is RootChild.AppStartAnimationScreenChild -> {
-                                with(instance.component) {
-                                    AppStartAnimationScreen(
-                                        onEvent = { onEvent(it) }
-                                    )
+                    CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+                        com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack(
+                            stack = childStack,
+                            modifier = Modifier,
+                            animation = stackAnimation,
+                        ) { child ->
+                            CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                                val instance = child.instance
+                                when (instance) {
+                                    is RootChild.AppStartAnimationScreenChild -> {
+                                        with(instance.component) {
+                                            AppStartAnimationScreen(
+                                                onEvent = { onEvent(it) }
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.WelcomeScreenChild -> {
+                                        with(instance.component) {
+                                            WelcomeScreen(
+                                                onEvent = { onEvent(it) },
+                                                state = state.collectValue()
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.ViewAccountScreenChild -> {
+                                        with(instance.component) {
+                                            ViewAccountScreen(
+                                                onEvent = { onEvent(it) },
+                                                state = state.collectValue(),
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.ViewOwnAccountScreenChild -> {
+                                        with(instance.component) {
+                                            ViewOwnAccountScreen(
+                                                onEvent = { onEvent(it) },
+                                                state = state.collectValue()
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.SignUpScreenChild -> {
+                                        with(instance.component) {
+                                            SignUpScreen(
+                                                component = state.collectValue(),
+                                                onEvent = { onEvent(it) }
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.SignInScreenChild -> {
+                                        with(instance.component) {
+                                            SignInScreen(
+                                                state = state.collectValue(),
+                                                onEvent = { onEvent(it) }
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.GameWithFriendChild -> {
+                                        with(instance.component) {
+                                            GameWithFriendScreen(
+                                                state = state.collectValue(),
+                                                onEvent = { onEvent(it) }
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.GameWithBotChild -> {
+                                        with(instance.component) {
+                                            GameWithBotScreen(
+                                                state = state.collectValue(),
+                                                onEvent = { onEvent(it) }
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.SearchingForGameChild -> {
+                                        with(instance.component) {
+                                            SearchingForGameScreen(
+                                                state.collectValue()
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.OnlineGameChild -> {
+                                        with(instance.component) {
+                                            OnlineGameScreen(
+                                                state.collectValue(),
+                                                { onEvent(it) }
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.LeaderboardChild -> {
+                                        with(instance.component) {
+                                            LeaderboardScreen(
+                                                state.collectValue(),
+                                                { onEvent(it) },
+                                            )
+                                        }
+                                    }
+
+                                    is RootChild.AboutChild -> {
+                                        with(instance.component) {
+                                            AboutScreen(
+                                                { onEvent(it) },
+                                                state.collectValue()
+                                            )
+                                        }
+                                    }
+                                }
+
+                                BackHandler(instance.component.backHandler) {
+                                    instance.component.onBackPressed()
                                 }
                             }
-
-                            is RootChild.WelcomeScreenChild -> {
-                                with(instance.component) {
-                                    WelcomeScreen(
-                                        onEvent = { onEvent(it) },
-                                        state = state.collectValue()
-                                    )
-                                }
-                            }
-
-                            is RootChild.ViewAccountScreenChild -> {
-                                with(instance.component) {
-                                    ViewAccountScreen(
-                                        onEvent = { onEvent(it) },
-                                        state = state.collectValue(),
-                                        this@SharedTransitionLayout,
-                                        this@ChildStack
-                                    )
-                                }
-                            }
-
-                            is RootChild.ViewOwnAccountScreenChild -> {
-                                with(instance.component) {
-                                    ViewOwnAccountScreen(
-                                        onEvent = { onEvent(it) },
-                                        state = state.collectValue()
-                                    )
-                                }
-                            }
-
-                            is RootChild.SignUpScreenChild -> {
-                                with(instance.component) {
-                                    SignUpScreen(
-                                        component = state.collectValue(),
-                                        onEvent = { onEvent(it) }
-                                    )
-                                }
-                            }
-
-                            is RootChild.SignInScreenChild -> {
-                                with(instance.component) {
-                                    SignInScreen(
-                                        state = state.collectValue(),
-                                        onEvent = { onEvent(it) }
-                                    )
-                                }
-                            }
-
-                            is RootChild.GameWithFriendChild -> {
-                                with(instance.component) {
-                                    GameWithFriendScreen(
-                                        state = state.collectValue(),
-                                        onEvent = { onEvent(it) }
-                                    )
-                                }
-                            }
-
-                            is RootChild.GameWithBotChild -> {
-                                with(instance.component) {
-                                    GameWithBotScreen(
-                                        state = state.collectValue(),
-                                        onEvent = { onEvent(it) }
-                                    )
-                                }
-                            }
-
-                            is RootChild.SearchingForGameChild -> {
-                                with(instance.component) {
-                                    SearchingForGameScreen(
-                                        state.collectValue()
-                                    )
-                                }
-                            }
-
-                            is RootChild.OnlineGameChild -> {
-                                with(instance.component) {
-                                    OnlineGameScreen(
-                                        state.collectValue(),
-                                        { onEvent(it) }
-                                    )
-                                }
-                            }
-
-                            is RootChild.LeaderboardChild -> {
-                                with(instance.component) {
-                                    LeaderboardScreen(
-                                        state.collectValue(),
-                                        { onEvent(it) },
-                                        this@SharedTransitionLayout,
-                                        this@ChildStack
-                                    )
-                                }
-                            }
-
-                            is RootChild.AboutChild -> {
-                                with(instance.component) {
-                                    AboutScreen(
-                                        { onEvent(it) },
-                                        state.collectValue()
-                                    )
-                                }
-                            }
-                        }
-
-                        BackHandler(instance.component.backHandler) {
-                            instance.component.onBackPressed()
                         }
                     }
                     val state = component.state.collectValue()

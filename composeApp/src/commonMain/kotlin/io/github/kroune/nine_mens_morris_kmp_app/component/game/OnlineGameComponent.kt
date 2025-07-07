@@ -1,6 +1,7 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.game
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.ImageBitmap
 import com.arkivanov.decompose.ComponentContext
 import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
@@ -361,9 +362,9 @@ data class OnlineGameScreenState(
 
     val ownAccountLoginResult: LoginByIdApiResponses?,
     val ownAccountRatingResult: RatingByIdApiResponses?,
-    val ownAccountPictureResult: AccountPictureByIdApiResponses?,
+    val ownAccountPictureResult: AccountPictureByIdApiResponses<ImageBitmap>?,
 
     val enemyAccountLoginResult: LoginByIdApiResponses?,
     val enemyAccountRatingResult: RatingByIdApiResponses?,
-    val enemyAccountPictureResult: AccountPictureByIdApiResponses?
+    val enemyAccountPictureResult: AccountPictureByIdApiResponses<ImageBitmap>?
 )

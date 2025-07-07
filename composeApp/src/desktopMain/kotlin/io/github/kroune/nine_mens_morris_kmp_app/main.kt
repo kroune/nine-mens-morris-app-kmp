@@ -9,9 +9,9 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
 import io.github.kroune.nine_mens_morris_kmp_app.di.koinModule
+import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.screen.RootScreen
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.icon

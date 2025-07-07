@@ -1,9 +1,9 @@
 package io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api
 
-sealed interface AccountPictureByIdApiResponses {
-    class Success(val picture: ByteArray): AccountPictureByIdApiResponses
-    class CredentialsError: AccountPictureByIdApiResponses
-    class NetworkError: AccountPictureByIdApiResponses
-    class ServerError: AccountPictureByIdApiResponses
-    class UnknownError: AccountPictureByIdApiResponses
+sealed interface AccountPictureByIdApiResponses<T> {
+    class Success<T>(val picture: T) : AccountPictureByIdApiResponses<T>
+    class CredentialsError<T> : AccountPictureByIdApiResponses<T>
+    class NetworkError<T> : AccountPictureByIdApiResponses<T>
+    class ServerError<T> : AccountPictureByIdApiResponses<T>
+    class UnknownError<T> : AccountPictureByIdApiResponses<T>
 }

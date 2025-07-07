@@ -146,7 +146,8 @@ kotlin {
             api(libs.ninemensmorris)
             implementation(libs.filekit.compose)
             implementation(libs.koin.core)
-//            implementation(compose.components.uiToolingPreview)
+//            implementation(libs.coil.compose)
+//            implementation(libs.coil.network.ktor3)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.cio)
@@ -245,6 +246,11 @@ android {
         }
     }
     buildTypes {
+        getByName("debug") {
+            isProfileable = true
+            isDebuggable = true
+            isMinifyEnabled = false
+        }
         getByName("release") {
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
@@ -282,6 +288,10 @@ android {
             }
         }
     }
+}
+
+compose.resources {
+    publicResClass = true
 }
 
 compose.desktop {

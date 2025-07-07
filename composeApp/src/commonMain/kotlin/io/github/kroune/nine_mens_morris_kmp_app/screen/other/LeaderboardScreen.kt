@@ -1,14 +1,11 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.other
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,16 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderBoardPlayerInfo
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.LeaderboardScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.LeaderboardEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LocalNavAnimatedVisibilityScope
+import io.github.kroune.nine_mens_morris_kmp_app.screen.LocalSharedTransitionScope
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.CustomDrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.leaderboard
 import ninemensmorrisappkmp.composeapp.generated.resources.rating
@@ -44,8 +44,6 @@ import org.jetbrains.compose.resources.stringResource
 fun LeaderboardScreen(
     state: LeaderboardScreenState,
     onEvent: (LeaderboardEvent) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -76,10 +74,8 @@ fun LeaderboardScreen(
                 LeaderboardItem(
                     player = player,
                     onEvent = { onEvent(it) },
-                    snackbarHostState,
-                    index,
-                    sharedTransitionScope,
-                    animatedVisibilityScope
+                    snackbarHostState = snackbarHostState,
+                    index = index,
                 )
             }
         }
@@ -90,13 +86,11 @@ fun LeaderboardScreen(
  * Draws a single item in the leaderboard column
  */
 @Composable
-fun LeaderboardItem(
-    player: LeaderBoardPlayerInfo,
-    onEvent: (LeaderboardEvent) -> Unit,
+inline fun LeaderboardItem(
+    player: LeaderBoardPlayerInfo?,
+    crossinline onEvent: (LeaderboardEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
     index: Int,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Card(
         modifier = Modifier
@@ -108,24 +102,24 @@ fun LeaderboardItem(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            with(sharedTransitionScope) {
+            with(LocalSharedTransitionScope.current!!) {
                 DrawIcon(
                     modifier = Modifier
                         .then(
-                            if (player.accountId != null) {
+                            if (player?.accountId != null) {
                                 val key =
                                     rememberSharedContentState(key = "icon-${player.accountId}")
                                 Modifier
                                     .sharedElement(
                                         key,
-                                        animatedVisibilityScope = animatedVisibilityScope
+                                        animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current!!
                                     )
                             } else
                                 Modifier
                         )
                         .size(80.dp)
                         .padding(10.dp),
-                    pictureByteArray = player.picture,
+                    pictureByteArray = player?.picture?.value,
                     onReload = {
                         onEvent(LeaderboardEvent.ReloadIcon(index))
                     },
@@ -140,59 +134,65 @@ fun LeaderboardItem(
                     .padding(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                with(sharedTransitionScope) {
+                with(LocalSharedTransitionScope.current!!) {
                     DrawName(
                         modifier = Modifier
                             .then(
-                                if (player.accountId != null) {
+                                if (player?.accountId != null) {
                                     val key =
                                         rememberSharedContentState(key = "name-${player.accountId}")
                                     Modifier
                                         .sharedElement(
                                             key,
-                                            animatedVisibilityScope = animatedVisibilityScope
+                                            animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current!!
                                         )
                                 } else
                                     Modifier
-                            )
-                            .fillMaxWidth()
-                            .heightIn(20.dp),
+                            ),
                         onSuccess = {
                             Text(
                                 it,
+                                maxLines = 1,
                                 fontSize = 18.sp
                             )
                         },
-                        accountName = player.loginResult,
+                        accountName = player?.loginResult?.value,
                         onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
+                        placeholderStyle = TextStyle(
+                            fontSize = 18.sp
+                        ),
+                        placeholderText = "some random name 123",
                         snackbarHostState = snackbarHostState
                     )
                 }
-                with(sharedTransitionScope) {
-                    DrawRating(
+                with(LocalSharedTransitionScope.current!!) {
+                    CustomDrawRating(
                         modifier = Modifier
                             .then(
-                                if (player.accountId != null) {
+                                if (player?.accountId != null) {
                                     val key =
                                         rememberSharedContentState(key = "rating-${player.accountId}")
                                     Modifier
                                         .sharedElement(
                                             key,
-                                            animatedVisibilityScope = animatedVisibilityScope
+                                            animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current!!
                                         )
                                 } else
                                     Modifier
-                            )
-                            .fillMaxWidth()
-                            .heightIn(20.dp),
+                            ),
                         onSuccess = {
                             Text(
                                 text = "${stringResource(Res.string.rating)}: $it",
+                                maxLines = 1,
                                 fontWeight = FontWeight.W300
                             )
                         },
-                        accountRating = player.ratingResult,
+                        accountRating = player?.ratingResult?.value,
                         onReload = { onEvent(LeaderboardEvent.ReloadRating(index)) },
+                        placeholderStyle = TextStyle(
+                            fontWeight = FontWeight.W500
+                        ),
+                        placeholderText = "${stringResource(Res.string.rating)}: 12345",
                         snackbarHostState = snackbarHostState
                     )
                 }

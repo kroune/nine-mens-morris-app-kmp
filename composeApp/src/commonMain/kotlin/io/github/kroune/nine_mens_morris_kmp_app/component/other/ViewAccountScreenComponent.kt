@@ -1,5 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
 import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
@@ -195,7 +196,7 @@ data class ViewAccountScreenState(
     val accountLoginResult: LoginByIdApiResponses?,
     val accountRatingResult: RatingByIdApiResponses?,
     val accountCreationDateResult: CreationDateByIdApiResponses?,
-    val accountPictureResult: AccountPictureByIdApiResponses?,
+    val accountPictureResult: AccountPictureByIdApiResponses<ImageBitmap>?,
     val playedGamesListPage: Int,
     val playedGamesList: PastGamesApiResponse<List<PastGamesUiModel>>?,
 )

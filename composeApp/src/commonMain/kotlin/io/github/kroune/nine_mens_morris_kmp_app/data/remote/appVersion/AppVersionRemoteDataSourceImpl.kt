@@ -23,7 +23,7 @@ class AppVersionRemoteDataSourceImpl : AppVersionRemoteDataSourceI {
         return runCatching {
             val request = network.get(route) {
                 parameter("distribution", BuildKonfig.distribution)
-                accept(ContentType.Application.ProtoBuf)
+                accept(ContentType.Application.Json)
             }
             AppLastVersionApiResponse.Success(
                 request.body<Int?>()
@@ -44,7 +44,7 @@ class AppVersionRemoteDataSourceImpl : AppVersionRemoteDataSourceI {
             val request = network.get(route) {
                 parameter("distribution", BuildKonfig.distribution)
                 parameter("version", BuildKonfig.versionInt)
-                accept(ContentType.Application.ProtoBuf)
+                accept(ContentType.Application.Json)
             }
             RequiredVersionApiResponse.Success(
                 request.body()

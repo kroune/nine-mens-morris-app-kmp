@@ -41,4 +41,5 @@ plugins {
 
 include(":composeApp")
 include(":baselineprofile")
-include(":storytale")
+// until storytale update their kotlin version
+//include(":storytale")

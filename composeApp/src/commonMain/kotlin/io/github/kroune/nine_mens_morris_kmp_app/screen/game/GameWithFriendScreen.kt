@@ -1,11 +1,13 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.game
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,15 +82,21 @@ fun GameWithFriendScreen(
                     onEvent(GameWithFriendScreenEvent.OnPieceClick(it))
                 },
             )
-            RenderGameAnalyzeScreen(
-                modifier = Modifier
+            Box(
+                Modifier
                     .padding(
                         horizontal = 10.dp, vertical = 10.dp
-                    ),
-                positions = state.gameAnalyzePositions,
-                depth = state.depth,
-                onEvent = { onEvent(it) }
-            )
+                    )
+                    .wrapContentWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                RenderGameAnalyzeScreen(
+                    modifier = Modifier,
+                    positions = state.gameAnalyzePositions,
+                    depth = state.depth,
+                    onEvent = { onEvent(it) }
+                )
+            }
         }
         Column(
             modifier = Modifier

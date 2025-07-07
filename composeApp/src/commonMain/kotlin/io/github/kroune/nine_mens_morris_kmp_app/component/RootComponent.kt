@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.component.inject
 
 @OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
@@ -341,7 +342,7 @@ class RootComponent(
                         {
                             popWithRootFallback(config.customAnimation)
                         },
-                        accountInfoRepository = get(),
+                        accountInfoRepository = inject(),
                         context
                     )
                 )

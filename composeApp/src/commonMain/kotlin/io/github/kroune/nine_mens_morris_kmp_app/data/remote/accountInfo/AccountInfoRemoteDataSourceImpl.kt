@@ -155,7 +155,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
     override suspend fun getAccountPictureById(
         id: Long,
         jwtToken: String
-    ): AccountPictureByIdApiResponses {
+    ): AccountPictureByIdApiResponses<ByteArray> {
         val route = httpApi {
             appendPathSegments("user", "get-picture-by-id")
         }
@@ -175,7 +175,7 @@ class AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    private suspend fun accountPictureByIdResult(request: HttpResponse): AccountPictureByIdApiResponses {
+    private suspend fun accountPictureByIdResult(request: HttpResponse): AccountPictureByIdApiResponses<ByteArray> {
         return when (request.status) {
             HttpStatusCode.Forbidden -> {
                 AccountPictureByIdApiResponses.CredentialsError()

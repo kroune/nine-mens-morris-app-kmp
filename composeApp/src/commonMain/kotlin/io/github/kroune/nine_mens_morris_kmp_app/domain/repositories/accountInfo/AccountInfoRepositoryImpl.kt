@@ -12,10 +12,13 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.UploadPictu
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
 
 class AccountInfoRepositoryImpl(
-    private val accountIdLocalDataSource: AccountIdLocalDataSourceI,
-    private val accountInfoRemoteDataSource: AccountInfoRemoteDataSourceI,
-    private val jwtTokenRepository: JwtTokenRepositoryI,
+    private val _accountIdLocalDataSource: Lazy<AccountIdLocalDataSourceI>,
+    private val _accountInfoRemoteDataSource: Lazy<AccountInfoRemoteDataSourceI>,
+    private val _jwtTokenRepository: Lazy<JwtTokenRepositoryI>,
 ) : AccountInfoRepositoryI {
+    private val accountIdLocalDataSource by _accountIdLocalDataSource
+    private val accountInfoRemoteDataSource by _accountInfoRemoteDataSource
+    private val jwtTokenRepository by _jwtTokenRepository
 
     override suspend fun getAccountRatingById(id: Long): RatingByIdApiResponses {
         val jwtToken = jwtTokenRepository.getJwtToken()!!
@@ -32,7 +35,7 @@ class AccountInfoRepositoryImpl(
         return accountInfoRemoteDataSource.getAccountLoginById(id, jwtToken)
     }
 
-    override suspend fun getAccountPictureById(id: Long): AccountPictureByIdApiResponses {
+    override suspend fun getAccountPictureById(id: Long): AccountPictureByIdApiResponses<ByteArray> {
         val jwtToken = jwtTokenRepository.getJwtToken()!!
         return accountInfoRemoteDataSource.getAccountPictureById(id, jwtToken)
     }

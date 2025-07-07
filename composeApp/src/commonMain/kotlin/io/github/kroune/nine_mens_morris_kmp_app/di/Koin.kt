@@ -31,7 +31,7 @@ val koinModule = module {
 
     single<AccountInfoRemoteDataSourceI> { AccountInfoRemoteDataSourceImpl() }
     single<AccountInfoRepositoryI> {
-        AccountInfoRepositoryImpl(get(), get(), get())
+        AccountInfoRepositoryImpl(inject(), inject(), inject())
     }
 
     single<JwtTokenRemoteDataSourceI> { JwtTokenRemoteDataSourceImpl() }

@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -16,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kroune.nineMensMorrisLib.Position
@@ -23,15 +23,15 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPict
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.OnlineGameScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.CustomDrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
 
 @Composable
 fun PlayerCard(
     playerName: LoginByIdApiResponses?,
-    pictureByteArray: AccountPictureByIdApiResponses?,
+    pictureByteArray: AccountPictureByIdApiResponses<ImageBitmap>?,
     isGreen: Boolean,
     rating: RatingByIdApiResponses?,
     pos: Position,
@@ -70,14 +70,14 @@ fun PlayerCard(
                 verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
             ) {
                 DrawName(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp),
+                    modifier = Modifier,
                     onSuccess = {
                         Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     },
                     accountName = playerName,
                     onReload = { onEvent(OnlineGameScreenEvent.ReloadName(ownAccount)) },
+                    placeholderStyle = TextStyle(),
+                    placeholderText = "some random name 123",
                     snackbarHostState = snackbarHostState
                 )
 
@@ -91,9 +91,10 @@ fun PlayerCard(
                     shouldMove,
                     if (isGreen) pos.freeGreenPieces else pos.freeBluePieces
                 )
-                DrawRating(
+                CustomDrawRating(
                     accountRating = rating,
                     onReload = { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
+                    placeholderText = "12345",
                     snackbarHostState = snackbarHostState
                 )
             }

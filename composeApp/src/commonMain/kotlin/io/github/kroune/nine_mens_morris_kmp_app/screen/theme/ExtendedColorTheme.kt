@@ -1,6 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.theme
 
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -12,12 +11,7 @@ import androidx.compose.ui.unit.Dp
 
 fun lightExtendedColors(): ExtendedColorScheme {
     return ExtendedColorScheme(
-        linkColors = ButtonColors(
-            containerColor = Color.Unspecified,
-            contentColor = Color(85, 104, 218),
-            disabledContainerColor = Color.Unspecified,
-            disabledContentColor = Color(71, 86, 177)
-        ),
+        linkColors = Color(85, 104, 218),
         shimmerColor = Color.DarkGray,
         animationScreenBackground = Color.White,
         animationScreenForeground = Color.DarkGray,
@@ -28,12 +22,7 @@ fun lightExtendedColors(): ExtendedColorScheme {
 
 fun darkExtendedColors(): ExtendedColorScheme {
     return ExtendedColorScheme(
-        linkColors = ButtonColors(
-            containerColor = Color.Unspecified,
-            contentColor = Color(79, 120, 255),
-            disabledContainerColor = Color.Unspecified,
-            disabledContentColor = Color(37, 50, 142)
-        ),
+        linkColors = Color(79, 120, 255),
         shimmerColor = Color.LightGray,
         animationScreenBackground = Color.Gray,
         animationScreenForeground = Color.Black,
@@ -44,7 +33,7 @@ fun darkExtendedColors(): ExtendedColorScheme {
 
 @Immutable
 data class ExtendedColorScheme(
-    val linkColors: ButtonColors,
+    val linkColors: Color,
     val shimmerColor: Color,
     val animationScreenBackground: Color,
     val animationScreenForeground: Color,

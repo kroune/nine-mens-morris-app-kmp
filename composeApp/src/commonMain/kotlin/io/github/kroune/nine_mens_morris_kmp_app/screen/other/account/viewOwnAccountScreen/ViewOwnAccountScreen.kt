@@ -3,7 +3,6 @@ package io.github.kroune.nine_mens_morris_kmp_app.screen.other.account.viewOwnAc
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -32,10 +33,10 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.Vie
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
+import io.github.kroune.nine_mens_morris_kmp_app.screen.common.CustomDrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
-import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
 import io.github.kroune.nine_mens_morris_kmp_app.screen.other.account.DrawPlayedGameItem
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
@@ -50,8 +51,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ViewOwnAccountScreen(
+    state: ViewOwnAccountScreenState,
     onEvent: (ViewOwnAccountScreenEvent) -> Unit,
-    state: ViewOwnAccountScreenState
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -79,24 +80,26 @@ fun ViewOwnAccountScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = padding2)
-                .padding(top = padding2),
-            horizontalAlignment = Alignment.Start
-        ) {
-            item {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    BoxWithConstraints {
-                        val size = min(this.maxWidth, this.maxHeight) / 2
+        BoxWithConstraints {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = padding2)
+                    .padding(top = padding2),
+                horizontalAlignment = Alignment.Start
+            ) {
+                item {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        val size = min(
+                            this@BoxWithConstraints.maxWidth,
+                            this@BoxWithConstraints.maxHeight
+                        ) / 2
                         DrawIcon(
                             Modifier
-                                .size(size)
-                                .aspectRatio(1f, true),
+                                .size(size),
                             pictureByteArray = state.accountPictureResult,
                             onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadIcon) },
                             onClick = {},
@@ -105,118 +108,122 @@ fun ViewOwnAccountScreen(
                     }
                     DrawName(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
+                            .clip(RoundedCornerShape3),
                         onSuccess = {
                             Text(
                                 it,
                                 fontSize = 30.sp,
+                                maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         },
                         accountName = state.accountLoginResult,
                         onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadName) },
+                        placeholderStyle = TextStyle(
+                            fontSize = 30.sp
+                        ),
+                        placeholderText = "some random name 123",
                         snackbarHostState = snackbarHostState
                     )
                 }
-            }
-            item {
-                DrawRating(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(30.dp),
-                    onSuccess = {
-                        Text(
-                            "${stringResource(Res.string.rating)}: $it",
-                            fontSize = 20.sp
-                        )
-                    },
-                    accountRating = state.accountRatingResult,
-                    onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadRating) },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-            item {
-                DrawAccountCreationDate(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(30.dp),
-                    onSuccess = { (first, second, third) ->
-                        Text(
-                            "$first.$second.$third",
-                            fontSize = 20.sp
-                        )
-                    },
-                    accountCreationDate = state.accountCreationDateResult,
-                    onReload = {
-                        onEvent(ViewOwnAccountScreenEvent.ReloadCreationDate)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-            item {
-                val launcher = rememberFilePickerLauncher(
-                    type = PickerType.Image,
-                    mode = PickerMode.Single
-                ) { file ->
-                    if (file == null) {
-                        return@rememberFilePickerLauncher
-                    }
-                    scope.launch {
-                        onEvent(ViewOwnAccountScreenEvent.UploadNewPicture(file.readBytes()))
-                    }
+                item {
+                    CustomDrawRating(
+                        modifier = Modifier,
+                        onSuccess = {
+                            Text(
+                                "${stringResource(Res.string.rating)}: $it",
+                                fontSize = 20.sp
+                            )
+                        },
+                        placeholderText = "${stringResource(Res.string.rating)}: 12345",
+                        accountRating = state.accountRatingResult,
+                        onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadRating) },
+                        snackbarHostState = snackbarHostState
+                    )
                 }
-                Button(
-                    { launcher.launch() },
-                    shape = RoundedCornerShape3
-                ) {
-                    Text(stringResource(Res.string.upload_picture))
+                item {
+                    DrawAccountCreationDate(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .height(30.dp),
+                        onSuccess = { (first, second, third) ->
+                            Text(
+                                "$first.$second.$third",
+                                fontSize = 20.sp
+                            )
+                        },
+                        accountCreationDate = state.accountCreationDateResult,
+                        onReload = {
+                            onEvent(ViewOwnAccountScreenEvent.ReloadCreationDate)
+                        },
+                        placeholderText = "11.11.1111",
+                        snackbarHostState = snackbarHostState
+                    )
                 }
-            }
-
-            item {
-                Card(
-                    shape = UiConstants.RoundedCornerShape1
-                ) {
-                    Row {
-                        Text(
-                            stringResource(Res.string.past_games_players),
-                            modifier = Modifier
-                                .weight(1f)
-                        )
+                item {
+                    val launcher = rememberFilePickerLauncher(
+                        type = PickerType.Image,
+                        mode = PickerMode.Single
+                    ) { file ->
+                        if (file == null) {
+                            return@rememberFilePickerLauncher
+                        }
+                        scope.launch {
+                            onEvent(ViewOwnAccountScreenEvent.UploadNewPicture(file.readBytes()))
+                        }
                     }
-                }
-            }
-            when (state.playedGamesList) {
-                is PastGamesApiResponse.CredentialsError -> TODO()
-                is PastGamesApiResponse.NetworkError -> TODO()
-                is PastGamesApiResponse.ServerError -> TODO()
-                is PastGamesApiResponse.Success -> {
-                    items(
-                        state.playedGamesList.playedGames
+                    Button(
+                        { launcher.launch() },
+                        shape = RoundedCornerShape3
                     ) {
-                        DrawPlayedGameItem(
-                            it,
-                            {
-                                onEvent(
-                                    ViewOwnAccountScreenEvent.NavigateToViewPastGame(
-                                        it.gameId
-                                    )
-                                )
-                            }
-                        )
+                        Text(stringResource(Res.string.upload_picture))
                     }
                 }
 
-                is PastGamesApiResponse.UnknownError -> TODO()
-                null -> {
+                item {
+                    Card(
+                        shape = UiConstants.RoundedCornerShape1
+                    ) {
+                        Row {
+                            Text(
+                                stringResource(Res.string.past_games_players),
+                                modifier = Modifier
+                                    .weight(1f)
+                            )
+                        }
+                    }
+                }
+                when (state.playedGamesList) {
+                    is PastGamesApiResponse.CredentialsError -> TODO()
+                    is PastGamesApiResponse.NetworkError -> TODO()
+                    is PastGamesApiResponse.ServerError -> TODO()
+                    is PastGamesApiResponse.Success -> {
+                        items(
+                            state.playedGamesList.playedGames
+                        ) {
+                            DrawPlayedGameItem(
+                                it,
+                                {
+                                    onEvent(
+                                        ViewOwnAccountScreenEvent.NavigateToViewPastGame(
+                                            it.gameId
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
 
+                    is PastGamesApiResponse.UnknownError -> TODO()
+                    null -> {
+
+                    }
                 }
             }
+            HandleOwnAccountScreenError(
+                state.uploadingNewPictureResult,
+                snackbarHostState
+            )
         }
-        HandleOwnAccountScreenError(
-            state.uploadingNewPictureResult,
-            snackbarHostState
-        )
     }
 }
