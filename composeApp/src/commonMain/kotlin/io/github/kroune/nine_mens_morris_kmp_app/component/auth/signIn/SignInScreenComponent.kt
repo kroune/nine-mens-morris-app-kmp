@@ -80,7 +80,7 @@ class SignInScreenComponent(
                 onNavigationToSignUpScreen()
             }
 
-            SignInScreenEvent.Back -> {
+            SignInScreenEvent.NavigateBack -> {
                 onNavigationBack()
             }
 
@@ -105,7 +105,7 @@ class SignInScreenComponent(
     }
 
     override fun onBackPressed() {
-        onEvent(SignInScreenEvent.Back)
+        onEvent(SignInScreenEvent.NavigateBack)
     }
 }
 

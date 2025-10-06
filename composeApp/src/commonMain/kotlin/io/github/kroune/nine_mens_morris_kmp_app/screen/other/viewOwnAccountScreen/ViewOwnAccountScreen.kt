@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -59,6 +60,7 @@ fun ViewOwnAccountScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .safeDrawingPadding()
                     .padding(bottom = padding2),
                 contentAlignment = Alignment.BottomCenter
             ) {
@@ -72,10 +74,10 @@ fun ViewOwnAccountScreen(
                 }
             }
         }
-    ) { padding ->
+    ) { contentPadding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .padding(contentPadding)
                 .padding(horizontal = padding2)
                 .padding(top = padding2),
             horizontalAlignment = Alignment.Start

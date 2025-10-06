@@ -10,5 +10,5 @@ sealed interface GameWithFriendScreenEvent {
     data class OnPieceClick(val index: Int): GameWithFriendScreenEvent
     data object Undo: GameWithFriendScreenEvent
     data object Redo: GameWithFriendScreenEvent
-    data object Back: GameWithFriendScreenEvent
+    data object NavigateBack: GameWithFriendScreenEvent
 }

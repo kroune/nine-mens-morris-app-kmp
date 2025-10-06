@@ -50,14 +50,13 @@ fun LeaderboardScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { contentPadding ->
         LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .fillMaxSize(),
+            contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
@@ -73,12 +72,11 @@ fun LeaderboardScreen(
             }
 
             itemsIndexed(state.leaderboard) { index, player ->
-                LeaderboardItem(
+                sharedTransitionScope.LeaderboardItem(
                     player = player,
                     onEvent = { onEvent(it) },
                     snackbarHostState,
                     index,
-                    sharedTransitionScope,
                     animatedVisibilityScope
                 )
             }
@@ -86,116 +84,92 @@ fun LeaderboardScreen(
     }
 }
 
-/**
- * Draws a single item in the leaderboard column
- */
 @Composable
-fun LeaderboardItem(
+private fun SharedTransitionScope.LeaderboardItem(
     player: LeaderBoardPlayerInfo,
     onEvent: (LeaderboardEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
     index: Int,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape3,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
         elevation = CardDefaults.elevatedCardElevation(10.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            with(sharedTransitionScope) {
-                DrawIcon(
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            DrawIcon(
+                modifier = Modifier
+                    .then(
+                        if (player.accountId != null) {
+                            Modifier.sharedElement(
+                                rememberSharedContentState(key = "icon-${player.accountId}"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        } else
+                            Modifier
+                    )
+                    .size(80.dp)
+                    .padding(10.dp),
+                pictureByteArray = player.picture,
+                onReload = { onEvent(LeaderboardEvent.ReloadIcon(index)) },
+                onClick = { onEvent(LeaderboardEvent.NavigateToAccountView(index)) },
+                snackbarHostState = snackbarHostState
+            )
+
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                DrawName(
                     modifier = Modifier
                         .then(
                             if (player.accountId != null) {
-                                val key =
-                                    rememberSharedContentState(key = "icon-${player.accountId}")
+                                Modifier.sharedElement(
+                                    rememberSharedContentState(key = "name-${player.accountId}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                            } else {
                                 Modifier
-                                    .sharedElement(
-                                        key,
-                                        animatedVisibilityScope = animatedVisibilityScope
-                                    )
-                            } else
-                                Modifier
+                            }
                         )
-                        .size(80.dp)
-                        .padding(10.dp),
-                    pictureByteArray = player.picture,
-                    onReload = {
-                        onEvent(LeaderboardEvent.ReloadIcon(index))
+                        .fillMaxWidth()
+                        .heightIn(20.dp),
+                    onSuccess = {
+                        Text(
+                            it,
+                            fontSize = 18.sp
+                        )
                     },
-                    onClick = {
-                        onEvent(LeaderboardEvent.NavigateToAccountView(index))
-                    },
+                    accountName = player.loginResult,
+                    onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
                     snackbarHostState = snackbarHostState
                 )
-            }
-            Column(
-                modifier = Modifier
-                    .padding(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                with(sharedTransitionScope) {
-                    DrawName(
-                        modifier = Modifier
-                            .then(
-                                if (player.accountId != null) {
-                                    val key =
-                                        rememberSharedContentState(key = "name-${player.accountId}")
-                                    Modifier
-                                        .sharedElement(
-                                            key,
-                                            animatedVisibilityScope = animatedVisibilityScope
-                                        )
-                                } else
-                                    Modifier
-                            )
-                            .fillMaxWidth()
-                            .heightIn(20.dp),
-                        onSuccess = {
-                            Text(
-                                it,
-                                fontSize = 18.sp
-                            )
-                        },
-                        accountName = player.loginResult,
-                        onReload = { onEvent(LeaderboardEvent.ReloadName(index)) },
-                        snackbarHostState = snackbarHostState
-                    )
-                }
-                with(sharedTransitionScope) {
-                    DrawRating(
-                        modifier = Modifier
-                            .then(
-                                if (player.accountId != null) {
-                                    val key =
-                                        rememberSharedContentState(key = "rating-${player.accountId}")
-                                    Modifier
-                                        .sharedElement(
-                                            key,
-                                            animatedVisibilityScope = animatedVisibilityScope
-                                        )
-                                } else
-                                    Modifier
-                            )
-                            .fillMaxWidth()
-                            .heightIn(20.dp),
-                        onSuccess = {
-                            Text(
-                                text = "${stringResource(Res.string.rating)}: $it",
-                                fontWeight = FontWeight.W300
-                            )
-                        },
-                        accountRating = player.ratingResult,
-                        onReload = { onEvent(LeaderboardEvent.ReloadRating(index)) },
-                        snackbarHostState = snackbarHostState
-                    )
-                }
+                DrawRating(
+                    modifier = Modifier
+                        .then(
+                            if (player.accountId != null) {
+                                Modifier.sharedElement(
+                                    rememberSharedContentState(key = "rating-${player.accountId}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                            } else {
+                                Modifier
+                            }
+                        )
+                        .fillMaxWidth()
+                        .heightIn(20.dp),
+                    onSuccess = {
+                        Text(
+                            text = "${stringResource(Res.string.rating)}: $it",
+                            fontWeight = FontWeight.W300
+                        )
+                    },
+                    accountRating = player.ratingResult,
+                    onReload = { onEvent(LeaderboardEvent.ReloadRating(index)) },
+                    snackbarHostState = snackbarHostState
+                )
             }
         }
     }

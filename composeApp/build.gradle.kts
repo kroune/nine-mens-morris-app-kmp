@@ -6,11 +6,19 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsSourceMapNamesPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import org.jetbrains.kotlin.konan.target.Family
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-val appVersion: String = "1.0.1"
-val appVersionInt: Int = 101
+object AppInfo {
+    const val appVersion: String = "1.0.1"
+    const val appVersionInt: Int = 101
+    const val licenseType = "GPL-3.0"
+    const val description = "Implementation of a table game called <Nine mens morris>"
+    const val homePage = "https://github.com/kroune/nine-mens-morris-lib-kmp"
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -21,6 +29,7 @@ plugins {
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.baseline.profile)
     alias(libs.plugins.build.konfig)
+    alias(libs.plugins.kotlinCocoapods)
 //    alias(libs.plugins.compose.compiler.report.generator)
 //    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
 //    alias(libs.plugins.storytale)
@@ -38,8 +47,8 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(STRING, "distribution", "")
-        buildConfigField(STRING, "version", appVersion)
-        buildConfigField(INT, "versionInt", appVersionInt.toString())
+        buildConfigField(STRING, "version", AppInfo.appVersion)
+        buildConfigField(INT, "versionInt", AppInfo.appVersionInt.toString())
     }
     targetConfigs {
         create("android") {
@@ -67,6 +76,24 @@ buildkonfig {
 }
 
 kotlin {
+    cocoapods {
+        version = AppInfo.appVersion
+        license = AppInfo.licenseType
+        summary = AppInfo.description
+        homepage = AppInfo.homePage
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+            export("com.arkivanov.decompose:decompose:3.3.0")
+            export("com.arkivanov.essenty:lifecycle:2.5.0")
+
+            // Optional, only if you need state preservation on Darwin (Apple) targets
+            export("com.arkivanov.essenty:state-keeper:2.5.0")
+        }
+        podfile = project.file("../iosApp/podfile")
+        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+    }
     compilerOptions {
         freeCompilerArgs.add("-Xnon-local-break-continue")
         freeCompilerArgs.add("-Xexpect-actual-classes")
@@ -113,16 +140,9 @@ kotlin {
 
     jvm("desktop")
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         val desktopMain by getting
@@ -133,7 +153,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            implementation(libs.decompose)
+            api(libs.decompose)
             implementation(libs.decompose.animations)
 
             implementation(libs.kotlinx.serialization.json)
@@ -151,7 +171,7 @@ kotlin {
 //            implementation(compose.components.uiToolingPreview)
         }
         iosMain.dependencies {
-            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.darwin)
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
@@ -222,8 +242,8 @@ android {
         applicationId = "io.github.kroune.nine_mens_morris"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = appVersionInt
-        versionName = appVersion
+        versionCode = AppInfo.appVersionInt
+        versionName = AppInfo.appVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
@@ -233,23 +253,23 @@ android {
         }
     }
     signingConfigs {
-        create("release") {
-            keyAlias = "release"
-            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
-                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
-            } else {
-                storeFile = file("/home/olowo/secureKeystore.jks")
-                storePassword = file("/home/olowo/secureSignPass").readText().trim()
-                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
-            }
-        }
+//        create("release") {
+//            keyAlias = "release"
+//            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
+//                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
+//                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+//                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+//            } else {
+//                storeFile = file("/home/olowo/secureKeystore.jks")
+//                storePassword = file("/home/olowo/secureSignPass").readText().trim()
+//                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
+//            }
+//        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
+//            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -305,7 +325,7 @@ compose.desktop {
             linux {
                 debMaintainer = "kr0ne@tuta.io"
                 appCategory = "Amusements/Games"
-                rpmLicenseType = "GPL-3.0"
+                rpmLicenseType = AppInfo.licenseType
                 modules("jdk.security.auth")
                 iconFile = project.file("icons/icon.png")
             }
@@ -322,7 +342,7 @@ compose.desktop {
                 TargetFormat.Msi, TargetFormat.Exe
             )
             packageName = "NineMensMorris"
-            packageVersion = appVersion
+            packageVersion = AppInfo.appVersion
             description = "Implementation of a table game called <Nine mens morris>"
             vendor = "kroune"
             copyright = "© 2024 Kroune. All rights reserved."

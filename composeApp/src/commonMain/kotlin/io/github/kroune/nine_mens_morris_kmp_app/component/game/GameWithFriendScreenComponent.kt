@@ -151,14 +151,14 @@ class GameWithFriendScreenComponent(
                 }
             }
 
-            GameWithFriendScreenEvent.Back -> {
+            GameWithFriendScreenEvent.NavigateBack -> {
                 onNavigationBack()
             }
         }
     }
 
     override fun onBackPressed() {
-        onEvent(GameWithFriendScreenEvent.Back)
+        onEvent(GameWithFriendScreenEvent.NavigateBack)
     }
 }
 

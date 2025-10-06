@@ -42,15 +42,12 @@ import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
-    @Suppress("LocalVariableName")
-    _appVersionRepository: AppVersionRepositoryI? = null,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, WebNavigationOwner, KoinComponent {
-    private val appVersionRepository: AppVersionRepositoryI =
-        _appVersionRepository ?: get<AppVersionRepositoryI>()
+    private val appVersionRepository: AppVersionRepositoryI = get<AppVersionRepositoryI>()
     private val componentScope = componentCoroutineScope()
 
-    private val navigation: StackNavigation<Configuration> = StackNavigation<Configuration>()
+    private val navigation: StackNavigation<Configuration> = StackNavigation()
 
     val childStack = childStack(
         source = navigation,

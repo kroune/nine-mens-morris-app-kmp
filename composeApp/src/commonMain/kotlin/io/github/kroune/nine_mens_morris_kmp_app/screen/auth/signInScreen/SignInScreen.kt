@@ -4,13 +4,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -28,10 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.signIn.SignInScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.auth.SignInScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.WelcomeScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation1
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.close
 import ninemensmorrisappkmp.composeapp.generated.resources.invalid_login
 import ninemensmorrisappkmp.composeapp.generated.resources.invalid_password
 import ninemensmorrisappkmp.composeapp.generated.resources.login
@@ -54,9 +62,26 @@ fun SignInScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
+        topBar = {
+            IconButton(
+                {
+                    onEvent(SignInScreenEvent.NavigateBack)
+                },
+                modifier = Modifier
+                    .safeDrawingPadding()
+            ) {
+                Icon(
+                    painterResource(Res.drawable.close),
+                    "close button",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        },
         bottomBar = {
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth()
+                    .safeDrawingPadding(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
