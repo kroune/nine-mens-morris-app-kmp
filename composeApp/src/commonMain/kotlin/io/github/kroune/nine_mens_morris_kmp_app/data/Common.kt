@@ -63,7 +63,7 @@ val network = HttpClient {
  * The server's address
  */
 val serverUrl
-    get() = URLBuilder(host = "nine-men-s-morris.me")
+    get() = URLBuilder(host = "kroune.tech")
 
 /**
  * The API endpoint for user-related operations.

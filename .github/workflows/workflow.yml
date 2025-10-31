@@ -308,7 +308,7 @@ jobs:
 #            PLATFORM_NAME=$(echo $FILE | cut -d "-" -f 2)
 #            echo "Compressing file for $PLATFORM_NAME, file - $FILE"
 #            7z a -mx=9 ../$FILE.7z $FILE
-#            curl -v --connect-timeout 30 -m 300 -X POST -T ../$FILE.7z https://nine-men-s-morris.me/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
+#            curl -v --connect-timeout 30 -m 300 -X POST -T ../$FILE.7z https://kroune.tech/artifacts-service/upload?auth_token=${{ secrets.AUTH_TOKEN }}\&type=Testing\&platform=$PLATFORM_NAME\&commit=${{ github.event.head_commit.id }}\&branch=${{ github.ref_name }}
 #          done
 #
 
