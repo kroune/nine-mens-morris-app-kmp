@@ -103,12 +103,15 @@ fun TutorialScreen(
             return 0f
         }
     }
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+    ) {
         Row(
             modifier = Modifier
                 .height(20.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             IconButton(onClick = {
                 scope.launch {
@@ -119,8 +122,8 @@ fun TutorialScreen(
             }) {
                 Icon(
                     painter = painterResource(Res.drawable.left_arrow),
-                    "to the left",
-                    modifier = Modifier.alpha(0.5f)
+                    contentDescription = "to the left",
+                    modifier = Modifier.alpha(0.5f),
                 )
             }
             IconButton(

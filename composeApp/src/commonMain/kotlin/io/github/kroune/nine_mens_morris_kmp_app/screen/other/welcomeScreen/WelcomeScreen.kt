@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -87,8 +88,7 @@ fun WelcomeScreen(
     val topScreen = remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             WelcomeScreenBottomBar(
                 state,
@@ -99,9 +99,8 @@ fun WelcomeScreen(
                 topScreen
             )
         },
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        contentWindowInsets = WindowInsets()
     ) { padding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -149,9 +148,7 @@ fun WelcomeScreen(
             ) {
                 RenderMainScreen(
                     state,
-                    {
-                        onEvent(it)
-                    },
+                    { onEvent(it) },
                     snackbarHostState,
                     modifier = Modifier
                         .requiredHeight(this@BoxWithConstraints.maxHeight)
@@ -165,7 +162,7 @@ fun WelcomeScreen(
             }
             HandleWelcomeScreenError(
                 state.accountIdFailure,
-                snackbarHostState
+                snackbarHostState,
             )
         }
     }
@@ -304,17 +301,17 @@ fun RenderMainScreen(
     state: WelcomeScreenState,
     onEvent: (WelcomeScreenEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
         IconButton(
             {
                 onEvent(WelcomeScreenEvent.NavigateBack)
             },
-            modifier = Modifier
         ) {
             Icon(
                 painterResource(Res.drawable.close),
@@ -323,8 +320,7 @@ fun RenderMainScreen(
             )
         }
         BoxWithConstraints(
-            modifier = Modifier
-                .align(Alignment.TopCenter),
+            modifier = Modifier.align(Alignment.TopCenter),
         ) {
             val spacing = this.maxHeight * 0.05f
             Column(
@@ -340,9 +336,7 @@ fun RenderMainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally),
-                    onClick = {
-                        onEvent(WelcomeScreenEvent.NavigateToGameWithFriend)
-                    },
+                    onClick = { onEvent(WelcomeScreenEvent.NavigateToGameWithFriend) },
                     shape = RoundedCornerShape(5.dp),
                 ) {
                     Text(
@@ -355,9 +349,7 @@ fun RenderMainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally),
-                    onClick = {
-                        onEvent(WelcomeScreenEvent.NavigateToGameWithBot)
-                    },
+                    onClick = { onEvent(WelcomeScreenEvent.NavigateToGameWithBot) },
                     shape = RoundedCornerShape(5.dp),
                 ) {
                     Text(
@@ -409,7 +401,7 @@ fun RenderMainScreen(
                     Text(
                         modifier = Modifier.padding(10.dp),
                         text = stringResource(Res.string.leaderboard),
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
                     )
                 }
             }
