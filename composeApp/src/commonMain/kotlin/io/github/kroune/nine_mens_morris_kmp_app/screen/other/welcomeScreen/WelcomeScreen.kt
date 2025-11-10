@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -104,6 +105,7 @@ fun WelcomeScreen(
     ) { padding ->
         BoxWithConstraints(
             modifier = Modifier
+                .padding(padding)
                 .fillMaxSize(),
         ) {
             // show that this screen can be scrolled
@@ -265,7 +267,7 @@ private fun WelcomeScreenBottomBar(
                         } else {
                             scrollState.maxValue
                         },
-                        animationSpec = tween(durationMillis = 1000000, easing = LinearEasing)
+                        animationSpec = tween(durationMillis = 700, easing = LinearEasing)
                     )
                 }
             },
@@ -305,13 +307,14 @@ fun RenderMainScreen(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    Box {
+    Box(
+        modifier = modifier,
+    ) {
         IconButton(
             {
                 onEvent(WelcomeScreenEvent.NavigateBack)
             },
             modifier = Modifier
-                .safeDrawingPadding()
         ) {
             Icon(
                 painterResource(Res.drawable.close),
@@ -320,15 +323,14 @@ fun RenderMainScreen(
             )
         }
         BoxWithConstraints(
-            modifier,
-            contentAlignment = Alignment.TopCenter
+            modifier = Modifier
+                .align(Alignment.TopCenter),
         ) {
             val spacing = this.maxHeight * 0.05f
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(IntrinsicSize.Max)
-                    .windowInsetsPadding(WindowInsets.safeDrawing),
+                    .width(IntrinsicSize.Max),
                 verticalArrangement = Arrangement.spacedBy(
                     spacing, Alignment.CenterVertically,
                 ),

@@ -11,6 +11,8 @@ class GameBoardUseCase(
      */
     private val getPosition: () -> Position,
 
+    private val getSelectedButton: () -> Int?,
+
     private val onPositionChange: (Position) -> Unit,
     /**
      * stores all pieces which can be moved (used for highlighting)
@@ -28,8 +30,6 @@ class GameBoardUseCase(
      * used for storing info of the previous (valid one) clicked button
      */
     private val onSelectedButtonUpdate: (Int?) -> Unit = {},
-
-    private val getSelectedButton: () -> Int?,
     /**
      * what should happen on game end
      */

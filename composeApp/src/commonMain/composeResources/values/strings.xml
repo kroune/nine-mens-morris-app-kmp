@@ -26,8 +26,7 @@
     <string name="searching_for_game">Searching for game...</string>
     <string name="game_expected_waiting_time">expected waiting time:</string>
     <string name="retry">retry</string>
-    <string name="tutorial_indicator_piece_count">Each circle at the top shows how many pieces of the following color aren't placed yet</string>
-    <string name="tutorial_indicator_piece_move_turn">Circle size and opacity indicates whose turn it is</string>
+    <string name="tutorial_indicator_piece">Each circle at the top shows how many pieces of the following color aren't placed yet \n Circle size and opacity indicates whose turn it is</string>
     <string name="tutorial_lose_condition">You lose if you have less than 3 pieces (including the ones you can place)</string>
     <string name="tutorial_placement_condition">If you have any pieces left you can place them in any empty cell</string>
     <string name="tutorial_placement_highlighting">Possible moves are highlighted</string>

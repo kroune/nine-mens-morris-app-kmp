@@ -83,7 +83,7 @@ fun TutorialScreen(
     val currentScreenIndex = remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
 
-    class CustomFlingBehaviour : FlingBehavior {
+    val flingBehaviour = object : FlingBehavior {
         override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
             val scrollWidth = listState.layoutInfo.viewportSize.width
             when {
@@ -103,10 +103,7 @@ fun TutorialScreen(
             return 0f
         }
     }
-    Column(
-        modifier = modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-    ) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .height(20.dp)
@@ -121,19 +118,23 @@ fun TutorialScreen(
                 }
             }) {
                 Icon(
-                    painter = painterResource(Res.drawable.left_arrow), "to the left",
+                    painter = painterResource(Res.drawable.left_arrow),
+                    "to the left",
                     modifier = Modifier.alpha(0.5f)
                 )
             }
-            IconButton(onClick = {
-                scope.launch {
-                    currentScreenIndex.intValue =
-                        (currentScreenIndex.intValue + 1) % tutorialScreens.size
-                    listState.animateScrollToItem(currentScreenIndex.intValue)
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        currentScreenIndex.intValue =
+                            (currentScreenIndex.intValue + 1) % tutorialScreens.size
+                        listState.animateScrollToItem(currentScreenIndex.intValue)
+                    }
                 }
-            }) {
+            ) {
                 Icon(
-                    painter = painterResource(Res.drawable.right_arrow), "to the right",
+                    painter = painterResource(Res.drawable.right_arrow),
+                    "to the right",
                     modifier = Modifier.alpha(0.5f)
                 )
             }
@@ -142,7 +143,7 @@ fun TutorialScreen(
             modifier = Modifier
                 .fillMaxSize(),
             state = listState,
-            flingBehavior = CustomFlingBehaviour(),
+            flingBehavior = flingBehaviour,
             verticalAlignment = Alignment.CenterVertically
         ) {
             itemsIndexed(
@@ -152,7 +153,7 @@ fun TutorialScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(getScreenDpSize().width),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     screen()
                 }
@@ -164,20 +165,20 @@ fun TutorialScreen(
                 .width(tutorialScreens.size * 3 * 7.dp)
                 .padding(bottom = 50.dp),
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             tutorialScreens.indices.forEach { index ->
                 Box(
                     modifier = Modifier
                         .size(7.dp)
                         .clip(CircleShape)
-                        .let {
+                        .background(
                             if (currentScreenIndex.value == index) {
-                                it.background(Color.Blue)
+                                Color.Blue
                             } else {
-                                it.background(Color.White)
+                                Color.White
                             }
-                        }
+                        )
                 )
             }
         }

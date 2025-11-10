@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,7 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
@@ -46,7 +50,8 @@ fun RenderPieceCount(pos: Position) {
 fun RenderPieceCountElement(
     isGreen: Boolean,
     shouldMove: Boolean,
-    freePieces: UByte
+    freePieces: UByte,
+    modifier: Modifier = Modifier,
 ) {
     val backgroundColor =
         if (isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
@@ -64,11 +69,11 @@ fun RenderPieceCountElement(
     val padding = 10.dp
     val offset = animatedOffset
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(40.dp + padding * 2)
-            .height(40.dp * freePieces.toInt() - offset * (freePieces.toInt() - 1) + padding * 2)
+            .heightIn(min = 40.dp * freePieces.toInt() - offset * (freePieces.toInt() - 1) + padding * 2)
             .alpha(animatedAlpha),
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = Alignment.TopCenter,
     ) {
         repeat(freePieces.toInt()) {
             Box(
@@ -77,7 +82,7 @@ fun RenderPieceCountElement(
                     .zIndex(freePieces.toInt() - it.toFloat())
                     .shadow(
                         shadowElevation2,
-                        CircleShape
+                        CircleShape,
                     )
                     .border(1.dp, borderColor, CircleShape)
                     .clip(CircleShape)

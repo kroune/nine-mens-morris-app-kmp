@@ -8,14 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
@@ -24,14 +23,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kroune.nineMensMorrisLib.Position
@@ -42,6 +42,12 @@ import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.redo_move
 import ninemensmorrisappkmp.composeapp.generated.resources.undo_move
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.min
+
+enum class MeasurePolicy {
+    TAKE_MAX,
+    TAKE_MIN
+}
 
 /**
  * renders game board
@@ -52,20 +58,44 @@ fun RenderGameBoard(
     pos: Position,
     selectedButton: Int?,
     moveHints: Set<Int>,
+    measurePolicy: MeasurePolicy = MeasurePolicy.TAKE_MAX,
     onClick: ((Int) -> Unit)?,
 ) {
-    BoxWithConstraints(
-        modifier = modifier,
-        contentAlignment = Alignment.TopCenter,
+    Box(
+        modifier
+            .layout { measurable, constraints ->
+                val minSize = if (constraints.minWidth < constraints.minHeight) {
+                    if (constraints.maxWidth >= constraints.minHeight) {
+                        constraints.minHeight
+                    } else {
+                        constraints.minWidth
+                    }
+                } else {
+                    if (constraints.maxHeight >= constraints.minWidth) {
+                        constraints.minWidth
+                    } else {
+                        constraints.minHeight
+                    }
+                }
+                val maxSize = min(constraints.maxWidth, constraints.maxHeight)
+
+                val squaredConstraints = Constraints(
+                    minWidth = if (measurePolicy == MeasurePolicy.TAKE_MAX) maxSize else minSize,
+                    minHeight = if (measurePolicy == MeasurePolicy.TAKE_MAX) maxSize else minSize,
+                    maxWidth = maxSize,
+                    maxHeight = maxSize,
+                )
+                val placeable = measurable.measure(squaredConstraints)
+                layout(placeable.width, placeable.height) {
+                    placeable.place(0, 0)
+                }
+            }
     ) {
-        val heightBigger = derivedStateOf { maxHeight > maxWidth }
         Box(
-            modifier = Modifier
-                .aspectRatio(1f, !heightBigger.value)
+            Modifier
                 .clip(RoundedCornerShape3)
                 .background(Color(0xFF8F8F8F))
-                .padding(15.dp),
-            contentAlignment = Alignment.TopCenter
+                .padding(15.dp)
         ) {
             DrawGameBoardShadows()
             DrawCircles(pos, selectedButton, moveHints, onClick)
@@ -84,8 +114,7 @@ private fun BoxScope.DrawCircles(
     onClick: ((Int) -> Unit)?
 ) {
     Column(
-        modifier = Modifier
-            .matchParentSize(),
+        modifier = Modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,7 +122,7 @@ private fun BoxScope.DrawCircles(
         RowOfCircles(1, 1, 3..5, pos, selectedButton, moveHints, onClick)
         RowOfCircles(2, 0, 6..8, pos, selectedButton, moveHints, onClick)
         Row(
-            modifier = Modifier.weight(1f).fillMaxSize(),
+            modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             with(this@Column) {
@@ -105,7 +134,7 @@ private fun BoxScope.DrawCircles(
                  * 2=6x
                  * x = 1/3
                  */
-                Spacer(modifier = Modifier.weight(1f / 3).fillMaxSize())
+                Spacer(modifier = Modifier.weight(1f / 3))
                 RowOfCircles(0, 0, 12..14, pos, selectedButton, moveHints, onClick)
             }
         }
@@ -133,16 +162,14 @@ private fun ColumnScope.RowOfCircles(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .weight(1f),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (padding > 0)
-            Spacer(
-                modifier = Modifier
-                    .fillMaxSize().weight(padding.toFloat())
-            )
+        if (padding > 0) {
+            Spacer(modifier = Modifier.weight(padding.toFloat()))
+        }
         range.forEach { index ->
             CircledButton(
                 pieceColor = pos.positions[index],
@@ -151,16 +178,10 @@ private fun ColumnScope.RowOfCircles(
                 onClick = onClick?.let { { onClick(index) } }
             )
             if (gap > 0 && index != range.last)
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxSize().weight(gap.toFloat())
-                )
+                Spacer(modifier = Modifier.weight(gap.toFloat()))
         }
         if (padding > 0) {
-            Spacer(
-                modifier = Modifier
-                    .fillMaxSize().weight(padding.toFloat())
-            )
+            Spacer(modifier = Modifier.weight(padding.toFloat()))
         }
     }
 }
@@ -175,77 +196,63 @@ fun RowScope.CircledButton(
     pieceColor: Boolean?,
     isSelected: Boolean,
     isHinted: Boolean,
-    onClick: (() -> Unit)?
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)?,
 ) {
-    Box(
-        modifier = Modifier
+    AnimatedContent(
+        pieceColor,
+        modifier = modifier
             .fillMaxSize()
             .weight(1f)
-            .wrapContentSize()
-    ) {
-        AnimatedContent(pieceColor) { pieceColor ->
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .then(
-                        if (pieceColor != null) {
-                            Modifier
-                                .shadow(shadowElevation2, CircleShape)
-                        } else {
-                            Modifier
-                        }
-                    )
-                    .fillMaxSize(if (isSelected) 0.7f else 0.9f)
-                    .background(Color.Transparent, CircleShape)
-                    .semantics {
-                        contentDescription =
-                            "game piece element with ${
-                                when (pieceColor) {
-                                    null -> "empty slot"
-                                    true -> "white piece"
-                                    false -> "black piece"
-                                }
-                            } value"
+            .wrapContentSize(),
+    ) { pieceColor ->
+        Box(
+            modifier = Modifier
+                .clip(CircleShape)
+                .then(
+                    if (pieceColor != null) {
+                        Modifier.shadow(shadowElevation2, CircleShape)
+                    } else {
+                        Modifier
                     }
-                    .then(
-                        if (isHinted)
-                            Modifier.border(
-                                BorderStroke(
-                                    6.dp,
-                                    Color.DarkGray
-                                ),
-                                CircleShape
-                            )
-                        else
-                            Modifier
-                    )
-                    .background(
-                        when (pieceColor) {
-                            null -> {
-                                Color.Transparent
+                )
+                .fillMaxSize(if (isSelected) 0.7f else 0.9f)
+                .background(Color.Transparent, CircleShape)
+                .semantics {
+                    contentDescription =
+                        "game piece element with ${
+                            when (pieceColor) {
+                                null -> "empty slot"
+                                true -> "white piece"
+                                false -> "black piece"
                             }
-
-                            true -> {
-                                ExtendedColorTheme.colorScheme.colorPiece1
-                            }
-
-                            false -> {
-                                ExtendedColorTheme.colorScheme.colorPiece2
-                            }
-                        }
-                    )
-                    .then(
-                        if (onClick != null) {
-                            Modifier
-                                .clickable {
-                                    onClick()
-                                }
-                        } else {
-                            Modifier
-                        }
-                    )
-            )
-        }
+                        } value"
+                }
+                .then(
+                    if (isHinted) {
+                        Modifier.border(
+                            BorderStroke(6.dp, Color.DarkGray),
+                            CircleShape,
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
+                .background(
+                    when (pieceColor) {
+                        null -> Color.Transparent
+                        true -> ExtendedColorTheme.colorScheme.colorPiece1
+                        false -> ExtendedColorTheme.colorScheme.colorPiece2
+                    }
+                )
+                .then(
+                    if (onClick != null) {
+                        Modifier.clickable { onClick() }
+                    } else {
+                        Modifier
+                    }
+                )
+        )
     }
 }
 
@@ -254,32 +261,28 @@ fun RenderUndo(
     handleUndo: () -> Unit
 ) {
     IconButton(
-        modifier = Modifier
-            .requiredSize(70.dp),
-        onClick = {
-            handleUndo()
-        },
+        modifier = Modifier.requiredSize(70.dp),
+        onClick = { handleUndo() },
     ) {
         Icon(
-            painter = painterResource(Res.drawable.undo_move), "undo",
-            tint = MaterialTheme.colorScheme.onBackground
+            painter = painterResource(Res.drawable.undo_move),
+            "undo",
+            tint = MaterialTheme.colorScheme.onBackground,
         )
     }
 }
 
 @Composable
 fun RenderRedo(
-    handleRedo: () -> Unit
+    handleRedo: () -> Unit,
 ) {
     IconButton(
-        modifier = Modifier
-            .requiredSize(70.dp),
-        onClick = {
-            handleRedo()
-        }) {
+        modifier = Modifier.requiredSize(70.dp),
+        onClick = { handleRedo() },
+    ) {
         Icon(
             painter = painterResource(Res.drawable.redo_move), "redo",
-            tint = MaterialTheme.colorScheme.onBackground
+            tint = MaterialTheme.colorScheme.onBackground,
         )
     }
 }
