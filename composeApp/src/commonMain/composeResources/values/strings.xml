@@ -28,14 +28,10 @@
     <string name="retry">retry</string>
     <string name="tutorial_indicator_piece">Each circle at the top shows how many pieces of the following color aren't placed yet \n Circle size and opacity indicates whose turn it is</string>
     <string name="tutorial_lose_condition">You lose if you have less than 3 pieces (including the ones you can place)</string>
-    <string name="tutorial_placement_condition">If you have any pieces left you can place them in any empty cell</string>
-    <string name="tutorial_placement_highlighting">Possible moves are highlighted</string>
-    <string name="tutorial_normal_moves_condition">If you don't have any pieces to place and your total pieces count > 3 you can move any of them to the next cell</string>
-    <string name="tutorial_normal_moves_highlighting">Possible moves are highlighted when you have selected a piece to move</string>
-    <string name="tutorial_fly_condition">If you don't have any figures to place and your pieces count = 3 you can "fly" (move you piece to any empty place)</string>
-    <string name="tutorial_fly_highlighting">Possible moves are highlighted when you have selected a piece to move</string>
-    <string name="tutorial_triples_condition">If after your move a new row with 3 pieces appears, you can remove enemies piece</string>
-    <string name="tutorial_triples_highlighting">Such rows are highlighted with grey</string>
+    <string name="tutorial_placement_condition_plus_hints">If you have any pieces left you can place them in any empty cell\nPossible moves are highlighted</string>
+    <string name="tutorial_normal_moves_condition_plus_hints">If you don't have any pieces to place and your total pieces count > 3 you can move any of them to the next cell\nPossible moves are highlighted when you have selected a piece to move</string>
+    <string name="tutorial_fly_plus_hints_condition">If you don't have any figures to place and your pieces count = 3 you can "fly" (move you piece to any empty place)\nPossible moves are highlighted when you have selected a piece to move</string>
+    <string name="tutorial_triples_condition_plus_hints">If after your move a new row with 3 pieces appears, you can remove enemies piece\nSuch rows are highlighted with grey</string>
     <string name="tutorial_removal_moves_explanation">For removing enemy's piece simply click on it</string>
     <string name="rating">Rating</string>
     <string name="keep_me_here">Keep me here</string>

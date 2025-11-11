@@ -24,6 +24,7 @@ uiautomator = "2.3.0"
 baselineprofile = "1.4.1"
 screenshot = "0.0.1-alpha10"
 koinCore = "4.1.1"
+detekt = "2.0.0-alpha.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
@@ -78,4 +79,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 baseline-profile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}

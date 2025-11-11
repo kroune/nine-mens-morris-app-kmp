@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +39,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun GameWithFriendScreen(
     state: GameWithFriendScreenState,
-    onEvent: (GameWithFriendScreenEvent) -> Unit
+    onEvent: (GameWithFriendScreenEvent) -> Unit,
 ) {
     var gameEndPopUpClosed by remember { mutableStateOf(false) }
     if (!gameEndPopUpClosed && state.gameEnded) {
@@ -58,7 +56,7 @@ fun GameWithFriendScreen(
         topBar = {
             IconButton(
                 onClick = { onEvent(GameWithFriendScreenEvent.NavigateBack) },
-                modifier = Modifier.safeDrawingPadding()
+                modifier = Modifier.safeDrawingPadding(),
             ) {
                 Icon(
                     painterResource(Res.drawable.close),

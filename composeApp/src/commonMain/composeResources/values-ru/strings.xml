@@ -28,14 +28,10 @@
     <string name="retry">попробовать заново</string>
     <string name="tutorial_indicator_piece">В каждом из кругов вверху экрана написано, сколько фишек соответствующего цвета еще не размещены \n Размер круга и его прозрачность указывают на то, чья сейчас очередь</string>
     <string name="tutorial_lose_condition">Вы проиграли, если у вас меньше 3 фишек (включая те, которые вы можете разместить)</string>
-    <string name="tutorial_placement_condition">Если у вас есть еще не размещенные фишки, то вы можете поставить их в любую пустую клетку</string>
-    <string name="tutorial_placement_highlighting">Возможные ходы подсвечиваются</string>
-    <string name="tutorial_normal_moves_condition">Если у вас нет неразмещенных фигур и у вас > 3 фишек, то вы можете двигать фишки в соседние клетки</string>
-    <string name="tutorial_normal_moves_highlighting">Возможные ходы подсвечиваются после выбора фишки</string>
-    <string name="tutorial_fly_condition">Если у вас нет фигур, чтобы разместить и у вас есть ровно 3 фишки, то вы можете переместить вашу фишку из любой клетки в любую другую (пустую)</string>
-    <string name="tutorial_fly_highlighting">Возможные перемещения подсвечиваются после выбора фишки</string>
-    <string name="tutorial_triples_condition">Если после вашего хода появляется новая линия из трех фигур, то вы можете убрать фишку противника</string>
-    <string name="tutorial_triples_highlighting">Такие линии подсвечены серым цветом</string>
+    <string name="tutorial_placement_condition_plus_hints">Если у вас есть еще не размещенные фишки, то вы можете поставить их в любую пустую клетку\nВозможные ходы подсвечиваются</string>
+    <string name="tutorial_normal_moves_condition_plus_hints">Если у вас нет неразмещенных фигур и у вас > 3 фишек, то вы можете двигать фишки в соседние клетки\nВозможные ходы подсвечиваются после выбора фишки</string>
+    <string name="tutorial_fly_plus_hints_condition">Если у вас нет фигур, чтобы разместить и у вас есть ровно 3 фишки, то вы можете переместить вашу фишку из любой клетки в любую другую (пустую)\nВозможные перемещения подсвечиваются после выбора фишки</string>
+    <string name="tutorial_triples_condition_plus_hints">Если после вашего хода появляется новая линия из трех фигур, то вы можете убрать фишку противника\nТакие линии подсвечены серым цветом</string>
     <string name="tutorial_removal_moves_explanation">Для удаления фишки противника просто нажмите на неё</string>
     <string name="rating">Рейтинг</string>
     <string name="keep_me_here">Остаться здесь</string>
@@ -56,6 +52,7 @@
     <string name="view_own_account">Мой профиль</string>
     <string name="source_code_link">Ссылка на исходный код</string>
     <string name="report_an_issue">Сообщить об ошибке</string>
+    <string name="creator_telegram_link">Ссылка на тг создателя</string>
     <string name="new_update">Появилось новое обновление</string>
     <string name="required_update">В нем есть критические изменения, поэтому если продолжите использовать эту версию, то что-то может не работать</string>
     <string name="update">Обновиться</string>

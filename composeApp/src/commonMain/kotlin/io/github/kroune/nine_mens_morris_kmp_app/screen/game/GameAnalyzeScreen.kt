@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,11 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.GameWithFriendScreenEvent.GameAnalyzeEvent
-import io.github.kroune.nine_mens_morris_kmp_app.getScreenDpSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
@@ -60,17 +58,14 @@ fun RenderGameAnalyzeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            modifier = Modifier
-                .padding(bottom = 5.dp),
-            onClick = {
-                onEvent(GameAnalyzeEvent.StartAnalyze)
-            },
+            modifier = Modifier.padding(bottom = 5.dp),
+            onClick = { onEvent(GameAnalyzeEvent.StartAnalyze) },
             shape = RoundedCornerShape3,
             colors = ButtonColors(
                 containerColor = Color.DarkGray,
                 contentColor = Color.White,
                 disabledContainerColor = Color.DarkGray.copy(alpha = 0.5f),
-                disabledContentColor = Color.White.copy(alpha = 0.5f)
+                disabledContentColor = Color.White.copy(alpha = 0.5f),
             )
         ) {
             Column(
@@ -95,12 +90,13 @@ fun RenderGameAnalyzeScreen(
                             tint = Color.White,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .clickable {
-                                    onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth)
-                                }
+                                .clickable { onEvent(GameAnalyzeEvent.DecreaseAnalyzeDepth) }
                         )
                     }
-                    Text("${stringResource(Res.string.depth)} - $depth", fontSize = 13.sp)
+                    Text(
+                        text = "${stringResource(Res.string.depth)} - $depth",
+                        fontSize = 13.sp
+                    )
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -112,9 +108,7 @@ fun RenderGameAnalyzeScreen(
                             tint = Color.White,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .clickable {
-                                    onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth)
-                                }
+                                .clickable { onEvent(GameAnalyzeEvent.IncreaseAnalyzeDepth) }
                         )
                     }
                 }
@@ -125,8 +119,6 @@ fun RenderGameAnalyzeScreen(
     if (positions.isNotEmpty()) {
         val bottomSheet =
             rememberStandardBottomSheetState(SheetValue.Hidden, skipHiddenState = false)
-        val (screenWidth, screenHeight) = getScreenDpSize()
-        val minSide = min(screenWidth, screenHeight)
         ModalBottomSheet(
             {
                 scope.launch {
@@ -135,21 +127,20 @@ fun RenderGameAnalyzeScreen(
                 }
             },
             modifier = Modifier
-                .width(minSide)
+                .fillMaxWidth()
                 .padding(horizontal = 20.dp),
             sheetState = bottomSheet
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 items(positions) {
                     Row {
                         RenderPieceCountElement(
                             true,
                             it.pieceToMove,
-                            it.freeGreenPieces
+                            it.freeGreenPieces,
                         )
                         RenderGameBoard(
                             modifier = Modifier
@@ -163,7 +154,7 @@ fun RenderGameAnalyzeScreen(
                         RenderPieceCountElement(
                             false,
                             !it.pieceToMove,
-                            it.freeBluePieces
+                            it.freeBluePieces,
                         )
                     }
                 }

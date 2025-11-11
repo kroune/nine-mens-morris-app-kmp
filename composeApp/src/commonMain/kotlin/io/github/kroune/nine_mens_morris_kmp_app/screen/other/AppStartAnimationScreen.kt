@@ -12,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,8 +34,7 @@ fun AppStartAnimationScreen(
     onEvent: (AppStartAnimationScreenEvent) -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         DrawAnimation()
@@ -58,7 +56,8 @@ private fun DrawAnimation() {
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 7500, easing = LinearEasing
-            ), repeatMode = RepeatMode.Reverse
+            ),
+            repeatMode = RepeatMode.Reverse,
         ),
         label = "backgroundAnimation"
     )
@@ -79,7 +78,7 @@ private fun DrawAnimation() {
         lightPath.lineTo(0f, size.height)
         drawPath(
             path = lightPath,
-            color = foregroundColor
+            color = foregroundColor,
         )
     }
 }
@@ -109,9 +108,7 @@ private fun StartButton(
         text = stringResource(Res.string.press_to_start),
         modifier = Modifier
             .alpha(animatedProgress)
-            .clickable {
-                onClick()
-            },
+            .clickable { onClick() },
         color = MaterialTheme.colorScheme.onBackground,
         fontSize = 22.sp
     )

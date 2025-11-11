@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +38,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -96,11 +92,11 @@ fun WelcomeScreen(
                 snackbarHostState,
                 onEvent,
                 scrollState,
-                topScreen
+                topScreen,
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        contentWindowInsets = WindowInsets()
+        contentWindowInsets = WindowInsets(),
     ) { padding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -118,7 +114,7 @@ fun WelcomeScreen(
                     )
                 }
             }
-            class CustomFlingBehaviour : FlingBehavior {
+            val customFlingBehaviour = object : FlingBehavior {
                 override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
                     val progress = scrollState.value.toFloat() / scrollState.maxValue
                     val scrollUp =
@@ -142,14 +138,12 @@ fun WelcomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(
-                        state = scrollState, flingBehavior = CustomFlingBehaviour()
-                    )
+                    .verticalScroll(state = scrollState, flingBehavior = customFlingBehaviour)
             ) {
                 RenderMainScreen(
-                    state,
-                    { onEvent(it) },
-                    snackbarHostState,
+                    state = state,
+                    onEvent = { onEvent(it) },
+                    snackbarHostState = snackbarHostState,
                     modifier = Modifier
                         .requiredHeight(this@BoxWithConstraints.maxHeight)
                         .requiredWidth(this@BoxWithConstraints.maxWidth),
@@ -161,8 +155,8 @@ fun WelcomeScreen(
                 )
             }
             HandleWelcomeScreenError(
-                state.accountIdFailure,
-                snackbarHostState,
+                result = state.accountIdFailure,
+                snackbarHostState = snackbarHostState,
             )
         }
     }
@@ -305,13 +299,10 @@ fun RenderMainScreen(
 ) {
     val scope = rememberCoroutineScope()
     Box(
-        modifier = modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
         IconButton(
-            {
-                onEvent(WelcomeScreenEvent.NavigateBack)
-            },
+            onClick = { onEvent(WelcomeScreenEvent.NavigateBack) }
         ) {
             Icon(
                 painterResource(Res.drawable.close),
@@ -327,9 +318,7 @@ fun RenderMainScreen(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(IntrinsicSize.Max),
-                verticalArrangement = Arrangement.spacedBy(
-                    spacing, Alignment.CenterVertically,
-                ),
+                verticalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Button(

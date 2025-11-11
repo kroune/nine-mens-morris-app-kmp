@@ -2,25 +2,25 @@ package io.github.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame
 
 import io.github.kroune.nine_mens_morris_kmp_app.data.decodeServerEvent
 import io.github.kroune.nine_mens_morris_kmp_app.data.network
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.log
 import io.github.kroune.nine_mens_morris_kmp_app.data.wsApi
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
+import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.log
 import io.github.kroune.nine_mens_morris_kmp_app.onNetworkError
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.parameter
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.Frame
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onClosed
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.onSuccess
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.io.IOException
 
 class SearchingForGameRemoteDataSourceImpl : SearchingForGameRemoteDataSourceI {
     override suspend fun connect(
-        channel: Channel<Long>,
-        jwtToken: String
+        channel: MutableSharedFlow<Long>,
+        jwtToken: String,
     ): SearchingForGameResponse {
         val route = wsApi {
             appendPathSegments("game", "search-for-game")
@@ -43,8 +43,7 @@ class SearchingForGameRemoteDataSourceImpl : SearchingForGameRemoteDataSourceI {
                             val (data, metadata) = it.decodeServerEvent<Long, String>()
                             when (metadata) {
                                 "waiting_time" -> {
-                                    val waitingTime = data
-                                    channel.send(waitingTime)
+                                    channel.emit(data)
                                 }
 
                                 "game_id" -> {
@@ -58,7 +57,6 @@ class SearchingForGameRemoteDataSourceImpl : SearchingForGameRemoteDataSourceI {
                                         severity = Severity.INFO
                                     )
                                     println("FUCK")
-                                    metadata
                                 }
                             }
                         }
