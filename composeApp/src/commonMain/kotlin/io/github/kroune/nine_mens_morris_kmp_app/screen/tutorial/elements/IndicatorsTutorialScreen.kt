@@ -1,13 +1,8 @@
 package io.github.kroune.nine_mens_morris_kmp_app.screen.tutorial.elements
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +41,8 @@ fun RenderIndicatorsTutorialScreen() {
         removalCount = 0u,
     )
     Layout(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing),
         content = {
             RenderPieceCountElement(
                 true,
@@ -86,7 +83,6 @@ fun RenderIndicatorsTutorialScreen() {
         val gameBoardConstraints = constraints.copy(
             minWidth = constraints.maxWidth - (leftIndicatorMinWidth + rightIndicatorMinWidth),
             maxWidth = constraints.maxWidth - (leftIndicatorMinWidth + rightIndicatorMinWidth),
-            minHeight = 0,
             maxHeight = constraints.maxHeight - text.minIntrinsicHeight(constraints.maxWidth),
         )
         val gameBoardPlaceable = gameBoard.measure(gameBoardConstraints)
@@ -112,21 +108,15 @@ fun RenderIndicatorsTutorialScreen() {
         ) {
             leftIndicatorNewPlaceable.place(x = 0, y = 0)
             gameBoardPlaceable.place(x = leftIndicatorMinWidth, y = 0)
-            rightIndicatorNewPlaceable.place(x = constraints.maxWidth - rightIndicatorMinWidth, y = 0)
+            rightIndicatorNewPlaceable.place(
+                x = constraints.maxWidth - rightIndicatorMinWidth,
+                y = 0
+            )
 
-            textPlaceable.place(x = 0, y = upPartHeight)
+            textPlaceable.place(
+                x = (constraints.maxWidth - textPlaceable.width) / 2,
+                y = upPartHeight
+            )
         }
-
     }
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.Top
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(IntrinsicSize.Min)
-//        ) {
-//        }
-//    }
 }
