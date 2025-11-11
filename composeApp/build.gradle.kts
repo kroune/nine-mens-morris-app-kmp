@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import dev.detekt.gradle.Detekt
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -16,6 +17,12 @@ object AppInfo {
     const val licenseType = "GPL-3.0"
     const val description = "Implementation of a table game called <Nine mens morris>"
     const val homePage = "https://github.com/kroune/nine-mens-morris-lib-kmp"
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude { element ->
+        element.file.path.contains("/build/generated/")
+    }
 }
 
 plugins {
