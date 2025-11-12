@@ -2,10 +2,10 @@ package io.github.kroune.nine_mens_morris_kmp_app.domain.useCases
 
 import com.kroune.nineMensMorrisLib.Position
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlin.coroutines.coroutineContext
 import kotlin.math.max
 
 /**
@@ -45,11 +45,11 @@ class GameAnalyzeUseCase(
      * starts board analyze
      */
     fun startAnalyze(pos: Position): Flow<Position> {
-        return flow<Position> {
+        return flow {
             var currentPos = pos
             emit(currentPos)
             repeat(depth()) {
-                coroutineContext.ensureActive()
+                currentCoroutineContext().ensureActive()
                 val move = currentPos.findBestMove(depth().toUByte()) ?: return@flow
                 currentPos = move.producePosition(currentPos)
                 emit(currentPos)

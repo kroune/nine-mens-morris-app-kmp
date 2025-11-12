@@ -150,4 +150,3 @@ private fun ColumnScope.HorizontalShadow(
             Spacer(modifier = Modifier.fillMaxSize().weight(paddingWeight.toFloat()))
     }
 }
-

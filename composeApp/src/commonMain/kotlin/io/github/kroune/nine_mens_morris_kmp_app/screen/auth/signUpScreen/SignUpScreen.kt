@@ -4,14 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -33,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.auth.singUp.SignUpScreenState
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.auth.SignInScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.auth.SignUpScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation1

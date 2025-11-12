@@ -14,10 +14,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -471,24 +469,6 @@ fun BackHandler(backHandler: BackHandler, isEnabled: Boolean = true, onBack: () 
     DisposableEffect(backHandler) {
         backHandler.register(callback)
         onDispose { backHandler.unregister(callback) }
-    }
-}
-
-@Composable
-inline fun LimitSize(
-    percentage: Float,
-    crossinline content: @Composable BoxScope.() -> Unit,
-) {
-    BoxWithConstraints {
-        Box(
-            Modifier
-                .sizeIn(
-                    maxHeight = maxHeight * percentage,
-                    maxWidth = maxWidth * percentage
-                )
-        ) {
-            content()
-        }
     }
 }
 

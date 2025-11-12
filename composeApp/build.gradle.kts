@@ -210,6 +210,123 @@ kotlin {
     }
 }
 
+tasks.register("emptyLiner") {
+    ensureSingleEmptyLineAtEndVerbose("/home/olowo/StudioProjects/nine-mens-morris-app-kmp/composeApp")
+}
+
+fun ensureSingleEmptyLineAtEnd(directoryPath: String) {
+    val directory = File(directoryPath)
+
+    if (!directory.exists() || !directory.isDirectory) {
+        println("Error: The specified path is not a valid directory")
+        return
+    }
+
+    val kotlinFiles = directory.walk()
+        .filter { it.isFile && it.extension == "kt" }
+        .toList()
+
+    if (kotlinFiles.isEmpty()) {
+        println("No Kotlin files found in the specified directory")
+        return
+    }
+
+    var processedCount = 0
+    var modifiedCount = 0
+
+    kotlinFiles.forEach { file ->
+        try {
+            processedCount++
+            val content = file.readText()
+
+            // Remove all trailing whitespace and newlines
+            val trimmedContent = content.trimEnd()
+
+            // Determine the line separator used in the file
+            val lineSeparator = detectLineSeparator(content)
+
+            // Add exactly one empty line at the end
+            val newContent = if (trimmedContent.isNotEmpty()) {
+                trimmedContent + lineSeparator
+            } else {
+                trimmedContent // Leave empty files as-is
+            }
+
+            // Only write if content actually changed
+            if (newContent != content) {
+                file.writeText(newContent)
+                modifiedCount++
+                println("✓ Fixed trailing lines in: ${file.name}")
+            }
+        } catch (e: Exception) {
+            println("✗ Error processing ${file.name}: ${e.message}")
+        }
+    }
+
+    println("\nProcessing complete: $processedCount files processed, $modifiedCount files modified")
+}
+
+private fun detectLineSeparator(content: String): String {
+    return when {
+        content.contains("\r\n") -> "\r\n" // Windows
+        content.contains("\r") -> "\r"     // Old Mac
+        else -> "\n"                       // Unix/Linux/Mac OS X
+    }
+}
+
+// Alternative version that shows what changes were made
+fun ensureSingleEmptyLineAtEndVerbose(directoryPath: String) {
+    val directory = File(directoryPath)
+
+    if (!directory.exists() || !directory.isDirectory) {
+        println("Error: The specified path is not a valid directory")
+        return
+    }
+
+    directory.walk()
+        .filter { it.isFile && it.extension == "kt" }
+        .forEach { file ->
+            try {
+                val originalContent = file.readText()
+                val originalEnding = getTrailingWhitespace(originalContent)
+
+                // Remove all trailing whitespace and newlines
+                val trimmedContent = originalContent.trimEnd()
+
+                // Determine line separator
+                val lineSeparator = detectLineSeparator(originalContent)
+
+                // Add exactly one empty line at the end
+                val newContent = if (trimmedContent.isNotEmpty()) {
+                    trimmedContent + lineSeparator
+                } else {
+                    trimmedContent
+                }
+
+                if (newContent != originalContent) {
+                    val newEnding = getTrailingWhitespace(newContent)
+                    file.writeText(newContent)
+                    println("✓ Fixed: ${file.name}")
+                    println("  Before: ended with ${originalEnding.length} chars '${escapeWhitespace(originalEnding)}'")
+                    println("  After:  ended with ${newEnding.length} chars '${escapeWhitespace(newEnding)}'")
+                }
+            } catch (e: Exception) {
+                println("✗ Error processing ${file.name}: ${e.message}")
+            }
+        }
+}
+
+private fun getTrailingWhitespace(content: String): String {
+    return content.takeLastWhile { it == ' ' || it == '\t' || it == '\n' || it == '\r' }
+}
+
+private fun escapeWhitespace(text: String): String {
+    return text.replace("\r", "\\r")
+        .replace("\n", "\\n")
+        .replace("\t", "\\t")
+        .replace(" ", "·")
+}
+
 tasks.register("wasmJsProcessBrowserDistribution") {
     dependsOn("wasmJsBrowserDistribution")
     val dir = "build/dist/wasmJs/productionExecutable"
