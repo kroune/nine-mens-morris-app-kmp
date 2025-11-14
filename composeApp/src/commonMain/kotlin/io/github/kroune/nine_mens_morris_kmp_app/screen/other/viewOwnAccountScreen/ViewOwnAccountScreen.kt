@@ -58,7 +58,7 @@ import org.jetbrains.compose.resources.stringResource
 fun ViewOwnAccountScreen(
     onEvent: (ViewOwnAccountScreenEvent) -> Unit,
     state: ViewOwnAccountScreenState,
-    uploadingNewPictureResult: SharedFlow<UploadPictureApiResponses>
+    uploadingNewPictureResult: SharedFlow<UploadPictureApiResponses>,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -71,11 +71,11 @@ fun ViewOwnAccountScreen(
                     .fillMaxWidth()
                     .safeDrawingPadding()
                     .padding(bottom = padding2),
-                contentAlignment = Alignment.BottomCenter
+                contentAlignment = Alignment.BottomCenter,
             ) {
                 Button(
                     onClick = { onEvent(ViewOwnAccountScreenEvent.OnLogoutPressed) },
-                    shape = RoundedCornerShape3
+                    shape = RoundedCornerShape3,
                 ) {
                     Text(stringResource(Res.string.log_out))
                 }
@@ -146,10 +146,8 @@ fun ViewOwnAccountScreen(
                     )
                 },
                 accountCreationDate = state.accountCreationDateResult,
-                onReload = {
-                    onEvent(ViewOwnAccountScreenEvent.ReloadCreationDate)
-                },
-                snackbarHostState = snackbarHostState
+                onReload = { onEvent(ViewOwnAccountScreenEvent.ReloadCreationDate) },
+                snackbarHostState = snackbarHostState,
             )
             val launcher = rememberFilePickerLauncher(
                 type = PickerType.Image,
@@ -164,13 +162,23 @@ fun ViewOwnAccountScreen(
             }
             Button(
                 { launcher.launch() },
-                shape = RoundedCornerShape3
+                shape = RoundedCornerShape3,
             ) {
                 Text(stringResource(Res.string.upload_picture))
             }
         }
     }
+    HandleError(
+        uploadingNewPictureResult,
+        snackbarHostState,
+    )
+}
 
+@Composable
+fun HandleError(
+    uploadingNewPictureResult: SharedFlow<UploadPictureApiResponses>,
+    snackbarHostState: SnackbarHostState,
+) {
     LaunchedEffect(uploadingNewPictureResult) {
         uploadingNewPictureResult.collectLatest {
             val text = when (it) {
@@ -194,7 +202,7 @@ fun ViewOwnAccountScreen(
                     getString(
                         Res.string.image_too_large,
                         it.maxWidth,
-                        it.maxHeight
+                        it.maxHeight,
                     )
                 }
 

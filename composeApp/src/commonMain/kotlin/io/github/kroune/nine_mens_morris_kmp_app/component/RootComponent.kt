@@ -1,6 +1,5 @@
 package io.github.kroune.nine_mens_morris_kmp_app.component
 
-import androidx.compose.foundation.gestures.Orientation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.StackAnimator
@@ -142,24 +141,28 @@ class RootComponent(
                     WelcomeScreenComponent(
                         componentContext = context,
                         onNavigationToGameWithFriendScreen = {
-                            navigation.pushToFront(Configuration.GameWithFriendScreen(scale() + fade()))
+                            navigation.pushToFront(
+                                Configuration.GameWithFriendScreen(scale() + fade())
+                            )
                         },
                         onNavigationToGameWithBotScreen = {
-                            navigation.pushToFront(Configuration.GameWithBotScreen(scale() + fade()))
+                            navigation.pushToFront(
+                                Configuration.GameWithBotScreen(scale() + fade())
+                            )
                         },
                         onNavigationToOnlineGameScreen = {
-                            navigation.pushToFront(Configuration.SearchingForGameScreen(scale() + fade()))
+                            navigation.pushToFront(
+                                Configuration.SearchingForGameScreen(scale() + fade())
+                            )
                         },
                         onNavigationToLeaderboardScreen = {
-                            navigation.pushToFront(Configuration.LeaderboardScreen(scale() + fade()))
+                            navigation.pushToFront(
+                                Configuration.LeaderboardScreen(scale() + fade())
+                            )
                         },
                         onNavigationToAuthScreen = {
-                            slide(orientation = Orientation.Horizontal)
                             navigation.pushToFront(
-                                Configuration.SignUpScreen(
-                                    invertedSlide(
-                                    )
-                                )
+                                Configuration.SignUpScreen(invertedSlide())
                             )
                         },
                         onNavigationToAccountViewScreen = {
@@ -189,9 +192,7 @@ class RootComponent(
             is Configuration.ViewOwnAccountScreen -> {
                 RootChild.ViewOwnAccountScreenChild(
                     ViewOwnAccountScreenComponent(
-                        onNavigationBack = {
-                            popWithRootFallback(config.customAnimation)
-                        },
+                        onNavigationBack = { popWithRootFallback(config.customAnimation) },
                         accountId = config.accountId,
                         componentContext = context,
                         accountInfoRepository = get(),
@@ -203,9 +204,7 @@ class RootComponent(
             is Configuration.ViewAccountScreen -> {
                 RootChild.ViewAccountScreenChild(
                     ViewAccountScreenComponent(
-                        onNavigationBack = {
-                            popWithRootFallback(config.customAnimation)
-                        },
+                        onNavigationBack = { popWithRootFallback(config.customAnimation) },
                         accountId = config.accountId,
                         componentContext = context,
                         jwtTokenInteractor = get(),
@@ -216,21 +215,13 @@ class RootComponent(
             is Configuration.SignUpScreen -> {
                 RootChild.SignUpScreenChild(
                     SignUpScreenComponent(
-                        onNavigationBack = {
-                            popWithRootFallback(
-                                invertedSlide()
-                            )
-                        },
+                        onNavigationBack = { popWithRootFallback(invertedSlide()) },
                         onNavigationToSignInScreen = {
                             navigation.replaceCurrent(
-                                Configuration.SignInScreen(
-                                    customAnimation = invertedSlide()
-                                )
+                                Configuration.SignInScreen(customAnimation = invertedSlide())
                             )
                         },
-                        onSuccessfulAuth = {
-                            popWithRootFallback(config.customAnimation)
-                        },
+                        onSuccessfulAuth = { popWithRootFallback(config.customAnimation) },
                         componentContext = context,
                         accountIdRepository = get(),
                         authRepository = get(),
@@ -241,19 +232,13 @@ class RootComponent(
             is Configuration.SignInScreen -> {
                 RootChild.SignInScreenChild(
                     SignInScreenComponent(
-                        onNavigationBack = {
-                            popWithRootFallback(config.customAnimation)
-                        },
+                        onNavigationBack = { popWithRootFallback(config.customAnimation) },
                         onNavigationToSignUpScreen = {
                             navigation.replaceCurrent(
-                                Configuration.SignUpScreen(
-                                    customAnimation = invertedSlide()
-                                )
+                                Configuration.SignUpScreen(customAnimation = invertedSlide())
                             )
                         },
-                        onSuccessfulAuth = {
-                            popWithRootFallback(config.customAnimation)
-                        },
+                        onSuccessfulAuth = { popWithRootFallback(config.customAnimation) },
                         componentContext = context,
                         accountIdRepository = get(),
                         authRepository = get(),
@@ -264,10 +249,8 @@ class RootComponent(
             is Configuration.GameWithFriendScreen -> {
                 RootChild.GameWithFriendChild(
                     GameWithFriendScreenComponent(
-                        {
-                            popWithRootFallback(config.customAnimation)
-                        },
-                        context
+                        onNavigationBack = { popWithRootFallback(config.customAnimation) },
+                        componentContext = context
                     )
                 )
             }
@@ -275,10 +258,8 @@ class RootComponent(
             is Configuration.GameWithBotScreen -> {
                 RootChild.GameWithBotChild(
                     GameWithBotScreenComponent(
-                        {
-                            popWithRootFallback(config.customAnimation)
-                        },
-                        context
+                        { popWithRootFallback(config.customAnimation) },
+                        context,
                     )
                 )
             }
@@ -291,13 +272,11 @@ class RootComponent(
                             navigation.pushToFront(
                                 Configuration.OnlineGameScreen(
                                     gameId,
-                                    scale()
+                                    scale(),
                                 )
                             )
                         },
-                        onGoingToWelcomeScreen = {
-                            popWithRootFallback(config.customAnimation)
-                        },
+                        onGoingToWelcomeScreen = { popWithRootFallback(config.customAnimation) },
                         searchingForGameRepository = get(),
                         context,
                     )
@@ -319,7 +298,7 @@ class RootComponent(
                         },
                         onlineGameRepository = get(),
                         accountIdRepository = get(),
-                        componentContext = context
+                        componentContext = context,
                     )
                 )
             }
@@ -336,7 +315,7 @@ class RootComponent(
                             popWithRootFallback(config.customAnimation)
                         },
                         accountInfoRepository = get(),
-                        context
+                        context,
                     )
                 )
             }
@@ -347,7 +326,7 @@ class RootComponent(
                         {
                             popWithRootFallback(slide())
                         },
-                        context
+                        context,
                     )
                 )
             }

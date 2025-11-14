@@ -125,7 +125,7 @@ fun SignInScreen(
                             stringResource(Res.string.invalid_login),
                             modifier = Modifier,
                             color = Color.Red,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
                         )
                     }
                 },

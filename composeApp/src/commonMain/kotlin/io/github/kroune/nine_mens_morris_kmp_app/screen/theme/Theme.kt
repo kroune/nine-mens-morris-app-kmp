@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber")
 package io.github.kroune.nine_mens_morris_kmp_app.screen.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme

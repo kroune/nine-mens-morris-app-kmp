@@ -43,17 +43,6 @@ fun GameWithFriendScreen(
     state: GameWithFriendScreenState,
     onEvent: (GameWithFriendScreenEvent) -> Unit,
 ) {
-    var gameEndPopUpClosed by remember { mutableStateOf(false) }
-    if (!gameEndPopUpClosed && state.gameEnded) {
-        GameEndPopUp(
-            onDismiss = { gameEndPopUpClosed = true },
-            onDiscarded = { gameEndPopUpClosed = true },
-            onBackToMainScreen = {
-                gameEndPopUpClosed = false
-                onEvent(GameWithFriendScreenEvent.NavigateBack)
-            }
-        )
-    }
     Scaffold(
         topBar = {
             IconButton(
@@ -129,5 +118,16 @@ fun GameWithFriendScreen(
                 }
             }
         }
+    }
+    var gameEndPopUpClosed by remember { mutableStateOf(false) }
+    if (!gameEndPopUpClosed && state.gameEnded) {
+        GameEndPopUp(
+            onDismiss = { gameEndPopUpClosed = true },
+            onDiscarded = { gameEndPopUpClosed = true },
+            onBackToMainScreen = {
+                gameEndPopUpClosed = false
+                onEvent(GameWithFriendScreenEvent.NavigateBack)
+            }
+        )
     }
 }

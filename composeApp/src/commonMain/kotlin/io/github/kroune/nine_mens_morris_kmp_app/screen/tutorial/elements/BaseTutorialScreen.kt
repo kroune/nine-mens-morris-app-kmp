@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.text.style.TextAlign
 import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
@@ -19,8 +20,7 @@ fun BaseTutorialScreen(
     textString: String,
 ) {
     Layout(
-        modifier = Modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
         content = {
             RenderPieceCountElement(
                 true,
@@ -43,8 +43,13 @@ fun BaseTutorialScreen(
                 text = textString,
                 textAlign = TextAlign.Center,
             )
-        }
-    ) { measurableList, constraints ->
+        },
+        measurePolicy = baseTutorialMeasurePolicy,
+    )
+}
+
+private val baseTutorialMeasurePolicy =
+    MeasurePolicy { measurableList, constraints ->
         val leftIndicator = measurableList[0]
         val gameBoard = measurableList[1]
         val rightIndicator = measurableList[2]
@@ -75,21 +80,18 @@ fun BaseTutorialScreen(
         )
         val leftIndicatorNewPlaceable = leftIndicator.measure(newConstraints)
         val rightIndicatorNewPlaceable = rightIndicator.measure(newConstraints)
-        layout(
-            constraints.maxWidth,
-            constraints.maxHeight,
-        ) {
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
             leftIndicatorNewPlaceable.place(x = 0, y = 0)
             gameBoardPlaceable.place(x = leftIndicatorMinWidth, y = 0)
             rightIndicatorNewPlaceable.place(
                 x = constraints.maxWidth - rightIndicatorMinWidth,
-                y = 0
+                y = 0,
             )
 
             textPlaceable.place(
                 x = (constraints.maxWidth - textPlaceable.width) / 2,
-                y = upPartHeight
+                y = upPartHeight,
             )
         }
     }
-}

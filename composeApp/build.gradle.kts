@@ -11,11 +11,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 object AppInfo {
-    const val appVersion: String = "1.0.1"
-    const val appVersionInt: Int = 101
-    const val licenseType = "GPL-3.0"
-    const val description = "Implementation of a table game called <Nine mens morris>"
-    const val homePage = "https://github.com/kroune/nine-mens-morris-lib-kmp"
+    const val APP_VERSION: String = "1.0.1"
+    const val APP_VERSION_INT: Int = 101
+    const val LICENSE_TYPE = "GPL-3.0"
+    const val DESCRIPTION = "Implementation of a table game called <Nine mens morris>"
+    const val HOME_PAGE = "https://github.com/kroune/nine-mens-morris-lib-kmp"
 }
 
 tasks.withType<Detekt>().configureEach {
@@ -60,8 +60,8 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(STRING, "distribution", "")
-        buildConfigField(STRING, "version", AppInfo.appVersion)
-        buildConfigField(INT, "versionInt", AppInfo.appVersionInt.toString())
+        buildConfigField(STRING, "version", AppInfo.APP_VERSION)
+        buildConfigField(INT, "versionInt", AppInfo.APP_VERSION_INT.toString())
     }
     targetConfigs {
         create("android") {
@@ -90,10 +90,10 @@ buildkonfig {
 
 kotlin {
     cocoapods {
-        version = AppInfo.appVersion
-        license = AppInfo.licenseType
-        summary = AppInfo.description
-        homepage = AppInfo.homePage
+        version = AppInfo.APP_VERSION
+        license = AppInfo.LICENSE_TYPE
+        summary = AppInfo.DESCRIPTION
+        homepage = AppInfo.HOME_PAGE
         framework {
             baseName = "ComposeApp"
             isStatic = true
@@ -377,8 +377,8 @@ android {
         applicationId = "io.github.kroune.nine_mens_morris"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = AppInfo.appVersionInt
-        versionName = AppInfo.appVersion
+        versionCode = AppInfo.APP_VERSION_INT
+        versionName = AppInfo.APP_VERSION
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
@@ -460,7 +460,7 @@ compose.desktop {
             linux {
                 debMaintainer = "kr0ne@tuta.io"
                 appCategory = "Amusements/Games"
-                rpmLicenseType = AppInfo.licenseType
+                rpmLicenseType = AppInfo.LICENSE_TYPE
                 modules("jdk.security.auth")
                 iconFile = project.file("icons/icon.png")
             }
@@ -477,7 +477,7 @@ compose.desktop {
                 TargetFormat.Msi, TargetFormat.Exe
             )
             packageName = "NineMensMorris"
-            packageVersion = AppInfo.appVersion
+            packageVersion = AppInfo.APP_VERSION
             description = "Implementation of a table game called <Nine mens morris>"
             vendor = "kroune"
             copyright = "© 2024 Kroune. All rights reserved."

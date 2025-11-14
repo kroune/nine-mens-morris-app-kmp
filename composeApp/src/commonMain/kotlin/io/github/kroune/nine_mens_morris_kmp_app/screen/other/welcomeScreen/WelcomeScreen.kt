@@ -191,8 +191,7 @@ private fun WelcomeScreenBottomBar(
                 onEvent(WelcomeScreenEvent.NavigateToAccountView)
             },
             icon = {
-                val isInAccount = state.isInAccount
-                when (isInAccount) {
+                when (val isInAccount = state.isInAccount) {
                     null -> {
                         LoadingCircle(
                             modifier = Modifier
