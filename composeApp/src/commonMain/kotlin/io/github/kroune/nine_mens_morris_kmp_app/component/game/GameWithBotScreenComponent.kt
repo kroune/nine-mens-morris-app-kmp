@@ -12,6 +12,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameBoardUseCas
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,11 +27,11 @@ class GameWithBotScreenComponent(
             gameStartPosition,
             setOf(),
             null,
-            false
+            false,
         )
     )
     val state
-        get() = _state
+        get() = _state.asStateFlow()
 
     private var botJob: Job? = null
 
@@ -42,7 +43,7 @@ class GameWithBotScreenComponent(
             }
             gameUseCase.handleHighLighting()
             botJob = componentScope.launch {
-                while (gameUseCase.canBotMove()) {
+                while (canBotMove()) {
                     gameUseCase.botMove()
                     gameUseCase.handleHighLighting()
                 }
@@ -117,9 +118,7 @@ class GameWithBotScreenComponent(
     fun onEvent(event: GameWithBotScreenEvent) {
         when (event) {
             is GameWithBotScreenEvent.OnPieceClick -> {
-                with(gameUseCase) {
-                    onClick(event.index)
-                }
+                onClick(event.index)
             }
 
             GameWithBotScreenEvent.Redo -> {
@@ -140,7 +139,7 @@ class GameWithBotScreenComponent(
         }
     }
 
-    private fun GameBoardUseCase.canBotMove(): Boolean {
+    private fun canBotMove(): Boolean {
         val position = _state.value.position
         return !position.pieceToMove && position.gameState() != GameState.End
     }

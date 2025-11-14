@@ -159,7 +159,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            implementation(libs.decompose)
+            api(libs.decompose)
             implementation(libs.decompose.animations)
 
             implementation(libs.kotlinx.serialization.json)
