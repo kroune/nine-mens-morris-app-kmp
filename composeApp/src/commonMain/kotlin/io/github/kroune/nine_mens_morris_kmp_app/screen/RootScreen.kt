@@ -132,7 +132,8 @@ fun RootScreen(component: RootComponent) {
                             with(instance.component) {
                                 ViewOwnAccountScreen(
                                     onEvent = { onEvent(it) },
-                                    state = state.collectValue()
+                                    state = state.collectValue(),
+                                    uploadingNewPictureResult = uploadingNewPictureResult,
                                 )
                             }
                         }
@@ -174,7 +175,12 @@ fun RootScreen(component: RootComponent) {
                         }
 
                         is RootChild.SearchingForGameChild -> {
-                            SearchingForGameScreen(instance.component)
+                            with(instance.component) {
+                                SearchingForGameScreen(
+                                    state = expectedWaitingTime.collectValue(),
+                                    errorFlow = searchingForGameErrorFlow,
+                                )
+                            }
                         }
 
                         is RootChild.OnlineGameChild -> {

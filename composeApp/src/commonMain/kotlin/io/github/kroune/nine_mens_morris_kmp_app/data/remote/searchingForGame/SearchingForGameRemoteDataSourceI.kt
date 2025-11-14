@@ -1,11 +1,10 @@
 package io.github.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame
 
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
-import kotlinx.coroutines.flow.MutableSharedFlow
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameEvent
+import kotlinx.coroutines.flow.Flow
 
 interface SearchingForGameRemoteDataSourceI {
-    suspend fun connect(
-        channel: MutableSharedFlow<Long>,
+    fun connect(
         jwtToken: String,
-    ): SearchingForGameResponse
+    ): Flow<SearchingForGameEvent>
 }

@@ -17,6 +17,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -26,36 +27,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.other.ViewOwnAccountScreenState
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.UploadPictureApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.ViewOwnAccountScreenEvent
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
+import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawAccountCreationDate
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
-import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCornerShape3
-import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.padding2
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.credentials_error
+import ninemensmorrisappkmp.composeapp.generated.resources.image_too_large
+import ninemensmorrisappkmp.composeapp.generated.resources.image_was_updated
 import ninemensmorrisappkmp.composeapp.generated.resources.log_out
+import ninemensmorrisappkmp.composeapp.generated.resources.network_error
 import ninemensmorrisappkmp.composeapp.generated.resources.rating
+import ninemensmorrisappkmp.composeapp.generated.resources.server_error
+import ninemensmorrisappkmp.composeapp.generated.resources.unknown_error
 import ninemensmorrisappkmp.composeapp.generated.resources.upload_picture
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ViewOwnAccountScreen(
     onEvent: (ViewOwnAccountScreenEvent) -> Unit,
-    state: ViewOwnAccountScreenState
+    state: ViewOwnAccountScreenState,
+    uploadingNewPictureResult: SharedFlow<UploadPictureApiResponses>
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             Box(
                 modifier = Modifier
@@ -65,9 +74,7 @@ fun ViewOwnAccountScreen(
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Button(
-                    onClick = {
-                        onEvent(ViewOwnAccountScreenEvent.OnLogoutPressed)
-                    },
+                    onClick = { onEvent(ViewOwnAccountScreenEvent.OnLogoutPressed) },
                     shape = RoundedCornerShape3
                 ) {
                     Text(stringResource(Res.string.log_out))
@@ -162,9 +169,40 @@ fun ViewOwnAccountScreen(
                 Text(stringResource(Res.string.upload_picture))
             }
         }
-        HandleOwnAccountScreenError(
-            state.uploadingNewPictureResult,
-            snackbarHostState
-        )
+    }
+
+    LaunchedEffect(uploadingNewPictureResult) {
+        uploadingNewPictureResult.collectLatest {
+            val text = when (it) {
+                is UploadPictureApiResponses.Success -> {
+                    getString(Res.string.image_was_updated)
+                }
+
+                is UploadPictureApiResponses.ServerError -> {
+                    getString(Res.string.server_error)
+                }
+
+                is UploadPictureApiResponses.NetworkError -> {
+                    getString(Res.string.network_error)
+                }
+
+                is UploadPictureApiResponses.CredentialsError -> {
+                    getString(Res.string.credentials_error)
+                }
+
+                is UploadPictureApiResponses.TooLargeImage -> {
+                    getString(
+                        Res.string.image_too_large,
+                        it.maxWidth,
+                        it.maxHeight
+                    )
+                }
+
+                is UploadPictureApiResponses.UnknownError -> {
+                    getString(Res.string.unknown_error)
+                }
+            }
+            snackbarHostState.showSnackbar(text)
+        }
     }
 }

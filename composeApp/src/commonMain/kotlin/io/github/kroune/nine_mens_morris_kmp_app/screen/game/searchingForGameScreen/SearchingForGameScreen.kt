@@ -14,18 +14,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameComponent
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
+import io.github.kroune.nine_mens_morris_kmp_app.component.game.SearchingForGameScreenState
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LoadingCircle
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.game_expected_waiting_time
-import ninemensmorrisappkmp.composeapp.generated.resources.image_was_updated
 import ninemensmorrisappkmp.composeapp.generated.resources.network_error
 import ninemensmorrisappkmp.composeapp.generated.resources.searching_for_game
 import ninemensmorrisappkmp.composeapp.generated.resources.server_error
@@ -35,7 +34,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SearchingForGameScreen(
-    component: SearchingForGameComponent
+    state: SearchingForGameScreenState,
+    errorFlow: SharedFlow<SearchingForGameEvent.Error>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -58,8 +58,7 @@ fun SearchingForGameScreen(
                 modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center,
             ) {
-                val waitingTime =
-                    component.expectedWaitingTime.collectAsState(null).value
+                val waitingTime = state.expectedWaitingTime
                 if (waitingTime == null) {
                     LoadingCircle()
                 } else {
@@ -71,12 +70,11 @@ fun SearchingForGameScreen(
             }
         }
         LaunchedEffect(Unit) {
-            component.searchingForGameErrorFlow.collectLatest { forGameResponse ->
+            errorFlow.collectLatest { forGameResponse ->
                 val textRes = when (forGameResponse) {
-                    is SearchingForGameResponse.Success -> Res.string.image_was_updated
-                    is SearchingForGameResponse.ServerError -> Res.string.server_error
-                    is SearchingForGameResponse.NetworkError -> Res.string.network_error
-                    is SearchingForGameResponse.UnknownError -> Res.string.unknown_error
+                    is SearchingForGameEvent.Error.ServerError -> Res.string.server_error
+                    is SearchingForGameEvent.Error.NetworkError -> Res.string.network_error
+                    is SearchingForGameEvent.Error.UnknownError -> Res.string.unknown_error
                 }
                 snackbarHostState.showSnackbar(getString(textRes))
             }

@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.gradle.dsl.JsSourceMapNamesPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 object AppInfo {
@@ -114,6 +113,11 @@ kotlin {
         freeCompilerArgs.add("-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi")
     }
 
+    js {
+        browser()
+        binaries.executable()
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
     listOf(wasmJs()).forEach {
         with(it) {
@@ -125,18 +129,6 @@ kotlin {
                 testTask {
                     useKarma {
                         useDebuggableChrome()
-                    }
-                }
-                val rootDirPath = project.rootDir.path
-                val projectDirPath = project.projectDir.path
-                commonWebpackConfig {
-                    outputFileName = "composeApp.js"
-                    devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                        static = (static ?: mutableListOf()).apply {
-                            // Serve sources to debug inside browser
-                            add(rootDirPath)
-                            add(projectDirPath)
-                        }
                     }
                 }
             }
@@ -167,7 +159,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            api(libs.decompose)
+            implementation(libs.decompose)
             implementation(libs.decompose.animations)
 
             implementation(libs.kotlinx.serialization.json)
@@ -307,8 +299,20 @@ fun ensureSingleEmptyLineAtEndVerbose(directoryPath: String) {
                     val newEnding = getTrailingWhitespace(newContent)
                     file.writeText(newContent)
                     println("✓ Fixed: ${file.name}")
-                    println("  Before: ended with ${originalEnding.length} chars '${escapeWhitespace(originalEnding)}'")
-                    println("  After:  ended with ${newEnding.length} chars '${escapeWhitespace(newEnding)}'")
+                    println(
+                        "  Before: ended with ${originalEnding.length} chars '${
+                            escapeWhitespace(
+                                originalEnding
+                            )
+                        }'"
+                    )
+                    println(
+                        "  After:  ended with ${newEnding.length} chars '${
+                            escapeWhitespace(
+                                newEnding
+                            )
+                        }'"
+                    )
                 }
             } catch (e: Exception) {
                 println("✗ Error processing ${file.name}: ${e.message}")
