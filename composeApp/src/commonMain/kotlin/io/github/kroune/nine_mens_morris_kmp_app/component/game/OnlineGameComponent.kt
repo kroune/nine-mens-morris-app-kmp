@@ -6,22 +6,21 @@ import com.kroune.nineMensMorrisLib.EMPTY
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountIdByJwtTokenApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.GameEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.OnlineGameScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameBoardUseCase
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -114,17 +113,15 @@ class OnlineGameComponent(
         }
     )
 
-    private val channelToSendMoves: Channel<Movement> = Channel()
-    private val channelToReceiveMoves: Channel<Movement> = Channel()
-    val onGiveUp: suspend () -> Unit = {
+    private val channelToSendMoves: MutableSharedFlow<Movement> = MutableSharedFlow()
+    private val onGiveUp: suspend () -> Unit = {
         _state.update {
             it.copy(
                 gameEnded = true
             )
         }
-        channelToSendMoves.trySend(Movement(null, null))
+        channelToSendMoves.emit(Movement(null, null))
     }
-    private var onGiveClose: (suspend () -> Unit)? = null
     var displayGiveUpConfirmation = mutableStateOf(false)
     private lateinit var ownAccountInfoUseCase: AccountInfoUseCase
     private lateinit var enemyAccountInfoUseCase: AccountInfoUseCase
@@ -132,108 +129,94 @@ class OnlineGameComponent(
 
     init {
         componentScope.launch {
-            runCatching {
-                val gameEnded: CompletableDeferred<Boolean>
-                // TODO: handle errors
-                val enemyId: Long
-                onlineGameRepository.connect(gameId, channelToSendMoves, channelToReceiveMoves)
-                    .let { value ->
-                        state.update {
-                            it.copy(
-                                position = value.first.startPosition.await(),
-                                isGreen = value.first.isGreen.await()
-                            )
-                        }
-                        enemyId = value.first.enemyId.await()
-                        onGiveClose = value.second
-                        gameEnded = value.first.gameEnded
+            val accountIdResult = accountIdRepository.getAccountId()
+            if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
+                error("accountId is not success")
+            }
+            ownAccountId = accountIdResult.accountId
+            ownAccountInfoUseCase = AccountInfoUseCase(
+                accountId = accountIdResult.accountId,
+                onLoginResult = { result ->
+                    _state.update {
+                        it.copy(
+                            ownAccountLoginResult = result
+                        )
                     }
-                val accountIdResult = accountIdRepository.getAccountId()
-                if (accountIdResult !is AccountIdByJwtTokenApiResponses.Success) {
-                    error("accountId is not success")
-                }
-                ownAccountId = accountIdResult.accountId
-                ownAccountInfoUseCase = AccountInfoUseCase(
-                    accountId = accountIdResult.accountId,
-                    onLoginResult = { result ->
-                        _state.update {
-                            it.copy(
-                                ownAccountLoginResult = result
-                            )
-                        }
-                    },
-                    onRatingResult = { result ->
-                        _state.update {
-                            it.copy(
-                                ownAccountRatingResult = result
-                            )
-                        }
-                    },
-                    needPicture = { result ->
-                        _state.update {
-                            it.copy(
-                                ownAccountPictureResult = result
-                            )
-                        }
-                    },
-                    scope = componentScope,
-                    accountInfoRepository = get()
-                )
-                enemyAccountId = enemyId
-                enemyAccountInfoUseCase = AccountInfoUseCase(
-                    accountId = enemyId,
-                    onLoginResult = { result ->
-                        _state.update {
-                            it.copy(
-                                enemyAccountLoginResult = result
-                            )
-                        }
-                    },
-                    onRatingResult = { result ->
-                        _state.update {
-                            it.copy(
-                                enemyAccountRatingResult = result
-                            )
-                        }
-                    },
-                    needPicture = { result ->
-                        _state.update {
-                            it.copy(
-                                enemyAccountPictureResult = result
-                            )
-                        }
-                    },
-                    scope = componentScope,
-                    accountInfoRepository = get()
-                )
-                while (!gameEnded.isCompleted) {
-                    val moveResult = channelToReceiveMoves.receiveCatching()
-                    if (moveResult.isFailure) {
-                        // game ended
-                        if (gameEnded.isCompleted && gameEnded.getCompleted()) {
-                            break
-                        } else {
-                            // some error happened
-                            // TODO: notify user
-                            println(moveResult.exceptionOrNull()!!.stackTraceToString())
-                            withContext(Dispatchers.Main) {
-                                onNavigationToWelcomeScreen()
+                },
+                onRatingResult = { result ->
+                    _state.update {
+                        it.copy(
+                            ownAccountRatingResult = result
+                        )
+                    }
+                },
+                needPicture = { result ->
+                    _state.update {
+                        it.copy(
+                            ownAccountPictureResult = result
+                        )
+                    }
+                },
+                scope = componentScope,
+                accountInfoRepository = get()
+            )
+        }
+        componentScope.launch {
+            onlineGameRepository.connect(gameId, channelToSendMoves).collect { event ->
+                if (event is GameEvent.Error) {
+                    println(event)
+                    withContext(Dispatchers.Main) {
+                        onNavigationToWelcomeScreen()
+                    }
+                } else {
+                    when (event) {
+                        GameEvent.Success.GameEnded -> {
+                            _state.update {
+                                it.copy(gameEnded = true)
                             }
-                            return@launch
+                        }
+
+                        is GameEvent.Success.GameInfo -> {
+                            state.update {
+                                it.copy(
+                                    position = event.startPosition,
+                                    isGreen = event.isGreen,
+                                )
+                            }
+                            val enemyId = event.enemyId
+                            enemyAccountId = enemyId
+                            enemyAccountInfoUseCase = AccountInfoUseCase(
+                                accountId = enemyId,
+                                onLoginResult = { result ->
+                                    _state.update {
+                                        it.copy(
+                                            enemyAccountLoginResult = result
+                                        )
+                                    }
+                                },
+                                onRatingResult = { result ->
+                                    _state.update {
+                                        it.copy(
+                                            enemyAccountRatingResult = result
+                                        )
+                                    }
+                                },
+                                needPicture = { result ->
+                                    _state.update {
+                                        it.copy(
+                                            enemyAccountPictureResult = result
+                                        )
+                                    }
+                                },
+                                scope = componentScope,
+                                accountInfoRepository = get()
+                            )
+                        }
+
+                        is GameEvent.Success.Move -> {
+                            gameUseCase.processMovement(event.movement)
                         }
                     }
-                    val move = moveResult.getOrThrow()
-                    gameUseCase.processMovement(move)
-                }
-                _state.update {
-                    it.copy(
-                        gameEnded = true
-                    )
-                }
-            }.onFailure {
-                println("caught unhandled exception at online game ${it.stackTraceToString()}")
-                withContext(Dispatchers.Main) {
-                    onNavigationToWelcomeScreen()
                 }
             }
         }
@@ -273,10 +256,7 @@ class OnlineGameComponent(
                         }
                         // post our move
                         componentScope.launch {
-                            channelToSendMoves.trySend(move).onFailure {
-                                // game has ended || some exception occurred
-                                return@launch
-                            }
+                            channelToSendMoves.emit(move)
                             _state.update {
                                 it.copy(
                                     timeLeft = 30
