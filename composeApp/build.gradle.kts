@@ -180,6 +180,7 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
         androidMain.dependencies {
+            implementation(libs.androidx.core.splashscreen)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.cio)
 //            implementation(compose.uiTooling)

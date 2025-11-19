@@ -4,6 +4,7 @@ android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activityCompose = "1.11.0"
+androidx-splash = "1.2.0"
 buildKonfig = "0.17.1"
 compose-plugin = "1.9.3"
 filekitCompose = "0.8.8"
@@ -27,6 +28,7 @@ koinCore = "4.1.1"
 detekt = "2.0.0-alpha.1"
 
 [libraries]
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splash" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
 androidx-ui-test = { module = "androidx.compose.ui:ui-test", version.ref = "uiTestJunit4Android" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestJunit4Android" }

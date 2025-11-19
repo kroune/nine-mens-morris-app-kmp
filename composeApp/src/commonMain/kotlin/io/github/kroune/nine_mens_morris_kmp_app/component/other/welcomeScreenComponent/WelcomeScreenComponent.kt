@@ -73,9 +73,7 @@ class WelcomeScreenComponent(
 
     init {
         startJwtTokenCheckJob()
-        println("1234")
         doOnStart {
-            println("123")
             startJwtTokenCheckJob()
         }
     }
