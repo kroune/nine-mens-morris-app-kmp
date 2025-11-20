@@ -1,7 +1,6 @@
 package io.github.kroune.nine_mens_morris_kmp_app.domain.useCases
 
 import com.kroune.nineMensMorrisLib.Position
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +22,6 @@ class GameAnalyzeUseCase(
         onDepthChange(
             max(0, depth() - 1)
         )
-        stopAnalyze()
     }
 
     /**
@@ -33,13 +31,7 @@ class GameAnalyzeUseCase(
         onDepthChange(
             depth() + 1
         )
-        stopAnalyze()
     }
-
-    /**
-     * current analyze job
-     */
-    var analyzeJob: Job? = null
 
     /**
      * starts board analyze
@@ -55,12 +47,5 @@ class GameAnalyzeUseCase(
                 emit(currentPos)
             }
         }
-    }
-
-    /**
-     * hides analyze gui and delete it's result
-     */
-    private fun stopAnalyze() {
-        analyzeJob?.cancel()
     }
 }

@@ -96,10 +96,12 @@ class GameWithFriendScreenComponent(
     fun onGameAnalyzeEvent(event: GameWithFriendScreenEvent.GameAnalyzeEvent) {
         when (event) {
             GameWithFriendScreenEvent.GameAnalyzeEvent.DecreaseAnalyzeDepth -> {
+                analyzeJob?.cancel()
                 gameAnalyzeUseCase.decreaseDepth()
             }
 
             GameWithFriendScreenEvent.GameAnalyzeEvent.IncreaseAnalyzeDepth -> {
+                analyzeJob?.cancel()
                 gameAnalyzeUseCase.increaseDepth()
             }
 
