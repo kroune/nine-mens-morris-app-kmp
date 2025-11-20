@@ -190,6 +190,7 @@ kotlin {
             implementation(kotlin("test"))
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
+            implementation(libs.multiplatform.settings.test)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

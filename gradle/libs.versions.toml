@@ -58,6 +58,7 @@ kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotl
 multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 
+multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatformSettings" }
 ninemensmorris = { group = "io.github.kroune", name = "nineMensMorris", version.ref = "ninemensmorris" }
 
 macro-benchmark = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "macroBenchmark"}
