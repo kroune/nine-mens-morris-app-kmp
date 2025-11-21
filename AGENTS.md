@@ -1,56 +1,62 @@
-# AGENT.md - AI Agent Development Guide
-
 ## Project Context
 
-**Nine Men's Morris KMP** is a cross-platform implementation of the classic board game "Nine Men's Morris" with local play (vs friend/bot), online multiplayer, leaderboards, and user authentication.
+**Nine Men's Morris KMP** is a cross-platform implementation of the classic board game "Nine Men's
+Morris" with local play (vs friend/bot), online multiplayer, leaderboards, and user authentication.
 
-**Mental Model**: "Offline-capable board game with optional online features - all UI and business logic shared across platforms using Compose Multiplatform, with Decompose for navigation and Koin for DI." [1](#0-0) 
+**Mental Model**: "Offline-capable board game with optional online features - all UI and business
+logic shared across platforms using Compose Multiplatform, with Decompose for navigation and Koin
+for DI."
 
 ## Tech Stack & Targets
 
 ### Supported Platforms
+
 - **Android** (minSdk 24, targetSdk 35, compileSdk 35)
 - **iOS** (iosX64, iosArm64, iosSimulatorArm64) - Framework-based integration
 - **Desktop** (JVM) - Linux, macOS, Windows
-- **Web** (WasmJs) - Browser-based via WebAssembly [2](#0-1) [3](#0-2) 
+- **Web** (WasmJs) - Browser-based via WebAssembly
 
 ### Core Technology Stack
 
 **Language & Build**
-- Kotlin: `2.2.0` (with experimental features: `-Xnon-local-break-continue`, `-Xexpect-actual-classes`)
-- Compose Multiplatform: `1.8.0` (Shared UI across all platforms)
-- Android Gradle Plugin: `8.7.3` [4](#0-3) [5](#0-4) 
 
-**Dependency Injection**
-- Koin Core: `4.0.3` (Single `koinModule` in `di/Koin.kt`) [6](#0-5) [7](#0-6) 
+- Kotlin: `2.2.0`
+- Compose Multiplatform: `1.8.0` (Shared UI across all platforms)
+- AGP: `8.7.3`
+
+**DI**
+
+- Koin: `4.0.3` (Single `koinModule` in `di/Koin.kt`)
 
 **Networking**
+
 - Ktor Client: `3.0.0` (with CIO engine, Content Negotiation, WebSockets, Retry logic)
-- Kotlinx Serialization: `1.8.1` (JSON + Protobuf) [8](#0-7) [9](#0-8) 
+- Kotlinx Serialization: `1.8.1` (JSON + Protobuf)
 
 **Navigation & Architecture**
+
 - Decompose: `3.3.0` (Component-based navigation with back stack management)
-- Architecture: Clean Architecture (Domain → Data → Component → Screen layers) [10](#0-9) [11](#0-10) 
+- Architecture: Clean Architecture (Domain → Data → Component → Screen layers)
 
 **Local Storage**
-- Multiplatform Settings: `1.3.0` (Key-value storage, no database used) [12](#0-11) 
+
+- Multiplatform Settings: `1.3.0` (Key-value storage, no database used)
 
 **Concurrency**
-- Kotlinx Coroutines: `1.10.2` (Default dispatcher for all coroutines) [13](#0-12) 
+
+- Kotlinx Coroutines: `1.10.2` (Default dispatcher for all coroutines)
 
 **Build Configuration**
-- BuildKonfig: `0.17.1` (Platform-specific build constants) [14](#0-13) 
+
+- BuildKonfig: `0.17.1` (Platform-specific build constants)
 
 ## Project Structure
 
 ### Module Organization
-
-This project uses a **single-module architecture**. All code lives in the `composeApp` module with platform-specific source sets.
-
 ```
 composeApp/
 ├── src/
-│   ├── commonMain/          # ✅ SHARED CODE (ALL PLATFORMS)
+│   ├── commonMain/
 │   │   ├── kotlin/
 │   │   │   └── io/github/kroune/nine_mens_morris_kmp_app/
 │   │   │       ├── component/      # Decompose components (navigation logic)
@@ -59,280 +65,197 @@ composeApp/
 │   │   │       ├── domain/         # Business logic (repositories, use cases, entities)
 │   │   │       ├── navigation/     # Navigation configuration
 │   │   │       ├── screen/         # Compose UI screens
-│   │   │       └── Platform.kt     # expect/actual declarations
-│   │   └── composeResources/       # ✅ SHARED RESOURCES (strings, images)
-│   ├── androidMain/         # ❌ NO KOTLIN CODE (uses Compose Multiplatform defaults)
-│   │   ├── AndroidManifest.xml
-│   │   └── res/             # Android-specific resources (icons, fonts)
-│   ├── iosMain/             # ❌ DOES NOT EXIST (iOS uses commonMain directly)
-│   ├── desktopMain/         # 🔧 PLATFORM ENTRY POINT
-│   │   └── kotlin/.../main.kt
-│   └── wasmJsMain/          # 🔧 PLATFORM ENTRY POINT
-│       └── kotlin/.../main.kt
+│   │   └── composeResources/
+│   ├── androidMain/
+│   ├── iosMain/
+│   ├── desktopMain/ 
+│   └── wasmJsMain/
 └── build.gradle.kts
-``` [15](#0-14) 
-
-### Source Set Hierarchy & Responsibilities
-
-**commonMain (Single Source of Truth)**
-- **ALL** business logic, networking, storage, UI, and navigation code
-- Domain layer: Repositories, Use Cases, Entities
-- Data layer: Remote/Local data sources
-- Component layer: Decompose components with state management
-- Screen layer: Composable UI functions [16](#0-15) 
-
-**Platform-Specific Source Sets**
-- `androidMain/`: Empty (Android uses Compose Multiplatform's auto-generated MainActivity)
-- `iosMain/`: Does not exist (iOS uses commonMain via framework export)
-- `desktopMain/`: Contains only `main()` entry point
-- `wasmJsMain/`: Contains only `main()` entry point with web-specific initialization [17](#0-16) [18](#0-17) 
+```
 
 ### Entry Points by Platform
 
 **Android**: Auto-generated by Compose Multiplatform (no custom Activity code)
+
 - Manifest references: `io.github.kroune.nine_mens_morris_kmp_app.MainActivity`
-- Application class: `AndroidApplication` (Compose Multiplatform default) [19](#0-18) 
+- Application class: `AndroidApplication` (Compose Multiplatform default)
 
 **iOS**: Swift calls into Kotlin framework
+
 - Entry: `iosApp/iosApp/iOSApp.swift` → `ContentView.swift`
-- Kotlin integration: `MainViewControllerKt.MainViewController()` (auto-generated by Compose Multiplatform) [20](#0-19) 
+- Kotlin integration: `MainViewControllerKt.MainViewController()` (auto-generated by Compose
+  Multiplatform)
 
 **Desktop**: JVM main function
+
 - Entry: `composeApp/src/desktopMain/kotlin/.../main.kt`
-- Initializes Koin, Decompose lifecycle, and Window [21](#0-20) 
+- Initializes Koin, Decompose lifecycle, and Window
 
 **Web (WasmJs)**: Browser entry point
+
 - Entry: `composeApp/src/wasmJsMain/kotlin/.../main.kt`
-- Uses `ComposeViewport` to mount Compose UI to DOM [22](#0-21) 
+- Uses `ComposeViewport` to mount Compose UI to DOM
 
 ### Architecture Layers
 
 **1. Domain Layer** (`domain/`)
+
 - Repositories (interfaces + implementations): Handle data orchestration
 - Use Cases: Business logic operations
-- Entities: Data models used across the app [23](#0-22) 
+- Entities: Data models used across the app
 
 **2. Data Layer** (`data/`)
+
 - Remote data sources: Ktor-based API calls
 - Local data sources: Multiplatform Settings for key-value storage
-- Common networking utilities (Ktor client configuration) [24](#0-23) 
+- Common networking utilities (Ktor client configuration)
 
 **3. Component Layer** (`component/`)
+
 - Decompose components: Manage navigation and screen-level state
 - NOT ViewModels: Uses `componentCoroutineScope()` instead of Android's ViewModel
-- Each component has associated screen in `screen/` directory [25](#0-24) 
+- Each component has associated screen in `screen/` directory
 
 **4. Screen Layer** (`screen/`)
+
 - Pure Composable functions
 - Receive state and event handlers from components
-- Organized by feature: `auth/`, `game/`, `other/`, `popUps/`, `tutorial/` [26](#0-25) 
+- Organized by feature: `auth/`, `game/`, `other/`, `popUps/`, `tutorial/`
 
 **5. Navigation** (`navigation/`)
+
 - Decompose-based navigation with serializable configurations
 - Custom animations per screen transition
-- Back stack management with fallback logic [27](#0-26) 
+- Back stack management with fallback logic
 
 ## Development Rules (KMP Specific)
 
 ### Critical Rules
 
-**❌ DO NOT:**
+**DO NOT:**
+
 1. **Add platform-specific code to `commonMain`**
-   - Java-specific classes (e.g., `java.util.Date`, `java.io.File`) are forbidden in commonMain
-   - Exception: Platform.kt uses `java.io.IOException` in `actual` implementations only [28](#0-27) 
+    - Java-specific classes (e.g., `java.util.Date`, `java.io.File`) are forbidden in commonMain
+    - Exception: Platform.kt uses `java.io.IOException` in `actual` implementations only
 
 2. **Use Android ViewModels or Lifecycle components**
-   - This is NOT an Android-first app
-   - Use Decompose components and `componentCoroutineScope()` instead [29](#0-28) 
+    - This is NOT an Android-first app
+    - Use Decompose components and `componentCoroutineScope()` instead
 
 3. **Add dependencies without updating `libs.versions.toml`**
-   - All dependencies MUST be declared in the version catalog first [30](#0-29) 
+    - All dependencies MUST be declared in the version catalog first
 
 4. **Create new `expect`/`actual` declarations unnecessarily**
-   - This codebase has ONLY ONE expect function: `getScreenIntSize()`
-   - Prefer pure Kotlin abstractions and interfaces [31](#0-30) 
+    - This codebase has ONLY ONE expect function: `getScreenIntSize()`
+    - Prefer pure Kotlin abstractions and interfaces
 
-**✅ DO:**
+**DO:**
+
 1. **Put ALL shared code in `commonMain`**
-   - Business logic, UI, networking, storage - everything goes here
-   - Platform entry points (`main.kt`) are the ONLY code in platform source sets
+    - Business logic, UI, networking, storage - everything goes here
+    - Platform entry points (`main.kt`) are the ONLY code in platform source sets
 
-2. **Use Koin for dependency injection**
-   - Single `koinModule` defined in `di/Koin.kt`
-   - Components get dependencies via Koin's `get()` function
-   - Initialize Koin in platform entry points (already done) [32](#0-31) [33](#0-32) 
+2. **Use Koin for DI**
+    - Single `koinModule` defined in `di/Koin.kt`
+    - Components get dependencies via Koin's `get()` function
+    - Initialize Koin in platform entry points (already done)
 
 3. **Use `componentCoroutineScope()` for async operations**
-   - Extension function on `ComponentContext` that ties coroutine lifecycle to component
-   - Uses `Dispatchers.Default` by default
-   - Automatically cancels when component is destroyed [25](#0-24) 
+    - Extension function on `ComponentContext` that ties coroutine lifecycle to component
+    - Uses `Dispatchers.Default` by default
+    - Automatically cancels when component is destroyed
 
 4. **Use Decompose for navigation**
-   - Define navigation configurations in `navigation/Root.kt`
-   - Create components in `component/` that extend `ComponentContext`
-   - Create corresponding screens in `screen/` as pure Composables [34](#0-33) 
+    - Define navigation configurations in `navigation/Root.kt`
+    - Create components in `component/` that extend `ComponentContext`
+    - Create corresponding screens in `screen/` as pure Composables
 
 5. **Store resources in `composeResources/`**
-   - Strings, images, fonts MUST be in `commonMain/composeResources/`
-   - Access via `Res.string.your_string_key` or `Res.drawable.your_image`
-   - This ensures cross-platform resource loading
+    - Strings, images, fonts MUST be in `commonMain/composeResources/`
+    - Access via `Res.string.your_string_key` or `Res.drawable.your_image`
+    - This ensures cross-platform resource loading
 
 6. **Use Multiplatform Settings for local storage**
-   - No database in this project
-   - Use `Settings()` from `com.russhwolf:multiplatform-settings`
-   - Store simple key-value pairs (JWT tokens, account IDs, preferences)
+    - No database in this project
+    - Use `Settings()` from `com.russhwolf:multiplatform-settings`
+    - Store simple key-value pairs (JWT tokens, account IDs, preferences)
 
 ### Naming Conventions
 
 **Components** (in `component/` directory)
+
 - Suffix: `Component` (e.g., `WelcomeScreenComponent`, `GameWithBotScreenComponent`)
 - Extend `ComponentContext`
 - Manage state via `MutableStateFlow`
-- Example pattern: `XyzComponent` + `XyzComponentState` (sealed class for events) [35](#0-34) 
+- Example pattern: `XyzComponent` + `XyzComponentState` (sealed class for events)
 
 **Screens** (in `screen/` directory)
+
 - Suffix: `Screen` (e.g., `WelcomeScreen`, `GameWithBotScreen`)
 - Pure `@Composable` functions
 - Receive component state and event handler as parameters
-- NO business logic - only UI rendering [26](#0-25) 
+- NO business logic - only UI rendering
 
 **Repositories**
+
 - Interface: `XyzRepositoryI`
 - Implementation: `XyzRepositoryImpl`
-- Registered in Koin as singletons [36](#0-35) 
+- Registered in Koin as singletons
 
 **Data Sources**
+
 - Interface: `XyzDataSourceI`
 - Implementation: `XyzDataSourceImpl`
-- Separate `remote/` and `local/` data sources (though no `local/` directory exists currently) [37](#0-36) 
+- Separate `remote/` and `local/` data sources (though no `local/` directory exists currently)
 
 ### Threading & Concurrency Rules
 
 **Default Dispatcher Usage**
+
 - All coroutines use `Dispatchers.Default` via `componentCoroutineScope()`
 - DO NOT use `Dispatchers.IO` (it's JVM-specific and won't work on JS/Native)
-- DO NOT use `Dispatchers.Main` directly - Compose handles main thread dispatching [38](#0-37) 
+- DO NOT use `Dispatchers.Main` directly - Compose handles main thread dispatching
 
 **Coroutine Lifecycle**
+
 - Always launch coroutines from `componentCoroutineScope()`
 - Never use `GlobalScope` or `CoroutineScope(Dispatchers.Default)` directly in components
-- The scope automatically cancels when component is destroyed [39](#0-38) 
+- The scope automatically cancels when component is destroyed
 
 ### Network Error Handling
 
 **Custom Network Error Recovery**
+
 - Use `Result<T>.recoverNetworkError()` extension for consistent error handling
-- Handles both common (`IOException`, `ConnectTimeoutException`) and platform-specific network errors
-- Platform-specific errors handled via `onNativeNetworkError()` (actual implementation per platform) [40](#0-39) 
+- Handles both common (`IOException`, `ConnectTimeoutException`) and platform-specific network
+  errors
+- Platform-specific errors handled via `onNativeNetworkError()` (actual implementation per platform)
 
 **Ktor Client Configuration**
+
 - Shared client defined in `data/Common.kt`
 - Includes retry logic (5 retries on timeout)
 - 10-second request timeout, 30-minute socket timeout
-- Uses JSON and Protobuf serialization [9](#0-8) 
+- Uses JSON and Protobuf serialization
 
 ### UI & Compose Rules
 
 **Theme Management**
+
 - Single theme defined in `screen/theme/Theme.kt`
 - Use `AppTheme` wrapper at root level
 - DO NOT create platform-specific themes
 
 **Back Handler**
+
 - Custom back handling via `BackHandler` utility
 - Components implement `onBackPressed()` method
-- Escape key triggers back action on Desktop/Web [41](#0-40) 
-
-**Navigation Animations**
-- Custom animations defined per configuration
-- Use Decompose's animation DSL (`slide()`, `fade()`, `scale()`)
-- Animations can be chained with `+` operator [42](#0-41) 
-
-## Common Tasks & Commands
-
-### Building & Running
-
-**Android**
-```bash
-./gradlew :composeApp:assembleDebug           # Build APK
-./gradlew :composeApp:installDebug            # Install on device
-./gradlew :composeApp:assembleRelease         # Build release APK (requires keystore)
-```
-
-**Desktop (JVM)**
-```bash
-./gradlew :composeApp:runDistributable        # Run desktop app
-./gradlew :composeApp:packageDistributionForCurrentOS  # Create native installer
-./gradlew :composeApp:createRuntimeImage      # Create runtime with bundled JDK
-```
-
-**Web (WasmJs)**
-```bash
-./gradlew :composeApp:wasmJsBrowserDevelopmentRun     # Dev server with hot reload
-./gradlew :composeApp:wasmJsBrowserDistribution       # Production build
-./gradlew :composeApp:wasmJsProcessBrowserDistribution # Rename WASM files (custom task)
-``` [43](#0-42) 
-
-**iOS**
-```bash
-# Build Kotlin framework for iOS
-./gradlew :composeApp:linkReleaseFrameworkIosArm64
-./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
-
-# Open Xcode project
-open iosApp/iosApp.xcodeproj
-# Then run from Xcode
-```
-
-### Testing
-
-**Unit Tests**
-```bash
-./gradlew :composeApp:allTests                # Run all tests
-./gradlew :composeApp:testDebugUnitTest       # Android unit tests
-./gradlew :composeApp:desktopTest             # Desktop tests
-```
-
-**UI Tests (Android)**
-```bash
-./gradlew :composeApp:connectedAndroidTest    # Run on connected device
-./gradlew :composeApp:pixel2api30DebugAndroidTest  # Run on managed device
-``` [44](#0-43) 
-
-### Adding Dependencies
-
-**Step 1: Update `gradle/libs.versions.toml`**
-```toml
-[versions]
-your-library = "1.0.0"
-
-[libraries]
-your-library = { group = "com.example", name = "library", version.ref = "your-library" }
-``` [45](#0-44) 
-
-**Step 2: Add to `composeApp/build.gradle.kts`**
-```kotlin
-kotlin {
-    sourceSets {
-        commonMain.dependencies {
-            implementation(libs.your.library)  // For all platforms
-        }
-        androidMain.dependencies {
-            implementation(libs.your.library)  // Android only
-        }
-        // etc.
-    }
-}
-``` [46](#0-45) 
-
-**Step 3: Sync Gradle**
-```bash
-./gradlew --refresh-dependencies
-```
+- Escape key triggers back action on Desktop/Web
 
 ### Adding a New Screen
 
 **1. Create Navigation Configuration** (in `navigation/Root.kt`)
+
 ```kotlin
 @Serializable
 data class YourNewScreen(
@@ -342,21 +265,24 @@ data class YourNewScreen(
 ```
 
 **2. Create Component** (in `component/YourFeatureComponent.kt`)
+
 ```kotlin
 class YourFeatureComponent(
     componentContext: ComponentContext,
     private val onNavigationBack: () -> Unit
 ) : ComponentContext by componentContext {
     private val scope = componentCoroutineScope()
-    
+
     private val _state = MutableStateFlow(YourState())
     val state: StateFlow<YourState> = _state.asStateFlow()
-    
-    fun onEvent(event: YourEvent) { /* handle events */ }
+
+    fun onEvent(event: YourEvent) { /* handle events */
+    }
 }
 ```
 
 **3. Create Screen** (in `screen/YourFeatureScreen.kt`)
+
 ```kotlin
 @Composable
 fun YourFeatureScreen(
@@ -368,71 +294,53 @@ fun YourFeatureScreen(
 ```
 
 **4. Register in RootComponent** (in `component/RootComponent.kt`)
+
 - Add to `RootChild` sealed class
 - Add to `createChild()` when statement
-- Add to `RootScreen.kt` rendering logic [49](#0-48)
+- Add to `RootScreen.kt` rendering logic
 
 ### Code Generation & Build Tasks
 
 **BuildKonfig** (Platform-specific constants)
+
 - Auto-generated file: `BuildKonfig.kt`
 - Access via: `BuildKonfig.distribution`, `BuildKonfig.version`, `BuildKonfig.versionInt`
-- Configuration in `build.gradle.kts` [14](#0-13)
-
-**Baseline Profile (Android Performance)**
-```bash
-./gradlew :baselineprofile:pixel2api30BenchmarkAndroidTest  # Generate profile
-# Profile saved to composeApp/src/androidMain/generated/baselineProfiles/
-``` [50](#0-49) 
+- Configuration in `build.gradle.kts`
 
 ### Debugging Tips
 
 **Network Issues**
+
 - Check server URL in `data/Common.kt`: `serverUrl` property
 - Enable Ktor logging (not currently configured)
-- Verify error handling uses `recoverNetworkError()` [51](#0-50) 
+- Verify error handling uses `recoverNetworkError()`
 
 **Navigation Issues**
+
 - Check back stack state in `RootComponent.childStack`
 - Verify animations are configured correctly
 - Ensure `BackHandler` is properly set up
 
 **Resource Loading Issues**
+
 - Resources MUST be in `composeApp/src/commonMain/composeResources/`
 - Access via generated `Res` object
 - Use `stringResource(Res.string.key)` in Composables
 
-**iOS Build Issues**
-- Verify framework export in `build.gradle.kts` (baseName: "ComposeApp")
-- Check Swift-Kotlin interop in `ContentView.swift`
-- Rebuild framework: `./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64` [52](#0-51) 
-
 ## Notes
 
-- **No separate shared module**: Unlike typical KMP projects, this uses a single-module architecture where `composeApp` contains everything.
-- **Minimal platform-specific code**: Only entry points exist in platform source sets; iOS doesn't even have an `iosMain` directory.
-- **Decompose, not Navigation Compose**: This project uses Arkivanov's Decompose library for navigation, not Jetpack Navigation Compose.
-- **No ViewModel**: Components replace ViewModels and use `componentCoroutineScope()` instead of `viewModelScope`.
-- **No database**: Uses Multiplatform Settings for simple key-value storage (JWT tokens, account IDs, preferences).
-- **BuildKonfig**: Generates platform-specific constants (distribution name, version) at compile time.
-- **Custom WASM processing**: Special Gradle task renames WASM files for deployment.
-- **iOS status**: README mentions "heavily appreciating iOS support contributions" - implementation is minimal. [53](#0-52) 
-```
+- Unlike typical KMP projects, this uses a single-module architecture
+  where `composeApp` contains everything.
+- Minimal platform-specific code
+- This project uses Arkivanov's Decompose library for navigation, not Jetpack Navigation Compose.
+- Components replace ViewModels and use `componentCoroutineScope()` instead of
+  `viewModelScope`.
+- Use Multiplatform Settings for simple key-value storage (JWT tokens, account
+  IDs, preferences).
 
-### Citations
+**File:** composeApp/build.gradle.kts
 
-**File:** README.md (L9-9)
-```markdown
-## This is a Kotlin Multiplatform project targeting Android, Web, Linux, MacOS, Windows of a game called "Nine men's morris"
-```
-
-**File:** README.md (L67-67)
-```markdown
-We would **heavily** appreciate adding support for the ios.
-```
-
-**File:** composeApp/build.gradle.kts (L36-67)
-```text
+```kotlin
 buildkonfig {
     packageName = "io.github.kroune.nine_mens_morris_kmp_app"
 
@@ -467,278 +375,18 @@ buildkonfig {
 }
 ```
 
-**File:** composeApp/build.gradle.kts (L70-74)
-```text
-    compilerOptions {
-        freeCompilerArgs.add("-Xnon-local-break-continue")
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-        freeCompilerArgs.add("-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi")
-    }
-```
-
-**File:** composeApp/build.gradle.kts (L106-125)
-```text
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_23)
-        }
-    }
-
-    jvm("desktop")
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-```
-
-**File:** composeApp/build.gradle.kts (L127-152)
-```text
-    sourceSets {
-        val desktopMain by getting
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-
-            implementation(libs.decompose)
-            implementation(libs.decompose.animations)
-
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.serialization.protobuf)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.serialization.kotlinx.protobuf)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.multiplatform.settings)
-            implementation(libs.multiplatform.settings.no.arg)
-            implementation(libs.ninemensmorris)
-            implementation(libs.filekit.compose)
-            implementation(libs.koin.core)
-//            implementation(compose.components.uiToolingPreview)
-        }
-```
-
 **File:** composeApp/build.gradle.kts
-```text
-tasks.register("wasmJsProcessBrowserDistribution") {
-    dependsOn("wasmJsBrowserDistribution")
-    val dir = "build/dist/wasmJs/productionExecutable"
-    val absolutePath = projectDir.absolutePath
-    inputs.dir(dir)
-    outputs.dir(dir)
-    description = "Rename wasm files"
-    doLast {
-        val file = File(absolutePath, dir)
-        if (file.exists()) {
-            val fileToParse = File(file, "composeApp.js")
-            val fileText = fileToParse.readText()
-            val regex = Regex("e\\.exports=r\\.p\\+\"[a-zA-Z0-9]*\\.wasm\"")
-            val prefix = "e.exports=r.p+\""
-            val suffix = "\""
-            val matches = regex.findAll(fileText).toList()
-                .map { it.value.removePrefix(prefix).removeSuffix(suffix) }
-            require(matches.size == 2)
-            val app = matches[0]
-            val newAppName = "app.wasm"
-            val skiko = matches[1]
-            val newSkikoName = "skiko.wasm"
-            println("app - $app, skiko - $skiko")
-            assert(File(file, app).renameTo(File(file, newAppName)))
-            assert(File(file, skiko).renameTo(File(file, newSkikoName)))
-            val transformedText = fileText.replace(app, newAppName).replace(skiko, newSkikoName)
-            fileToParse.writeText(transformedText)
-        } else {
-            logger.error("empty")
-        }
-    }
+
+```kotlin
+    compilerOptions {
+    freeCompilerArgs.add("-Xnon-local-break-continue")
+    freeCompilerArgs.add("-Xexpect-actual-classes")
+    freeCompilerArgs.add("-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi")
 }
 ```
 
-**File:** composeApp/build.gradle.kts
-```text
-android {
-    namespace = "io.github.kroune.nine_mens_morris_kmp_app"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+**File:**composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/data/Common.kt 
 
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        applicationId = "io.github.kroune.nine_mens_morris"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = appVersionInt
-        versionName = appVersion
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-```
-
-**File:** composeApp/build.gradle.kts
-```text
-    baselineProfile {
-        baselineProfileOutputDir = "../androidMain/generated/baselineProfiles"
-        automaticGenerationDuringBuild = true
-    }
-```
-
-**File:** composeApp/build.gradle.kts (L274-286)
-```text
-        managedDevices {
-            localDevices {
-                create("pixel2api30") {
-                    // Use device profiles you typically see in Android Studio.
-                    device = "Pixel 2"
-                    // Use only API levels 27 and higher.
-                    apiLevel = 30
-                    // To include Google services, use "google".
-                    systemImageSource = "aosp"
-                }
-            }
-        }
-    }
-```
-
-**File:** gradle/libs.versions.toml (L1-27)
-```text
-[versions]
-agp = "8.7.3"
-android-compileSdk = "35"
-android-minSdk = "24"
-android-targetSdk = "35"
-androidx-activityCompose = "1.10.1"
-buildKonfig = "0.17.1"
-compose-plugin = "1.8.0"
-filekitCompose = "0.8.8"
-kotlin = "2.2.0"
-ktor = "3.0.0"
-coroutines = "1.10.2"
-decompose = "3.3.0"
-kotlinxSerializationJson = "1.8.1"
-multiplatformSettings = "1.3.0"
-ninemensmorris = "1.0.4"
-uiTestJunit4Android = "1.8.3"
-roborazzi = "1.38.0"
-storytale = "0.0.1+dev5"
-macroBenchmark = "1.3.4"
-junit = "1.2.1"
-espressoCore = "3.6.1"
-uiautomator = "2.3.0"
-baselineprofile = "1.4.0-rc01"
-screenshot = "0.0.1-alpha10"
-koinCore = "4.0.3"
-
-```
-
-**File:** gradle/libs.versions.toml (L28-65)
-```text
-[libraries]
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
-androidx-ui-test = { module = "androidx.compose.ui:ui-test", version.ref = "uiTestJunit4Android" }
-androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestJunit4Android" }
-
-buildkonfig-gradle-plugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "buildKonfig" }
-filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCompose" }
-
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-
-ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
-ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
-ktor-client-js = { group = "io.ktor", name = "ktor-client-js", version.ref = "ktor" }
-ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-serialization-kotlinx-protobuf = { group = "io.ktor", name = "ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
-
-decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
-decompose-jetbrains = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
-decompose-animations = { group = "com.arkivanov.decompose", name = "extensions-compose-experimental", version.ref = "decompose" }
-
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlinxSerializationJson" }
-
-multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatformSettings" }
-multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
-
-ninemensmorris = { group = "io.github.kroune", name = "nineMensMorris", version.ref = "ninemensmorris" }
-
-macro-benchmark = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "macroBenchmark"}
-androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling"}
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
-
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
-```
-
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/di/Koin.kt (L17-30)
-```kotlin
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountId.AccountIdRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountInfo.AccountInfoRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountInfo.AccountInfoRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.appVersion.AppVersionRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.appVersion.AppVersionRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.auth.AuthRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.auth.AuthRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryImpl
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryImpl
-```
-
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/di/Koin.kt (L33-65)
-```kotlin
-val koinModule = module {
-    single<SearchingForGameRepositoryI> {
-        SearchingForGameRepositoryImpl(get(), get())
-    }
-    single<SearchingForGameRemoteDataSourceI> { SearchingForGameRemoteDataSourceImpl() }
-
-    single<AccountInfoRemoteDataSourceI> { AccountInfoRemoteDataSourceImpl() }
-    single<AccountInfoRepositoryI> {
-        AccountInfoRepositoryImpl(get(), get(), get())
-    }
-
-    single<JwtTokenRemoteDataSourceI> { JwtTokenRemoteDataSourceImpl() }
-    single<JwtTokenRepositoryI> { JwtTokenRepositoryImpl(get(), get(), get()) }
-
-    single<AccountIdLocalDataSourceI> { AccountIdLocalDataSourceImpl() }
-    single<AccountIdRepositoryI> {
-        AccountIdRepositoryImpl(get(), get(), get())
-    }
-
-    single<OnlineGameRemoteDataSourceI> { OnlineGameRemoteDataSourceImpl() }
-    single<OnlineGameRepositoryI> { OnlineGameRepositoryImpl(get(), get()) }
-
-    single<AuthRemoteDataSourceI> { AuthRemoteDataSourceImpl() }
-    single<AuthRepositoryI> {
-        AuthRepositoryImpl(get(), get(), get())
-    }
-
-    single<AppVersionRemoteDataSourceI> {
-        AppVersionRemoteDataSourceImpl()
-    }
-    single<AppVersionRepositoryI> {
-        AppVersionRepositoryImpl(get())
-    }
-```
-
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/data/Common.kt (L34-60)
 ```kotlin
 val network = HttpClient {
     install(HttpRequestRetry) {
@@ -769,21 +417,22 @@ val network = HttpClient {
 }
 ```
 
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/data/Common.kt (L62-88)
+**File:**composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/data/Common.kt 
+
 ```kotlin
 /**
  * The server's address
  */
 val serverUrl
-    get() = URLBuilder(host = "kroune.tech")
+get() = URLBuilder(host = "kroune.tech")
 
 /**
  * The API endpoint for user-related operations.
  */
 private val serverApi
-    get() = serverUrl.apply {
-        appendPathSegments("api", "v1")
-    }
+get() = serverUrl.apply {
+    appendPathSegments("api", "v1")
+}
 
 fun httpApi(modification: URLBuilder.() -> Unit): Url {
     return serverApi.apply {
@@ -800,139 +449,30 @@ fun wsApi(modification: URLBuilder.() -> Unit): Url {
 }
 ```
 
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/component/RootComponent.kt (L1-1)
-```kotlin
-package io.github.kroune.nine_mens_morris_kmp_app.component
-```
+**File:**
+composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/component/RootComponent.kt 
 
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/component/RootComponent.kt (L44-61)
-```kotlin
-class RootComponent(
-    @Suppress("LocalVariableName")
-    _appVersionRepository: AppVersionRepositoryI? = null,
-    componentContext: ComponentContext,
-) : ComponentContext by componentContext, WebNavigationOwner, KoinComponent {
-    private val appVersionRepository: AppVersionRepositoryI =
-        _appVersionRepository ?: get<AppVersionRepositoryI>()
-    private val componentScope = componentCoroutineScope()
-
-    private val navigation: StackNavigation<Configuration> = StackNavigation<Configuration>()
-
-    val childStack = childStack(
-        source = navigation,
-        serializer = Configuration.serializer(),
-        initialConfiguration = getInitialConfiguration(),
-        handleBackButton = false,
-        childFactory = ::createChild
-    )
-```
-
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/component/RootComponent.kt (L127-141)
 ```kotlin
     private fun createChild(
-        config: Configuration,
-        context: ComponentContext
-    ): RootChild {
-        return when (config) {
-            is Configuration.AppStartAnimation -> {
-                RootChild.AppStartAnimationScreenChild(
-                    AppStartAnimationComponent(
-                        componentContext = context,
-                        onNavigationToWelcomeScreen = {
-                            navigation.pushToFront(Configuration.WelcomeScreen())
-                        }
-                    )
+    config: Configuration,
+    context: ComponentContext
+): RootChild {
+    return when (config) {
+        is Configuration.AppStartAnimation -> {
+            RootChild.AppStartAnimationScreenChild(
+                AppStartAnimationComponent(
+                    componentContext = context,
+                    onNavigationToWelcomeScreen = {
+                        navigation.pushToFront(Configuration.WelcomeScreen())
+                    }
                 )
-            }
-```
-
-**File:** composeApp/src/desktopMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/main.kt (L21-43)
-```kotlin
-fun main() = application {
-    startKoin {
-        modules(koinModule)
-    }
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Nine men's morris game",
-        onKeyEvent = {
-            if (it.key == Key.Escape && it.type == KeyEventType.KeyUp) {
-                BackHandler.onCallback()
-                true
-            } else {
-                false
-            }
-        },
-        icon = painterResource(Res.drawable.icon)
-    ) {
-        val lifecycle = LifecycleRegistry()
-        val component = remember {
-            RootComponent(componentContext = DefaultComponentContext(lifecycle))
+            )
         }
-        RootScreen(component)
-    }
 ```
 
-**File:** composeApp/src/wasmJsMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/main.kt (L28-56)
-```kotlin
-fun main() {
-    window.onkeyup = {
-        if (it.key == "Escape") {
-            BackHandler.onCallback()
-        }
-    }
-    startKoin {
-        modules(koinModule)
-    }
-    val lifecycle = LifecycleRegistry()
-    val root = withWebHistory { stateKeeper, _ ->
-        val component = DefaultComponentContext(lifecycle, stateKeeper)
-        RootComponent(componentContext = component)
-    }
-    ComposeViewport(document.body!!) {
-        LaunchedEffect(Unit) {
-            onLoadFinished()
-        }
-        RootScreen(root)
-    }
-    // start fetching all resources asynchronously
-    with(CoroutineScope(Dispatchers.Default)) {
-        Res.allStringResources.forEach { (_, resource) ->
-            launch {
-                getString(resource)
-            }
-        }
-    }
-}
-```
+**File:**
+composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/component/Common.kt 
 
-**File:** composeApp/src/androidMain/AndroidManifest.xml (L13-23)
-```text
-        <activity
-            android:name="io.github.kroune.nine_mens_morris_kmp_app.MainActivity"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-```
-
-**File:** iosApp/iosApp/ContentView.swift (L5-11)
-```swift
-struct ComposeView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
-}
-```
-
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/component/Common.kt (L18-28)
 ```kotlin
 fun ComponentContext.componentCoroutineScope(): CoroutineScope {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -947,117 +487,8 @@ fun ComponentContext.componentCoroutineScope(): CoroutineScope {
 }
 ```
 
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/screen/RootScreen.kt (L64-65)
-```kotlin
-@Composable
-fun RootScreen(component: RootComponent) {
-```
+**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/Platform.kt 
 
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/navigation/Root.kt (L78-165)
-```kotlin
-@Serializable
-sealed class Configuration(
-    val urlName: String,
-    @Transient
-    override var customAnimation: StackAnimator = slide()
-) : AnimateAbleConfiguration(customAnimation) {
-    @Serializable
-    data class AppStartAnimation(
-        @Transient
-        override var customAnimation: StackAnimator = scale() + fade()
-    ) : Configuration("", customAnimation)
-
-    @Serializable
-    data class WelcomeScreen(
-        @Transient
-        override var customAnimation: StackAnimator = scale() + fade()
-    ) : Configuration("welcome", customAnimation)
-
-    @Serializable
-    data class ViewOwnAccountScreen(
-        val accountId: Long,
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("account-$accountId", customAnimation)
-
-    @Serializable
-    data class ViewAccountScreen(
-        val accountId: Long,
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("account-$accountId", customAnimation)
-
-    /**
-     * We don't pass lambda for navigation to the next destination
-     * because it can't be serialized, so we simply pop the screen in the end
-     */
-    @Serializable
-    data class SignUpScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("signup", customAnimation)
-
-    /**
-     * We don't pass lambda for navigation to the next destination
-     * because it can't be serialized, so we simply pop the screen in the end
-     */
-    @Serializable
-    data class SignInScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("signin", customAnimation)
-
-    @Serializable
-    data class GameWithFriendScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("game-with-friend", customAnimation)
-
-    @Serializable
-    data class GameWithBotScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("game-with-bot", customAnimation)
-
-    @Serializable
-    data class SearchingForGameScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("searching-for-game", customAnimation)
-
-    @Serializable
-    data class OnlineGameScreen(
-        val gameId: Long,
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("online-game", customAnimation)
-
-    @Serializable
-    data class LeaderboardScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("leaderboard", customAnimation)
-
-    @Serializable
-    data class AboutScreen(
-        @Transient
-        override var customAnimation: StackAnimator = slide()
-    ) : Configuration("about", customAnimation)
-```
-
-**File:** composeApp/src/androidMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/Platform.android.kt (L19-26)
-```kotlin
-actual inline fun <T> Result<T>.onNativeNetworkError(lambda: (Throwable) -> Unit) {
-    onFailure {
-        if (it is java.io.IOException || it is java.nio.channels.UnresolvedAddressException) {
-            lambda(it)
-            return
-        }
-    }
-}
-```
-
-**File:** composeApp/src/commonMain/kotlin/io/github/kroune/nine_mens_morris_kmp_app/Platform.kt (L25-33)
 ```kotlin
 fun <T> Result<T>.recoverNetworkError(networkException: T): Result<T> {
     return recoverCatching {
@@ -1070,19 +501,24 @@ fun <T> Result<T>.recoverNetworkError(networkException: T): Result<T> {
 }
 ```
 
-
 # Nine Men's Morris Library Guide
 
 ## Overview
-This Kotlin Multiplatform library implements Nine Men's Morris game logic with AI. Key classes: `Position` (board state), `Movement` (actions), `GameState` (phases). Supports serialization for persistence.
+
+This Kotlin Multiplatform library implements Nine Men's Morris game logic with AI. Key classes:
+`Position` (board state), `Movement` (actions), `GameState` (phases). Supports serialization for
+persistence.
 
 ## Quick Start
+
 Import the library:
+
 ```kotlin
 import com.kroune.nineMensMorrisLib.*
 ```
 
 Start a game:
+
 ```kotlin
 var position = gameStartPosition
 val bestMove = position.findBestMove(10u)
@@ -1092,12 +528,15 @@ if (bestMove != null) {
 ```
 
 ### Board Representation
+
 24 positions indexed 0-23. Use constants:
+
 - `GREEN` (true): First player
 - `BLUE_` (false): Second player
 - `EMPTY` (null): Empty spot
 
 Board layout for reference:
+
 ```
 0-----------------1-----------------2
 |                 |                 |
@@ -1115,6 +554,7 @@ Board layout for reference:
 ```
 
 ### Game Phases (`GameState`)
+
 - `Placement`: Placing pieces
 - `Normal`: Moving adjacent
 - `Flying`: Moving anywhere (when <3 pieces)
@@ -1122,13 +562,17 @@ Board layout for reference:
 - `End`: Game over
 
 ### Movements
+
 `Movement(startIndex: Int?, endIndex: Int?)`:
+
 - Placement: `startIndex = null`, `endIndex = target`
 - Move: `startIndex = from`, `endIndex = to`
 - Removal: `startIndex = piece`, `endIndex = null`
 
 ## Creating Positions
+
 Default start:
+
 ```kotlin
 val position = gameStartPosition
 ```
@@ -1157,6 +601,7 @@ val position = Position(
 Alternative constructor uses `Int` without `u` suffix.
 
 ## Core API
+
 - `position.gameState()`: Returns current `GameState`
 - `position.generateMoves()`: List of legal `Movement`s
 - `movement.producePosition(position)`: New `Position` after move (immutable)
@@ -1165,7 +610,9 @@ Alternative constructor uses `Int` without `u` suffix.
 - `Cache.wipeCache()`: Clear cache between games
 
 ## AI Integration
+
 For AI player:
+
 ```kotlin
 val bestMove = position.findBestMove(5u)
 position = bestMove?.producePosition(position) ?: position  // Handle no move
@@ -1174,6 +621,7 @@ position = bestMove?.producePosition(position) ?: position  // Handle no move
 AI uses alpha-beta pruning and transposition tables.
 
 ## Example Game Loop
+
 ```kotlin
 var position = gameStartPosition
 while (position.gameState() != GameState.End) {
@@ -1190,9 +638,11 @@ while (position.gameState() != GameState.End) {
 ```
 
 ## Win Conditions
+
 Game ends if player has <3 pieces or no moves. Check `position.gameState() == GameState.End`.
 
 ## Notes
+
 - Immutable: Always use returned `Position`.
 - Depths: 5-7 for strong play.
 - Compatible: JVM, Android, iOS, JS, Native.
