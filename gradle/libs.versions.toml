@@ -7,6 +7,7 @@ androidx-activityCompose = "1.11.0"
 androidx-splash = "1.2.0"
 buildKonfig = "0.17.1"
 compose-plugin = "1.9.3"
+detektFormatting = "1.23.8"
 filekitCompose = "0.8.8"
 kotlin = "2.3.0-Beta2"
 ktor = "3.0.0"
@@ -34,6 +35,7 @@ androidx-ui-test = { module = "androidx.compose.ui:ui-test", version.ref = "uiTe
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestJunit4Android" }
 
 buildkonfig-gradle-plugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "buildKonfig" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektFormatting" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekitCompose" }
 
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:OnlineGameComponent.kt:OnlineGameComponent$fun onEvent(event: OnlineGameScreenEvent)</ID>
+    <ID>CyclomaticComplexMethod:RootScreen.kt:@OptIn( ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, ExperimentalDecomposeApi::class ) @Composable fun RootScreen(component: RootComponent)</ID>
+    <ID>CyclomaticComplexMethod:WelcomeScreenComponent.kt:WelcomeScreenComponent$fun onEvent(event: WelcomeScreenEvent)</ID>
+    <ID>FunctionNaming:Drawable0.commonMain.kt:@InternalResourceApi internal fun _collectCommonMainDrawable0Resources(map: MutableMap&lt;String, DrawableResource&gt;)</ID>
+    <ID>FunctionNaming:Font0.commonMain.kt:@InternalResourceApi internal fun _collectCommonMainFont0Resources(map: MutableMap&lt;String, FontResource&gt;)</ID>
+    <ID>FunctionNaming:String0.commonMain.kt:@InternalResourceApi internal fun _collectCommonMainString0Resources(map: MutableMap&lt;String, StringResource&gt;)</ID>
+    <ID>LongMethod:GameAnalyzeScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun RenderGameAnalyzeScreen( modifier: Modifier = Modifier, positions: List&lt;Position&gt;, depth: Int, onEvent: (GameAnalyzeEvent) -&gt; Unit, )</ID>
+    <ID>LongMethod:RootComponent.kt:RootComponent$private fun createChild( config: Configuration, context: ComponentContext ): RootChild</ID>
+    <ID>LongMethod:RootScreen.kt:@OptIn( ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, ExperimentalDecomposeApi::class ) @Composable fun RootScreen(component: RootComponent)</ID>
+    <ID>LongMethod:SignInScreen.kt:@Composable fun SignInScreen( state: SignInScreenState, onEvent: (SignInScreenEvent) -&gt; Unit )</ID>
+    <ID>LongMethod:SignUpScreen.kt:@Composable fun SignUpScreen( component: SignUpScreenState, onEvent: (SignUpScreenEvent) -&gt; Unit )</ID>
+    <ID>LongMethod:ViewOwnAccountScreen.kt:@Composable fun ViewOwnAccountScreen( onEvent: (ViewOwnAccountScreenEvent) -&gt; Unit, state: ViewOwnAccountScreenState, uploadingNewPictureResult: SharedFlow&lt;UploadPictureApiResponses&gt;, )</ID>
+    <ID>LongMethod:WelcomeScreen.kt:@Composable fun RenderMainScreen( state: WelcomeScreenState, onEvent: (WelcomeScreenEvent) -&gt; Unit, snackbarHostState: SnackbarHostState, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:WelcomeScreen.kt:@Composable private fun WelcomeScreenBottomBar( state: WelcomeScreenState, scope: CoroutineScope, snackbarHostState: SnackbarHostState, onEvent: (WelcomeScreenEvent) -&gt; Unit, scrollState: ScrollState, topScreen: MutableState&lt;Boolean&gt; )</ID>
+    <ID>LoopWithTooManyJumpStatements:SearchingForGameRemoteDataSourceImpl.kt:SearchingForGameRemoteDataSourceImpl$while</ID>
+    <ID>MatchingDeclarationName:GameBoardScreen.kt:MeasurePolicy</ID>
+    <ID>MaxLineLength:Res.kt:Res$public</ID>
+    <ID>MaxLineLength:Res.kt:Res$public suspend</ID>
+    <ID>MaxLineLength:String0.commonMain.kt:StringResource</ID>
+    <ID>NewLineAtEndOfFile:Example.kt:.Example.kt</ID>
+    <ID>ReturnCount:GameBoardUseCase.kt:GameBoardUseCase$fun handleClick(elementIndex: Int): Movement?</ID>
+    <ID>ReturnCount:RootScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun DrawUpdateDialog( lastVersion: AppLastVersionApiResponse?, requiredVersion: RequiredVersionApiResponse?, )</ID>
+    <ID>ReturnCount:WelcomeScreenComponent.kt:WelcomeScreenComponent$fun onEvent(event: WelcomeScreenEvent)</ID>
+    <ID>TooManyFunctions:AccountInfoRemoteDataSourceImpl.kt:AccountInfoRemoteDataSourceImpl : AccountInfoRemoteDataSourceI</ID>
+    <ID>UnusedParameter:LogsRepository.kt:severity: Severity</ID>
+  </CurrentIssues>
+</SmellBaseline>

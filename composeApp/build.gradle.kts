@@ -204,6 +204,10 @@ kotlin {
     }
 }
 
+dependencies {
+    detektPlugins(libs.detekt.formatting)
+}
+
 tasks.register("emptyLiner") {
     ensureSingleEmptyLineAtEndVerbose("/home/olowo/StudioProjects/nine-mens-morris-app-kmp/composeApp")
 }
