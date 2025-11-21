@@ -32,7 +32,7 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
+          key: ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
           restore-keys: |
             ${{ runner.os }}-unit-tests-${{ hashFiles('**/libs.versions.toml') }}
 
@@ -105,7 +105,7 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-ui-tests-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
+          key: ${{ runner.os }}-ui-tests-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}
           restore-keys: |
             ${{ runner.os }}-ui-tests-${{ matrix.tag }}--${{ hashFiles('**/libs.versions.toml') }}
 
@@ -217,7 +217,7 @@ jobs:
             composeApp/build
             composeApp/.gradle
             baselineprofile/build
-          key: ${{ runner.os }}-produce-artifacts-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
+          key: ${{ runner.os }}-produce-artifacts-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}
           restore-keys: |
             ${{ runner.os }}-produce-artifacts-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}
 
