@@ -6,7 +6,6 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.Jw
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -47,7 +46,10 @@ class SearchingForGameRepositoryTest {
 
         assertEquals(2, result.size)
         assertTrue(result[0] is SearchingForGameEvent.Success.NewExpectedWaitingTime)
-        assertEquals(5000L, (result[0] as SearchingForGameEvent.Success.NewExpectedWaitingTime).expectedWaitingTime)
+        assertEquals(
+            5000L,
+            (result[0] as SearchingForGameEvent.Success.NewExpectedWaitingTime).expectedWaitingTime
+        )
         assertEquals(12345L, (result[1] as SearchingForGameEvent.Success.GameFound).gameId)
     }
 
