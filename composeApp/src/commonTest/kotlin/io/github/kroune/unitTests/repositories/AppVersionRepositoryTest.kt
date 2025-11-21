@@ -20,7 +20,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `getLastAppVersion returns version from remote`() = runTest {
+    fun getLastAppVersionReturnsVersionFromRemote() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.Success(150),
@@ -34,7 +34,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `getLastAppVersion handles network error`() = runTest {
+    fun getLastAppVersionHandlesNetworkError() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.NetworkError(),
@@ -47,7 +47,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `getLastAppVersion handles server error`() = runTest {
+    fun getLastAppVersionHandlesServerError() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.ServerError(),
@@ -60,7 +60,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `getRequiredVersion returns version from remote`() = runTest {
+    fun getRequiredVersionReturnsVersionFromRemote() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.Success(150),
@@ -74,7 +74,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `getRequiredVersion handles network error`() = runTest {
+    fun getRequiredVersionHandlesNetworkError() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.Success(150),
@@ -87,7 +87,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `getRequiredVersion handles server error`() = runTest {
+    fun getRequiredVersionHandlesServerError() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.Success(150),
@@ -100,7 +100,7 @@ class AppVersionRepositoryTest {
     }
 
     @Test
-    fun `multiple calls return consistent results`() = runTest {
+    fun multipleCallsReturnConsistentResults() = runTest {
         val repository = AppVersionRepositoryImpl(
             appVersionRemoteDataSource = MockAppVersionRemoteDataSource(
                 lastVersionResponse = AppLastVersionApiResponse.Success(200),

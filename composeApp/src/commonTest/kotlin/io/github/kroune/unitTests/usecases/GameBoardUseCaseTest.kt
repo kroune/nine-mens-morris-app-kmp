@@ -70,7 +70,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleClick on valid empty spot during Placement phase returns a placement Movement`() {
+    fun handleClick_on_valid_empty_spot_during_Placement_phase_returns_a_placement_Movement() {
         initializeUseCase()
         val possibleMoves = position.generateMoves()
         val firstMoveIndex = possibleMoves.first().endIndex!!
@@ -83,14 +83,14 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleClick on invalid spot during Placement phase returns null`() {
+    fun handleClick_on_invalid_spot_during_Placement_phase_returns_null() {
         initializeUseCase()
         val movement = useCase.handleClick(100)
         assertNull(movement)
     }
 
     @Test
-    fun `handleClick on own piece during Normal phase selects the piece`() {
+    fun handleClick_on_own_piece_during_Normal_phase_selects_the_piece() {
         val normalPhasePosition = createNormalPhasePosition()
         if (normalPhasePosition.gameState() !in listOf(GameState.Normal, GameState.Flying)) return
         initializeUseCase(normalPhasePosition)
@@ -103,7 +103,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleClick on valid destination during Normal phase with a piece selected completes the move`() {
+    fun handleClick_on_valid_destination_during_Normal_phase_with_a_piece_selected_completes_the_move() {
         val normalPhasePosition = createNormalPhasePosition()
         if (normalPhasePosition.gameState() !in listOf(GameState.Normal, GameState.Flying)) return
         initializeUseCase(normalPhasePosition)
@@ -119,7 +119,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleClick on removable opponent piece during Removing phase returns a removal Movement`() {
+    fun handleClick_on_removable_opponent_piece_during_Removing_phase_returns_a_removal_Movement() {
         val removingPhasePosition = createRemovingPhasePosition()
 
         if (removingPhasePosition.gameState() == GameState.Removing) {
@@ -134,7 +134,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `processMovement updates position, adds to history, and clears undone history`() {
+    fun processMovement_updates_position_adds_to_history_and_clears_undone_history() {
         initializeUseCase()
         useCase.undonePositionsHistory.addLast(gameStartPosition)
         val initialHistorySize = useCase.pastPositionsHistory.size
@@ -148,7 +148,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `processMovement calls onGameEnd when a move results in a win`() {
+    fun processMovement_calls_onGameEnd_when_a_move_results_in_a_win() {
         // @formatter:off
         val endPositionSetup = Position(
             positions = arrayOf(
@@ -181,7 +181,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `defaultOnUndo reverts to the previous position and adds to undone history`() {
+    fun defaultOnUndo_reverts_to_the_previous_position_and_adds_to_undone_history() {
         initializeUseCase()
         val movement = position.generateMoves().first()
         useCase.processMovement(movement)
@@ -194,7 +194,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `defaultOnRedo restores an undone position`() {
+    fun defaultOnRedo_restores_an_undone_position() {
         initializeUseCase()
         val movement = position.generateMoves().first()
         useCase.processMovement(movement)
@@ -207,7 +207,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `defaultOnUndo does nothing if history is empty`() {
+    fun defaultOnUndo_does_nothing_if_history_is_empty() {
         initializeUseCase()
         useCase.defaultOnUndo()
         assertEquals(gameStartPosition, position)
@@ -215,7 +215,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `defaultOnRedo does nothing if undone history is empty`() {
+    fun defaultOnRedo_does_nothing_if_undone_history_is_empty() {
         initializeUseCase()
         useCase.defaultOnRedo()
         assertEquals(gameStartPosition, position)
@@ -223,7 +223,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleHighLighting shows all empty spots during Placement phase`() {
+    fun handleHighLighting_shows_all_empty_spots_during_Placement_phase() {
         initializeUseCase()
         useCase.handleHighLighting()
         val expectedHints = position.generateMoves().map { it.endIndex!! }.toSet()
@@ -231,7 +231,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleHighLighting shows movable pieces during Normal phase when none selected`() {
+    fun handleHighLighting_shows_movable_pieces_during_Normal_phase_when_none_selected() {
         val normalPhasePosition = createNormalPhasePosition()
         if (normalPhasePosition.gameState() !in listOf(GameState.Normal, GameState.Flying)) return
         initializeUseCase(normalPhasePosition)
@@ -243,7 +243,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleHighLighting shows valid destinations during Normal phase when a piece is selected`() {
+    fun handleHighLighting_shows_valid_destinations_during_Normal_phase_when_a_piece_is_selected() {
         // @formatter:off
         val testPosition = Position(
             positions = arrayOf(
@@ -274,7 +274,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `handleHighLighting shows removable opponent pieces during Removing phase`() {
+    fun handleHighLighting_shows_removable_opponent_pieces_during_Removing_phase() {
         // @formatter:off
         val removingPosition = Position(
             positions = arrayOf(
@@ -300,7 +300,7 @@ class GameBoardUseCaseTest {
     }
 
     @Test
-    fun `defaultOnClick performs a full placement and highlight cycle`() {
+    fun defaultOnClick_performs_a_full_placement_and_highlight_cycle() {
         initializeUseCase()
         val validIndex = position.generateMoves().first().endIndex!!
 

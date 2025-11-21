@@ -31,7 +31,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `init triggers all callbacks that are provided`() = runTest {
+    fun init_triggers_all_callbacks_that_are_provided() = runTest {
         var loginResult: LoginByIdApiResponses? = null
         var ratingResult: RatingByIdApiResponses? = null
         var creationDateResult: CreationDateByIdApiResponses? = null
@@ -59,7 +59,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `init does not trigger callbacks that are null`() = runTest {
+    fun init_does_not_trigger_callbacks_that_are_null() = runTest {
         var loginResult: LoginByIdApiResponses? = null
 
         AccountInfoUseCase(
@@ -78,7 +78,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `reloadName updates login result`() = runTest {
+    fun reloadName_updates_login_result() = runTest {
         var loginResult: LoginByIdApiResponses? = null
 
         val useCase = AccountInfoUseCase(
@@ -105,7 +105,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `reloadRating updates rating result`() = runTest {
+    fun reloadRating_updates_rating_result() = runTest {
         var ratingResult: RatingByIdApiResponses? = null
 
         val useCase = AccountInfoUseCase(
@@ -131,7 +131,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `reloadCreationDate updates creation date result`() = runTest {
+    fun reloadCreationDate_updates_creation_date_result() = runTest {
         var creationDateResult: CreationDateByIdApiResponses? = null
 
         val useCase = AccountInfoUseCase(
@@ -163,7 +163,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `reloadPicture updates picture result`() = runTest {
+    fun reloadPicture_updates_picture_result() = runTest {
         var pictureResult: AccountPictureByIdApiResponses? = null
         val pictureData = byteArrayOf(1, 2, 3, 4, 5)
 
@@ -196,7 +196,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `reload methods do nothing when callback is null`() = runTest {
+    fun reload_methods_do_nothing_when_callback_is_null() = runTest {
         val useCase = AccountInfoUseCase(
             accountId = 333L,
             onLoginResult = null,
@@ -219,7 +219,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `handles network errors in responses`() = runTest {
+    fun handles_network_errors_in_responses() = runTest {
         var loginResult: LoginByIdApiResponses? = null
         var ratingResult: RatingByIdApiResponses? = null
 
@@ -243,7 +243,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `handles server errors in responses`() = runTest {
+    fun handles_server_errors_in_responses() = runTest {
         var creationDateResult: CreationDateByIdApiResponses? = null
 
         AccountInfoUseCase(
@@ -264,7 +264,7 @@ class AccountInfoUseCaseTest {
     }
 
     @Test
-    fun `multiple reloads work correctly`() = runTest {
+    fun multiple_reloads_work_correctly() = runTest {
         var callCount = 0
 
         val useCase = AccountInfoUseCase(

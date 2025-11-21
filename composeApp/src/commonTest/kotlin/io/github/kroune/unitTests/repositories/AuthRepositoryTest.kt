@@ -48,7 +48,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `login with valid credentials returns success and updates token`() = runTest {
+    fun loginWithValidCredentialsReturnsSuccessAndUpdatesToken() = runTest {
         val jwtTokenRepo = MockJwtTokenRepository()
         val accountIdDataSource = MockAccountIdLocalDataSource()
         accountIdDataSource.updateAccountId(123L)
@@ -70,7 +70,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `login with invalid credentials returns CredentialsError`() = runTest {
+    fun loginWithInvalidCredentialsReturnsCredentialsError() = runTest {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -85,7 +85,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `login with network error returns NetworkError`() = runTest {
+    fun loginWithNetworkErrorReturnsNetworkError() = runTest {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -100,7 +100,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `register with valid data returns success and updates token`() = runTest {
+    fun registerWithValidDataReturnsSuccessAndUpdatesToken() = runTest {
         val jwtTokenRepo = MockJwtTokenRepository()
         val accountIdDataSource = MockAccountIdLocalDataSource()
         accountIdDataSource.updateAccountId(456L)
@@ -122,7 +122,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `register with existing login returns LoginAlreadyInUse`() = runTest {
+    fun registerWithExistingLoginReturnsLoginAlreadyInUse() = runTest {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -137,7 +137,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `loginValidator accepts valid logins`() {
+    fun loginValidatorAcceptsValidLogins() {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -154,7 +154,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `loginValidator rejects invalid logins`() {
+    fun loginValidatorRejectsInvalidLogins() {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -172,7 +172,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `passwordValidator accepts valid passwords`() {
+    fun passwordValidatorAcceptsValidPasswords() {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -190,7 +190,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `passwordValidator rejects invalid passwords`() {
+    fun passwordValidatorRejectsInvalidPasswords() {
         val repository = AuthRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -209,7 +209,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `login clears account id on success`() = runTest {
+    fun loginClearsAccountIdOnSuccess() = runTest {
         val accountIdDataSource = MockAccountIdLocalDataSource()
         accountIdDataSource.updateAccountId(999L)
 
@@ -227,7 +227,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `register clears account id on success`() = runTest {
+    fun registerClearsAccountIdOnSuccess() = runTest {
         val accountIdDataSource = MockAccountIdLocalDataSource()
         accountIdDataSource.updateAccountId(888L)
 
@@ -245,7 +245,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `login does not clear account id on error`() = runTest {
+    fun loginDoesNotClearAccountIdOnError() = runTest {
         val accountIdDataSource = MockAccountIdLocalDataSource()
         accountIdDataSource.updateAccountId(777L)
 
@@ -263,7 +263,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `register does not clear account id on error`() = runTest {
+    fun registerDoesNotClearAccountIdOnError() = runTest {
         val accountIdDataSource = MockAccountIdLocalDataSource()
         accountIdDataSource.updateAccountId(666L)
 

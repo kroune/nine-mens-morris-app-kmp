@@ -31,7 +31,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame returns flow of searching events`() = runTest {
+    fun searchForGame_ReturnsFlowOfSearchingEvents() = runTest {
         val events = listOf(
             SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 5000L),
             SearchingForGameEvent.Success.GameFound(gameId = 12345L)
@@ -54,7 +54,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame throws exception when jwt token is null`() {
+    fun searchForGame_ThrowsExceptionWhenJwtTokenIsNull() {
         val repository = SearchingForGameRepositoryImpl(
             searchingForGameRemoteDataSource = MockSearchingForGameRemoteDataSource(emptyList()),
             jwtTokenRepository = MockJwtTokenRepository(null)
@@ -66,7 +66,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame handles empty event stream`() = runTest {
+    fun searchForGame_HandlesEmptyEventStream() = runTest {
         val repository = SearchingForGameRepositoryImpl(
             searchingForGameRemoteDataSource = MockSearchingForGameRemoteDataSource(emptyList()),
             jwtTokenRepository = MockJwtTokenRepository("token")
@@ -77,7 +77,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame handles game found event`() = runTest {
+    fun searchForGame_HandlesGameFoundEvent() = runTest {
         val events = listOf(
             SearchingForGameEvent.Success.GameFound(gameId = 99999L)
         )
@@ -94,7 +94,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame handles expected waiting time updates`() = runTest {
+    fun searchForGame_HandlesExpectedWaitingTimeUpdates() = runTest {
         val events = listOf(
             SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 1000L),
             SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 2000L),
@@ -116,7 +116,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame handles network error event`() = runTest {
+    fun searchForGame_HandlesNetworkErrorEvent() = runTest {
         val events = listOf(
             SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 5000L),
             SearchingForGameEvent.Error.NetworkError
@@ -134,7 +134,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame handles server error event`() = runTest {
+    fun searchForGame_HandlesServerErrorEvent() = runTest {
         val events = listOf(
             SearchingForGameEvent.Error.ServerError
         )
@@ -151,7 +151,7 @@ class SearchingForGameRepositoryTest {
     }
 
     @Test
-    fun `searchForGame works with different game ids`() = runTest {
+    fun searchForGame_WorksWithDifferentGameIds() = runTest {
         val events = listOf(
             SearchingForGameEvent.Success.GameFound(gameId = 1L),
             SearchingForGameEvent.Success.GameFound(gameId = 1000000L)

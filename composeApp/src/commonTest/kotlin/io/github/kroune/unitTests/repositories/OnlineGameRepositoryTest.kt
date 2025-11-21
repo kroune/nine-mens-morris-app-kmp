@@ -36,7 +36,7 @@ class OnlineGameRepositoryTest {
     }
 
     @Test
-    fun `connect returns flow of game events`() = runTest {
+    fun connect_returns_flow_of_game_events() = runTest {
         val gameEvents = listOf(
             GameEvent.Success.GameInfo(isGreen = true, startPosition = gameStartPosition, enemyId = 456L),
             GameEvent.Success.Move(Movement(null, 0)),
@@ -57,7 +57,7 @@ class OnlineGameRepositoryTest {
     }
 
     @Test
-    fun `connect passes jwt token to remote data source`() = runTest {
+    fun connect_passes_jwt_token_to_remote_data_source() = runTest {
         val repository = OnlineGameRepositoryImpl(
             jwtTokenRepository = MockJwtTokenRepository("my-jwt-token"),
             onlineGameRemoteDataSource = MockOnlineGameRemoteDataSource(emptyList())
@@ -70,7 +70,7 @@ class OnlineGameRepositoryTest {
     }
 
     @Test
-    fun `connect handles empty event stream`() = runTest {
+    fun connect_handles_empty_event_stream() = runTest {
         val repository = OnlineGameRepositoryImpl(
             jwtTokenRepository = MockJwtTokenRepository("token"),
             onlineGameRemoteDataSource = MockOnlineGameRemoteDataSource(emptyList())
@@ -81,7 +81,7 @@ class OnlineGameRepositoryTest {
     }
 
     @Test
-    fun `connect handles game ended event`() = runTest {
+    fun connect_handles_game_ended_event() = runTest {
         val gameEvents = listOf(
             GameEvent.Success.GameInfo(isGreen = true, startPosition = gameStartPosition, enemyId = 123L),
             GameEvent.Success.GameEnded
@@ -99,7 +99,7 @@ class OnlineGameRepositoryTest {
     }
 
     @Test
-    fun `connect handles error events`() = runTest {
+    fun connect_handles_error_events() = runTest {
         val gameEvents = listOf(
             GameEvent.Success.GameInfo(isGreen = false, startPosition = gameStartPosition, enemyId = 789L),
             GameEvent.Error.NetworkError
@@ -117,7 +117,7 @@ class OnlineGameRepositoryTest {
     }
 
     @Test
-    fun `connect handles server error`() = runTest {
+    fun connect_handles_server_error() = runTest {
         val gameEvents = listOf(
             GameEvent.Error.ServerError
         )

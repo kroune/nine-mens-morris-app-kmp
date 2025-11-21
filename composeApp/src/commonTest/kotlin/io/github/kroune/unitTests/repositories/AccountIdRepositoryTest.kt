@@ -49,7 +49,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `getAccountId returns local account id when available`() = runTest {
+    fun getAccountIdReturnsLocalAccountIdWhenAvailable() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
         localDataSource.updateAccountId(12345L)
 
@@ -67,7 +67,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `getAccountId fetches from remote when local is null and jwt token exists`() = runTest {
+    fun getAccountIdFetchesFromRemoteWhenLocalIsNullAndJwtTokenExists() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
         val remoteAccountId = 67890L
 
@@ -87,7 +87,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `getAccountId returns error response when remote fetch fails`() = runTest {
+    fun getAccountIdReturnsErrorResponseWhenRemoteFetchFails() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountIdRepositoryImpl(
@@ -103,7 +103,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `getAccountId throws error when no local id and no jwt token`() = runTest {
+    fun getAccountIdThrowsErrorWhenNoLocalIdAndNoJwtToken() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountIdRepositoryImpl(
@@ -120,7 +120,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `updateAccountId updates local storage`() {
+    fun updateAccountIdUpdatesLocalStorage() {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountIdRepositoryImpl(
@@ -136,7 +136,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `getAccountId handles CredentialsError from remote`() = runTest {
+    fun getAccountIdHandlesCredentialsErrorFromRemote() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountIdRepositoryImpl(
@@ -152,7 +152,7 @@ class AccountIdRepositoryTest {
     }
 
     @Test
-    fun `getAccountId handles ServerError from remote`() = runTest {
+    fun getAccountIdHandlesServerErrorFromRemote() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountIdRepositoryImpl(

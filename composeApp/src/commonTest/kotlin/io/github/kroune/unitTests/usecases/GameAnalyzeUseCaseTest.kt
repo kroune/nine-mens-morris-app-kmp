@@ -16,28 +16,28 @@ class GameAnalyzeUseCaseTest {
     )
 
     @Test
-    fun `decreaseDepth decreases depth by one`() {
+    fun decrease_depth_decreases_depth_by_one() {
         depth = 5
         useCase.decreaseDepth()
         assertEquals(4, depth)
     }
 
     @Test
-    fun `decreaseDepth does not go below zero`() {
+    fun decrease_depth_does_not_go_below_zero() {
         depth = 0
         useCase.decreaseDepth()
         assertEquals(0, depth)
     }
 
     @Test
-    fun `increaseDepth increases depth by one`() {
+    fun increase_depth_increases_depth_by_one() {
         depth = 5
         useCase.increaseDepth()
         assertEquals(6, depth)
     }
 
     @Test
-    fun `startAnalyze returns a flow of board positions`() = runTest {
+    fun start_analyze_returns_a_flow_of_board_positions() = runTest {
         depth = 2
         val positions = useCase.startAnalyze(gameStartPosition).toList()
         assertEquals(3, positions.size)
@@ -53,7 +53,7 @@ class GameAnalyzeUseCaseTest {
     }
 
     @Test
-    fun `startAnalyze with depth 0 returns only the initial position`() = runTest {
+    fun start_analyze_with_depth_0_returns_only_the_initial_position() = runTest {
         depth = 0
         val positions = useCase.startAnalyze(gameStartPosition).toList()
         assertEquals(1, positions.size)

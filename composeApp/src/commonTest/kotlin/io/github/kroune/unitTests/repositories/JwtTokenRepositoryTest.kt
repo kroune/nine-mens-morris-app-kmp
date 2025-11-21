@@ -46,7 +46,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `getJwtToken returns stored token`() {
+    fun get_jwt_token_returns_stored_token() {
         val localDataSource = MockJwtTokenLocalDataSource()
         localDataSource.updateJwtToken("test-token")
 
@@ -60,7 +60,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `getJwtToken returns null when no token is stored`() {
+    fun get_jwt_token_returns_null_when_no_token_is_stored() {
         val repository = JwtTokenRepositoryImpl(
             local = MockJwtTokenLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(CheckJwtTokenApiResponses.Success(true)),
@@ -71,7 +71,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `updateJwtToken updates stored token`() {
+    fun update_jwt_token_updates_stored_token() {
         val localDataSource = MockJwtTokenLocalDataSource()
 
         val repository = JwtTokenRepositoryImpl(
@@ -85,7 +85,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `logout deletes both token and account id`() {
+    fun logout_deletes_both_token_and_account_id() {
         val localDataSource = MockJwtTokenLocalDataSource()
         localDataSource.updateJwtToken("token")
 
@@ -105,7 +105,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `checkJwtToken returns success when token is valid`() = runTest {
+    fun check_jwt_token_returns_success_when_token_is_valid() = runTest {
         val localDataSource = MockJwtTokenLocalDataSource()
         localDataSource.updateJwtToken("valid-token")
 
@@ -123,7 +123,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `checkJwtToken returns success false when no token exists`() = runTest {
+    fun check_jwt_token_returns_success_false_when_no_token_exists() = runTest {
         val repository = JwtTokenRepositoryImpl(
             local = MockJwtTokenLocalDataSource(),
             authRemoteDataSource = MockAuthRemoteDataSource(
@@ -138,7 +138,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `checkJwtToken handles network errors`() = runTest {
+    fun check_jwt_token_handles_network_errors() = runTest {
         val localDataSource = MockJwtTokenLocalDataSource()
         localDataSource.updateJwtToken("token")
 
@@ -155,7 +155,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `checkJwtToken handles server errors`() = runTest {
+    fun check_jwt_token_handles_server_errors() = runTest {
         val localDataSource = MockJwtTokenLocalDataSource()
         localDataSource.updateJwtToken("token")
 
@@ -172,7 +172,7 @@ class JwtTokenRepositoryTest {
     }
 
     @Test
-    fun `multiple updateJwtToken calls update correctly`() {
+    fun multiple_update_jwt_token_calls_update_correctly() {
         val localDataSource = MockJwtTokenLocalDataSource()
 
         val repository = JwtTokenRepositoryImpl(

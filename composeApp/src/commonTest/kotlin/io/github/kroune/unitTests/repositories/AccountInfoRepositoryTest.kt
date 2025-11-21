@@ -51,7 +51,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getAccountRatingById returns rating from remote`() = runTest {
+    fun getAccountRatingByIdReturnsRatingFromRemote() = runTest {
         val repository = AccountInfoRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             accountInfoRemoteDataSource = MockAccountInfoRemoteDataSource(
@@ -66,7 +66,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getAccountCreationDateById returns date from remote`() = runTest {
+    fun getAccountCreationDateByIdReturnsDateFromRemote() = runTest {
         val repository = AccountInfoRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             accountInfoRemoteDataSource = MockAccountInfoRemoteDataSource(
@@ -81,7 +81,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getAccountLoginById returns login from remote`() = runTest {
+    fun getAccountLoginByIdReturnsLoginFromRemote() = runTest {
         val repository = AccountInfoRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             accountInfoRemoteDataSource = MockAccountInfoRemoteDataSource(
@@ -96,7 +96,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getAccountPictureById returns picture from remote`() = runTest {
+    fun getAccountPictureByIdReturnsPictureFromRemote() = runTest {
         val pictureData = byteArrayOf(1, 2, 3, 4, 5)
         val repository = AccountInfoRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
@@ -112,7 +112,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getOwnAccountId returns cached local account id`() = runTest {
+    fun getOwnAccountIdReturnsCachedLocalAccountId() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
         localDataSource.updateAccountId(456L)
 
@@ -130,7 +130,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getOwnAccountId fetches from remote when cache is empty`() = runTest {
+    fun getOwnAccountIdFetchesFromRemoteWhenCacheIsEmpty() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountInfoRepositoryImpl(
@@ -149,7 +149,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getOwnAccountId does not cache on error response`() = runTest {
+    fun getOwnAccountIdDoesNotCacheOnErrorResponse() = runTest {
         val localDataSource = MockAccountIdLocalDataSource()
 
         val repository = AccountInfoRepositoryImpl(
@@ -166,7 +166,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `getLeaderboard returns leaderboard from remote`() = runTest {
+    fun getLeaderboardReturnsLeaderboardFromRemote() = runTest {
         val leaderboardData = listOf(1L, 2L, 3L, 4L, 5L)
 
         val repository = AccountInfoRepositoryImpl(
@@ -184,7 +184,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `uploadPicture uploads picture to remote`() = runTest {
+    fun uploadPictureUploadsPictureToRemote() = runTest {
         val repository = AccountInfoRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             accountInfoRemoteDataSource = MockAccountInfoRemoteDataSource(
@@ -199,7 +199,7 @@ class AccountInfoRepositoryTest {
     }
 
     @Test
-    fun `methods handle network errors`() = runTest {
+    fun methodsHandleNetworkErrors() = runTest {
         val repository = AccountInfoRepositoryImpl(
             accountIdLocalDataSource = MockAccountIdLocalDataSource(),
             accountInfoRemoteDataSource = MockAccountInfoRemoteDataSource(
