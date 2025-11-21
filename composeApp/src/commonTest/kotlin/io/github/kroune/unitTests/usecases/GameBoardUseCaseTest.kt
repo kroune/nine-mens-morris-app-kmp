@@ -41,7 +41,7 @@ class GameBoardUseCaseTest {
             onPositionChange = { position = it },
             onSelectedButtonUpdate = { selectedButton = it },
             onMoveHintsUpdate = { moveHints = it },
-            onGameEnd = { gameEndCalled = true }
+            onGameEnd = { gameEndCalled = true },
         )
     }
 
@@ -163,7 +163,7 @@ class GameBoardUseCaseTest {
             freeGreenPieces = 0u,
             freeBluePieces = 0u,
             pieceToMove = true,
-            removalCount = 0u
+            removalCount = 0u,
         )
         // @formatter:on
         initializeUseCase(endPositionSetup)
@@ -255,7 +255,10 @@ class GameBoardUseCaseTest {
                         EMPTY,          EMPTY,          EMPTY,
                 EMPTY,                  EMPTY,                  EMPTY
             ),
-            freeGreenPieces = 0u, freeBluePieces = 0u, pieceToMove = true, removalCount = 0u
+            freeGreenPieces = 0u,
+            freeBluePieces = 0u,
+            pieceToMove = true,
+            removalCount = 0u,
         )
         // @formatter:on
         initializeUseCase(testPosition)
@@ -283,7 +286,10 @@ class GameBoardUseCaseTest {
                         EMPTY,          BLUE_,          EMPTY,
                 EMPTY,                  EMPTY,                  EMPTY
             ),
-            freeGreenPieces = 0u, freeBluePieces = 0u, pieceToMove = true, removalCount = 1u
+            freeGreenPieces = 0u,
+            freeBluePieces = 0u,
+            pieceToMove = true,
+            removalCount = 1u,
         )
         // @formatter:on
         initializeUseCase(removingPosition)
