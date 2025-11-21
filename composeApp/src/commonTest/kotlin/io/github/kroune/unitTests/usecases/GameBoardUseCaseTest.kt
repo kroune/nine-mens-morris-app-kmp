@@ -167,7 +167,7 @@ class GameBoardUseCaseTest {
         )
         // @formatter:on
         initializeUseCase(endPositionSetup)
-        val positions = endPositionSetup.positions.clone()
+        val positions = endPositionSetup.positions.copyOf()
         positions[16] = BLUE_
         positions[11] = EMPTY
         val millMove = Movement(5, 2)
