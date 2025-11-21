@@ -97,11 +97,11 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
-            export("com.arkivanov.decompose:decompose:3.4.0")
-            export("com.arkivanov.essenty:lifecycle:2.5.0")
+            export(libs.decompose)
+            export(libs.decompose.lifecycle)
 
             // Optional, only if you need state preservation on Darwin (Apple) targets
-            export("com.arkivanov.essenty:state-keeper:2.5.0")
+            export(libs.decompose.state.keeper)
         }
         podfile = project.file("../iosApp/podfile")
         xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
@@ -394,23 +394,23 @@ android {
         }
     }
     signingConfigs {
-//        create("release") {
-//            keyAlias = "release"
-//            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-//                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
-//                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-//                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
-//            } else {
-//                storeFile = file("/home/olowo/secureKeystore.jks")
-//                storePassword = file("/home/olowo/secureSignPass").readText().trim()
-//                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
-//            }
-//        }
+        create("release") {
+            keyAlias = "release"
+            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
+                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
+                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+            } else {
+                storeFile = file("/home/olowo/secureKeystore.jks")
+                storePassword = file("/home/olowo/secureSignPass").readText().trim()
+                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
+            }
+        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-//            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
