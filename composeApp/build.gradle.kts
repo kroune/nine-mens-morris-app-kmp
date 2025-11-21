@@ -97,7 +97,7 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
-            export("com.arkivanov.decompose:decompose:3.3.0")
+            export("com.arkivanov.decompose:decompose:3.4.0")
             export("com.arkivanov.essenty:lifecycle:2.5.0")
 
             // Optional, only if you need state preservation on Darwin (Apple) targets
