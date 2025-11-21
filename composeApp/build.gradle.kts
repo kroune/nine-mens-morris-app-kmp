@@ -208,135 +208,6 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
 }
 
-tasks.register("emptyLiner") {
-    ensureSingleEmptyLineAtEndVerbose("/home/olowo/StudioProjects/nine-mens-morris-app-kmp/composeApp")
-}
-
-fun ensureSingleEmptyLineAtEnd(directoryPath: String) {
-    val directory = File(directoryPath)
-
-    if (!directory.exists() || !directory.isDirectory) {
-        println("Error: The specified path is not a valid directory")
-        return
-    }
-
-    val kotlinFiles = directory.walk()
-        .filter { it.isFile && it.extension == "kt" }
-        .toList()
-
-    if (kotlinFiles.isEmpty()) {
-        println("No Kotlin files found in the specified directory")
-        return
-    }
-
-    var processedCount = 0
-    var modifiedCount = 0
-
-    kotlinFiles.forEach { file ->
-        try {
-            processedCount++
-            val content = file.readText()
-
-            // Remove all trailing whitespace and newlines
-            val trimmedContent = content.trimEnd()
-
-            // Determine the line separator used in the file
-            val lineSeparator = detectLineSeparator(content)
-
-            // Add exactly one empty line at the end
-            val newContent = if (trimmedContent.isNotEmpty()) {
-                trimmedContent + lineSeparator
-            } else {
-                trimmedContent // Leave empty files as-is
-            }
-
-            // Only write if content actually changed
-            if (newContent != content) {
-                file.writeText(newContent)
-                modifiedCount++
-                println("✓ Fixed trailing lines in: ${file.name}")
-            }
-        } catch (e: Exception) {
-            println("✗ Error processing ${file.name}: ${e.message}")
-        }
-    }
-
-    println("\nProcessing complete: $processedCount files processed, $modifiedCount files modified")
-}
-
-private fun detectLineSeparator(content: String): String {
-    return when {
-        content.contains("\r\n") -> "\r\n" // Windows
-        content.contains("\r") -> "\r"     // Old Mac
-        else -> "\n"                       // Unix/Linux/Mac OS X
-    }
-}
-
-// Alternative version that shows what changes were made
-fun ensureSingleEmptyLineAtEndVerbose(directoryPath: String) {
-    val directory = File(directoryPath)
-
-    if (!directory.exists() || !directory.isDirectory) {
-        println("Error: The specified path is not a valid directory")
-        return
-    }
-
-    directory.walk()
-        .filter { it.isFile && it.extension == "kt" }
-        .forEach { file ->
-            try {
-                val originalContent = file.readText()
-                val originalEnding = getTrailingWhitespace(originalContent)
-
-                // Remove all trailing whitespace and newlines
-                val trimmedContent = originalContent.trimEnd()
-
-                // Determine line separator
-                val lineSeparator = detectLineSeparator(originalContent)
-
-                // Add exactly one empty line at the end
-                val newContent = if (trimmedContent.isNotEmpty()) {
-                    trimmedContent + lineSeparator
-                } else {
-                    trimmedContent
-                }
-
-                if (newContent != originalContent) {
-                    val newEnding = getTrailingWhitespace(newContent)
-                    file.writeText(newContent)
-                    println("✓ Fixed: ${file.name}")
-                    println(
-                        "  Before: ended with ${originalEnding.length} chars '${
-                            escapeWhitespace(
-                                originalEnding
-                            )
-                        }'"
-                    )
-                    println(
-                        "  After:  ended with ${newEnding.length} chars '${
-                            escapeWhitespace(
-                                newEnding
-                            )
-                        }'"
-                    )
-                }
-            } catch (e: Exception) {
-                println("✗ Error processing ${file.name}: ${e.message}")
-            }
-        }
-}
-
-private fun getTrailingWhitespace(content: String): String {
-    return content.takeLastWhile { it == ' ' || it == '\t' || it == '\n' || it == '\r' }
-}
-
-private fun escapeWhitespace(text: String): String {
-    return text.replace("\r", "\\r")
-        .replace("\n", "\\n")
-        .replace("\t", "\\t")
-        .replace(" ", "·")
-}
-
 tasks.register("wasmJsProcessBrowserDistribution") {
     dependsOn("wasmJsBrowserDistribution")
     val dir = "build/dist/wasmJs/productionExecutable"
@@ -346,27 +217,26 @@ tasks.register("wasmJsProcessBrowserDistribution") {
     description = "Rename wasm files"
     doLast {
         val file = File(absolutePath, dir)
-        if (file.exists()) {
-            val fileToParse = File(file, "composeApp.js")
+        val wasmFileExportRegex = Regex("exports=.{1,10}\".{1,20}.wasm\"")
+
+        fun renameFileAccordingToExport(
+            fileNameWithExport: String,
+            newName: String,
+        ) {
+            val fileToParse = File(file, fileNameWithExport)
             val fileText = fileToParse.readText()
-            val regex = Regex("e\\.exports=r\\.p\\+\"[a-zA-Z0-9]*\\.wasm\"")
-            val prefix = "e.exports=r.p+\""
-            val suffix = "\""
-            val matches = regex.findAll(fileText).toList()
-                .map { it.value.removePrefix(prefix).removeSuffix(suffix) }
-            require(matches.size == 2)
-            val app = matches[0]
-            val newAppName = "app.wasm"
-            val skiko = matches[1]
-            val newSkikoName = "skiko.wasm"
-            println("app - $app, skiko - $skiko")
-            assert(File(file, app).renameTo(File(file, newAppName)))
-            assert(File(file, skiko).renameTo(File(file, newSkikoName)))
-            val transformedText = fileText.replace(app, newAppName).replace(skiko, newSkikoName)
+            val app = wasmFileExportRegex.findAll(fileText).single().value
+                .substringAfter('"')
+                .substringBeforeLast('"')
+            val appFile = File(file, app)
+            println("found wasm file - $app, $dir")
+            require(appFile.exists())
+            appFile.renameTo(File(file, newName))
+            val transformedText = fileText.replace(app, newName)
             fileToParse.writeText(transformedText)
-        } else {
-            logger.error("empty")
         }
+        renameFileAccordingToExport("composeApp.js", "app.wasm")
+        renameFileAccordingToExport("969.js", "skiko.wasm")
     }
 }
 
@@ -394,23 +264,23 @@ android {
         }
     }
     signingConfigs {
-        create("release") {
-            keyAlias = "release"
-            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
-                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
-            } else {
-                storeFile = file("/home/olowo/secureKeystore.jks")
-                storePassword = file("/home/olowo/secureSignPass").readText().trim()
-                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
-            }
-        }
+//        create("release") {
+//            keyAlias = "release"
+//            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
+//                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
+//                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+//                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+//            } else {
+//                storeFile = file("/home/olowo/secureKeystore.jks")
+//                storePassword = file("/home/olowo/secureSignPass").readText().trim()
+//                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
+//            }
+//        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
+//            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
