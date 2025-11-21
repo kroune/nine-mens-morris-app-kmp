@@ -125,4 +125,3 @@ class LogsRepositoryTest {
         log(multilineMessage, severity = Severity.INFO)
     }
 }
-

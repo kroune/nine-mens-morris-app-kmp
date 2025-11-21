@@ -19,7 +19,7 @@ class OnlineGameRepositoryTest {
     private class MockJwtTokenRepository(private val token: String?) : JwtTokenRepositoryI {
         override fun logout() {}
         override fun getJwtToken(): String? = token
-        override suspend fun checkJwtToken() = throw NotImplementedError()
+        override suspend fun checkJwtToken() = TODO()
         override fun updateJwtToken(newJwtToken: String) {}
     }
 
@@ -45,7 +45,7 @@ class OnlineGameRepositoryTest {
 
         val repository = OnlineGameRepositoryImpl(
             jwtTokenRepository = MockJwtTokenRepository("test-token"),
-            onlineGameRemoteDataSource = MockOnlineGameRemoteDataSource(gameEvents)
+            onlineGameRemoteDataSource = MockOnlineGameRemoteDataSource(gameEvents),
         )
 
         val movesFlow = flowOf(Movement(null, 5))
@@ -133,4 +133,3 @@ class OnlineGameRepositoryTest {
         assertEquals(GameEvent.Error.ServerError, events[0])
     }
 }
-

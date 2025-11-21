@@ -41,8 +41,8 @@ class JwtTokenRepositoryTest {
         private val checkTokenResponse: CheckJwtTokenApiResponses
     ) : AuthRemoteDataSourceI {
         override suspend fun checkJwtToken(jwtToken: String) = checkTokenResponse
-        override suspend fun login(login: String, password: String) = throw NotImplementedError()
-        override suspend fun register(login: String, password: String) = throw NotImplementedError()
+        override suspend fun login(login: String, password: String) = TODO()
+        override suspend fun register(login: String, password: String) = TODO()
     }
 
     @Test
@@ -191,4 +191,3 @@ class JwtTokenRepositoryTest {
         assertEquals("token3", repository.getJwtToken())
     }
 }
-

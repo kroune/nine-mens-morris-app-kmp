@@ -116,4 +116,3 @@ class AppVersionRepositoryTest {
         assertEquals(result1.lastVersion, result2.lastVersion)
     }
 }
-

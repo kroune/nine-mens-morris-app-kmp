@@ -31,12 +31,12 @@ class AccountIdRepositoryTest {
         private val response: AccountIdByJwtTokenApiResponses
     ) : AccountInfoRepositoryI {
         override suspend fun getOwnAccountId(): AccountIdByJwtTokenApiResponses = response
-        override suspend fun getAccountRatingById(id: Long) = throw NotImplementedError()
-        override suspend fun getAccountCreationDateById(id: Long) = throw NotImplementedError()
-        override suspend fun getAccountLoginById(id: Long) = throw NotImplementedError()
-        override suspend fun getAccountPictureById(id: Long) = throw NotImplementedError()
-        override suspend fun getLeaderboard(amount: Int) = throw NotImplementedError()
-        override suspend fun uploadPicture(picture: ByteArray) = throw NotImplementedError()
+        override suspend fun getAccountRatingById(id: Long) = TODO()
+        override suspend fun getAccountCreationDateById(id: Long) = TODO()
+        override suspend fun getAccountLoginById(id: Long) = TODO()
+        override suspend fun getAccountPictureById(id: Long) = TODO()
+        override suspend fun getLeaderboard(amount: Int) = TODO()
+        override suspend fun uploadPicture(picture: ByteArray) = TODO()
     }
 
     private class MockJwtTokenRepository(
@@ -44,7 +44,7 @@ class AccountIdRepositoryTest {
     ) : JwtTokenRepositoryI {
         override fun logout() {}
         override fun getJwtToken(): String? = token
-        override suspend fun checkJwtToken() = throw NotImplementedError()
+        override suspend fun checkJwtToken() = TODO()
         override fun updateJwtToken(newJwtToken: String) {}
     }
 
@@ -167,4 +167,3 @@ class AccountIdRepositoryTest {
         assertTrue(result is AccountIdByJwtTokenApiResponses.ServerError)
     }
 }
-

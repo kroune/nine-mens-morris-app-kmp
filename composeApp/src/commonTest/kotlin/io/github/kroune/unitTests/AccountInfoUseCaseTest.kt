@@ -22,9 +22,9 @@ class AccountInfoUseCaseTest {
         override suspend fun getAccountRatingById(id: Long) = rating
         override suspend fun getAccountCreationDateById(id: Long) = creationDate
         override suspend fun getAccountPictureById(id: Long) = picture
-        override suspend fun getOwnAccountId() = throw NotImplementedError()
-        override suspend fun getLeaderboard(amount: Int) = throw NotImplementedError()
-        override suspend fun uploadPicture(picture: ByteArray) = throw NotImplementedError()
+        override suspend fun getOwnAccountId() = TODO()
+        override suspend fun getLeaderboard(amount: Int) = TODO()
+        override suspend fun uploadPicture(picture: ByteArray) = TODO()
     }
 
     @Test
@@ -275,4 +275,3 @@ class AccountInfoUseCaseTest {
         assertEquals(3, callCount)
     }
 }
-

@@ -3,9 +3,11 @@ package io.github.kroune.unitTests
 import com.kroune.nineMensMorrisLib.GameState
 import com.kroune.nineMensMorrisLib.Position
 import com.kroune.nineMensMorrisLib.gameStartPosition
+import com.kroune.nineMensMorrisLib.move.Movement
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameBoardUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -199,23 +201,32 @@ class GameBoardUseCaseTest {
     @Test
     fun `processMovement calls onGameEnd when game ends`() {
         var gameEndCalled = false
+        // Position where blue has 3 pieces. Green is about to form a mill.
         // @formatter:off
+        val positions = arrayOfNulls<Boolean>(24)
+        positions[0] = true    // green
+        positions[1] = true    // green
+        // position 2 is empty, a green piece at 5 will move to 2 to form a mill
+        positions[5] = true    // green
+        positions[3] = false   // blue
+        positions[11] = false  // blue
+        positions[16] = false  // blue
+        // fill up with more green pieces to make it a valid normal phase for green
+        positions[9] = true
+        positions[10] = true
+        positions[12] = true
+        positions[13] = true
+        positions[15] = true
+        positions[18] = true
+
         var position = Position(
-            positions = arrayOf(
-                true,                  true,                  null,
-                        null,          null,          null,
-                                null,  null,  null,
-                null,  null,  null,          null,  null,  null,
-                                null,  null,  null,
-                        null,          null,          null,
-                null,                  null,                  null
-            ),
-            // @formatter:on
+            positions = positions,
             freeGreenPieces = 0u,
-            freeBluePieces = 0u,
-            pieceToMove = true,
+            freeBluePieces = 6u, // 3 blue pieces on board
+            pieceToMove = true, // Green's turn
             removalCount = 0u
         )
+        // @formatter:on
 
         val useCase = GameBoardUseCase(
             getPosition = { position },
@@ -224,10 +235,21 @@ class GameBoardUseCaseTest {
             onGameEnd = { gameEndCalled = true }
         )
 
-        // Find a move that ends the game or create a position that's ending
-        if (position.gameState() == GameState.End) {
-            gameEndCalled = true
-        }
+        // 1. Green moves 5->2 to form a mill (0-1-2)
+        val formingMillMove = Movement(5, 2)
+        useCase.processMovement(formingMillMove)
+
+        // Game state should be 'Removing', onGameEnd not called yet
+        assertEquals(GameState.Removing, position.gameState())
+        assertFalse(gameEndCalled)
+
+        // 2. Green removes one of blue's 3 pieces.
+        val removalMove = Movement(3, null) // remove blue piece at 3
+        useCase.processMovement(removalMove)
+
+        // Now blue has 2 pieces, game should end.
+        assertEquals(GameState.End, position.gameState())
+        assertTrue(gameEndCalled)
     }
 
     @Test
@@ -453,4 +475,3 @@ class GameBoardUseCaseTest {
         assertEquals(1, useCase.pastPositionsHistory.size)
     }
 }
-

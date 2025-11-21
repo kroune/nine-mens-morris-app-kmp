@@ -5,6 +5,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingFo
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryImpl
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -18,7 +19,7 @@ class SearchingForGameRepositoryTest {
     private class MockJwtTokenRepository(private val token: String?) : JwtTokenRepositoryI {
         override fun logout() {}
         override fun getJwtToken(): String? = token
-        override suspend fun checkJwtToken() = throw NotImplementedError()
+        override suspend fun checkJwtToken() = TODO()
         override fun updateJwtToken(newJwtToken: String) {}
     }
 
@@ -26,7 +27,7 @@ class SearchingForGameRepositoryTest {
         private val events: List<SearchingForGameEvent>
     ) : SearchingForGameRemoteDataSourceI {
         override fun connect(jwtToken: String): Flow<SearchingForGameEvent> {
-            return flowOf(*events.toTypedArray())
+            return events.asFlow()
         }
     }
 
@@ -95,7 +96,7 @@ class SearchingForGameRepositoryTest {
         val events = listOf(
             SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 1000L),
             SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 2000L),
-            SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 3000L)
+            SearchingForGameEvent.Success.NewExpectedWaitingTime(expectedWaitingTime = 3000L),
         )
 
         val repository = SearchingForGameRepositoryImpl(
@@ -108,7 +109,7 @@ class SearchingForGameRepositoryTest {
         assertEquals(3, result.size)
         result.forEachIndexed { index, event ->
             assertTrue(event is SearchingForGameEvent.Success.NewExpectedWaitingTime)
-            assertEquals((index + 1) * 1000L, (event as SearchingForGameEvent.Success.NewExpectedWaitingTime).expectedWaitingTime)
+            assertEquals((index + 1) * 1000L, event.expectedWaitingTime)
         }
     }
 
@@ -166,4 +167,3 @@ class SearchingForGameRepositoryTest {
         assertEquals(1000000L, (result[1] as SearchingForGameEvent.Success.GameFound).gameId)
     }
 }
-

@@ -46,7 +46,7 @@ class AccountInfoRepositoryTest {
     private class MockJwtTokenRepository(private val token: String?) : JwtTokenRepositoryI {
         override fun logout() {}
         override fun getJwtToken(): String? = token
-        override suspend fun checkJwtToken() = throw NotImplementedError()
+        override suspend fun checkJwtToken() = TODO()
         override fun updateJwtToken(newJwtToken: String) {}
     }
 
@@ -215,4 +215,3 @@ class AccountInfoRepositoryTest {
         assertTrue(repository.getAccountCreationDateById(1L) is CreationDateByIdApiResponses.NetworkError)
     }
 }
-

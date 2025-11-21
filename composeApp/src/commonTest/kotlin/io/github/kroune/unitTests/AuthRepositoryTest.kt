@@ -32,7 +32,7 @@ class AuthRepositoryTest {
 
         override fun logout() {}
         override fun getJwtToken(): String? = token
-        override suspend fun checkJwtToken() = throw NotImplementedError()
+        override suspend fun checkJwtToken() = TODO()
         override fun updateJwtToken(newJwtToken: String) {
             token = newJwtToken
         }
@@ -44,7 +44,7 @@ class AuthRepositoryTest {
     ) : AuthRemoteDataSourceI {
         override suspend fun login(login: String, password: String) = loginResponse
         override suspend fun register(login: String, password: String) = registerResponse
-        override suspend fun checkJwtToken(jwtToken: String) = throw NotImplementedError()
+        override suspend fun checkJwtToken(jwtToken: String) = TODO()
     }
 
     @Test
@@ -280,4 +280,3 @@ class AuthRepositoryTest {
         assertEquals(666L, accountIdDataSource.getAccountId())
     }
 }
-
