@@ -1,6 +1,9 @@
-package io.github.kroune.unitTests
+package io.github.kroune.unitTests.usecases
 
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.*
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.RatingByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountInfo.AccountInfoRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,7 +51,10 @@ class AccountInfoUseCaseTest {
 
         assertEquals("testuser", (loginResult as? LoginByIdApiResponses.Success)?.login)
         assertEquals(1500, (ratingResult as? RatingByIdApiResponses.Success)?.rating)
-        assertEquals(Triple(2024, 1, 1), (creationDateResult as? CreationDateByIdApiResponses.Success)?.creationDate)
+        assertEquals(
+            Triple(2024, 1, 1),
+            (creationDateResult as? CreationDateByIdApiResponses.Success)?.creationDate
+        )
         assertEquals(0, (pictureResult as? AccountPictureByIdApiResponses.Success)?.picture?.size)
     }
 
@@ -141,13 +147,19 @@ class AccountInfoUseCaseTest {
         )
 
         advanceUntilIdle()
-        assertEquals(Triple(2024, 5, 15), (creationDateResult as? CreationDateByIdApiResponses.Success)?.creationDate)
+        assertEquals(
+            Triple(2024, 5, 15),
+            (creationDateResult as? CreationDateByIdApiResponses.Success)?.creationDate
+        )
 
         creationDateResult = null
         useCase.reloadCreationDate()
         advanceUntilIdle()
 
-        assertEquals(Triple(2024, 5, 15), (creationDateResult as? CreationDateByIdApiResponses.Success)?.creationDate)
+        assertEquals(
+            Triple(2024, 5, 15),
+            (creationDateResult as? CreationDateByIdApiResponses.Success)?.creationDate
+        )
     }
 
     @Test
@@ -168,13 +180,19 @@ class AccountInfoUseCaseTest {
         )
 
         advanceUntilIdle()
-        assertEquals(pictureData.toList(), (pictureResult as? AccountPictureByIdApiResponses.Success)?.picture?.toList())
+        assertEquals(
+            pictureData.toList(),
+            (pictureResult as? AccountPictureByIdApiResponses.Success)?.picture?.toList()
+        )
 
         pictureResult = null
         useCase.reloadPicture()
         advanceUntilIdle()
 
-        assertEquals(pictureData.toList(), (pictureResult as? AccountPictureByIdApiResponses.Success)?.picture?.toList())
+        assertEquals(
+            pictureData.toList(),
+            (pictureResult as? AccountPictureByIdApiResponses.Success)?.picture?.toList()
+        )
     }
 
     @Test

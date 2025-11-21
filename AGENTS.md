@@ -7,6 +7,12 @@ Morris" with local play (vs friend/bot), online multiplayer, leaderboards, and u
 logic shared across platforms using Compose Multiplatform, with Decompose for navigation and Koin
 for DI."
 
+## Codestyle
+
+- use trailing commas unless it is one line
+- avoid ```lateinit``` when possible
+- when creating position manually you MUST follow specified pattern of spaces, don't use true/false/null directly, use constants
+
 ## Tech Stack & Targets
 
 ### Supported Platforms
@@ -529,7 +535,7 @@ if (bestMove != null) {
 
 ### Board Representation
 
-24 positions indexed 0-23. Use constants:
+24 positions indexed 0-23. ALWAYS use constants, DON'T pass true/false/null directly:
 
 - `GREEN` (true): First player
 - `BLUE_` (false): Second player
@@ -577,7 +583,7 @@ Default start:
 val position = gameStartPosition
 ```
 
-Custom (use `@formatter:off/on` for readability):
+Custom, you must follow spacing patterns (use `@formatter:off/on` for readability):
 ```kotlin
 val position = Position(
     // @formatter:off

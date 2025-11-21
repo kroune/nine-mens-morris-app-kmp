@@ -1,4 +1,4 @@
-package io.github.kroune.unitTests
+package io.github.kroune.unitTests.repositories
 
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.appVersion.AppVersionRemoteDataSourceI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AppLastVersionApiResponse

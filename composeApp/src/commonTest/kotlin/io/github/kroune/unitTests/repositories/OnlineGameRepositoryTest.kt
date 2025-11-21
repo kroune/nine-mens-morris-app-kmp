@@ -1,4 +1,4 @@
-package io.github.kroune.unitTests
+package io.github.kroune.unitTests.repositories
 
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import com.kroune.nineMensMorrisLib.move.Movement

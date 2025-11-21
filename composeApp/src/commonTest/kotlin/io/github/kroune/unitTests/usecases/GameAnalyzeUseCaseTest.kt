@@ -1,4 +1,4 @@
-package io.github.kroune.unitTests
+package io.github.kroune.unitTests.usecases
 
 import com.kroune.nineMensMorrisLib.gameStartPosition
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.GameAnalyzeUseCase
