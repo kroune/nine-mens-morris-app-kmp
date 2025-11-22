@@ -158,7 +158,7 @@ jobs:
             tag: MacosDmg
             after: |
             directory: composeApp/build/compose/binaries/main-release/dmg/
-            os: macos-13
+            os: macos-latest
           # ios
           - target: iosArm64Binaries
             after: |
@@ -242,6 +242,7 @@ jobs:
         run: |
           touch composeApp/keyStore.jks
           echo $KEYSTORE | base64 -d  > composeApp/keyStore.jks
+          free -h
 
       - name: Produce artifacts
         run: ./gradlew ${{ matrix.target }} -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest

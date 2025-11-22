@@ -74,7 +74,7 @@ jobs:
           # ios
           - target: iosSimulatorArm64Test --rerun -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
             tag: ios
-            os: macos-13
+            os: macos-latest
 
           #          # web
           #          - target: wasmJsBrowserTest --rerun -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
