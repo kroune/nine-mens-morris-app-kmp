@@ -148,7 +148,7 @@ jobs:
       matrix:
         include:
           # android
-          - target: assembleRelease
+          - target: assembleRelease --info
             tag: Android
             after: |
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
@@ -242,13 +242,30 @@ jobs:
         run: |
           touch composeApp/keyStore.jks
           echo $KEYSTORE | base64 -d  > composeApp/keyStore.jks
-          free -h
 
       - name: Produce artifacts
         run: ./gradlew ${{ matrix.target }} -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
 
       - name: Execute after actions
         run: ${{ matrix.after }}
+
+      - name: Print Kernel Logs (Check for Segfaults)
+        if: failure() # Only run if the build failed
+        run: |
+          sudo dmesg | grep -i "emulator"
+          sudo dmesg | grep -i "kvm"
+          sudo dmesg | grep -i "segfault"
+
+      - name: Upload Managed Device Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: managed-device-logs
+          path: |
+            **/build/outputs/androidTest-results/
+            **/build/outputs/managed_device_android_test_additional_output/
+            **/build/outputs/logs/
+            **/hs_err_pid*.log
 
       - name: Save cache
         uses: actions/cache/save@v4
