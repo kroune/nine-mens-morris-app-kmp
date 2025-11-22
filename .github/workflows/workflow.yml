@@ -74,7 +74,7 @@ jobs:
           # ios
           - target: iosSimulatorArm64Test --rerun -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
             tag: ios
-            os: macos-15-intel
+            os: macos-latest
 
 #          # web
 #          - target: wasmJsBrowserTest --rerun -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
@@ -158,7 +158,7 @@ jobs:
             tag: MacosDmg
             after: |
             directory: composeApp/build/compose/binaries/main-release/dmg/
-            os: macos-15-intel
+            os: macos-latest
           # ios
           - target: iosArm64Binaries
             after: |
@@ -166,7 +166,7 @@ jobs:
               xcodebuild build -workspace iosApp/iosApp.xcodeproj/project.xcworkspace/ -configuration Release -scheme iosApp -sdk iphoneos -verbose -archivePath iosOut/NineMensMorris.xcarchive archive CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
             tag: Ios
             directory: iosOut/
-            os: macos-15-intel
+            os: macos-latest
           # web
           - target: wasmJsProcessBrowserDistribution
             tag: Web
