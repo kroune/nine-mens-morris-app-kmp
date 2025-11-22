@@ -160,7 +160,7 @@ jobs:
             directory: composeApp/build/compose/binaries/main-release/dmg/
             os: macos-latest
           # ios
-          - target: iosArm64Binaries
+          - target: generateDummyFramework
             after: |
               cd iosApp
               pod install
