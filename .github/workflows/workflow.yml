@@ -162,19 +162,11 @@ jobs:
           # ios
           - target: iosArm64Binaries
             after: |
-              mkdir -p iosOut
-              # 1. Build the App (Unsigned)
-              # We use -project instead of -workspace (safer default for KMP)
-              # We use 'build' instead of 'archive' to bypass strict signing checks
-              xcodebuild build -project iosApp/iosApp.xcworkspace -configuration Release -scheme iosApp -sdk iphoneos -derivedDataPath iosOut/derivedData CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=""
-              
-              # 2. Package into an IPA
-              # Navigate to the build output
-              cd iosOut/derivedData/Build/Products/Release-iphoneos
-              # Create standard IPA structure (Payload/AppName.app)
-              mkdir Payload
-              cp -R iosApp.app Payload/
-              zip -r iosApp.ipa Payload
+              cd iosApp
+              pod install
+              cd ..
+              mkdir iosOut
+              xcodebuild build -workspace iosApp/iosApp.xcodeproj/project.xcworkspace/ -configuration Release -scheme iosApp -sdk iphoneos -verbose -archivePath iosOut/NineMensMorris.xcarchive archive CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
             tag: Ios
             directory: iosOut/
             os: macos-latest
