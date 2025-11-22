@@ -236,7 +236,10 @@ tasks.register("wasmJsProcessBrowserDistribution") {
             fileToParse.writeText(transformedText)
         }
         renameFileAccordingToExport("composeApp.js", "app.wasm")
-        renameFileAccordingToExport("969.js", "skiko.wasm")
+        file.listFiles()!!.forEach {
+            if (wasmFileExportRegex.findAll(it.readText()).any())
+                renameFileAccordingToExport(it.name, "skiko.wasm")
+        }
     }
 }
 

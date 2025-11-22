@@ -250,11 +250,11 @@ jobs:
         run: ${{ matrix.after }}
 
       - name: Print Kernel Logs (Check for Segfaults)
-        if: failure() # Only run if the build failed
+        if: failure()
         run: |
-          sudo dmesg | grep -i "emulator"
-          sudo dmesg | grep -i "kvm"
-          sudo dmesg | grep -i "segfault"
+          # -E allows extended regex for multiple terms
+          # || true ensures the step doesn't fail if logs are empty
+          sudo dmesg | grep -iE "emulator|kvm|segfault|denied|baseline" || true
 
       - name: Upload Managed Device Logs
         if: failure()
