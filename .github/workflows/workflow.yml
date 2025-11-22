@@ -148,7 +148,7 @@ jobs:
       matrix:
         include:
           # android
-          - target: assembleRelease -x :baselineprofile:pixel2Api34NonMinifiedReleaseAndroidTest
+          - target: assembleRelease
             tag: Android
             after: |
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk

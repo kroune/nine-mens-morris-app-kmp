@@ -301,7 +301,7 @@ android {
     }
     baselineProfile {
         baselineProfileOutputDir = "../androidMain/generated/baselineProfiles"
-        automaticGenerationDuringBuild = true
+//        automaticGenerationDuringBuild = true
     }
     @Suppress("UnstableApiUsage")
     testOptions {
