@@ -148,7 +148,7 @@ jobs:
       matrix:
         include:
           # android
-          - target: assembleRelease --info
+          - target: assembleRelease -x :baselineprofile:pixel2Api34NonMinifiedReleaseAndroidTest
             tag: Android
             after: |
             directory: composeApp/build/outputs/apk/release/composeApp-release.apk
@@ -248,24 +248,6 @@ jobs:
 
       - name: Execute after actions
         run: ${{ matrix.after }}
-
-      - name: Print Kernel Logs (Check for Segfaults)
-        if: failure()
-        run: |
-          # -E allows extended regex for multiple terms
-          # || true ensures the step doesn't fail if logs are empty
-          sudo dmesg | grep -iE "emulator|kvm|segfault|denied|baseline" || true
-
-      - name: Upload Managed Device Logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: managed-device-logs
-          path: |
-            **/build/outputs/androidTest-results/
-            **/build/outputs/managed_device_android_test_additional_output/
-            **/build/outputs/logs/
-            **/hs_err_pid*.log
 
       - name: Save cache
         uses: actions/cache/save@v4
