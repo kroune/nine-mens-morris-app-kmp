@@ -3,6 +3,10 @@ import ComposeApp
 
 @main
 struct iOSApp: App {
+    init() {
+        KoinKt.doInitKoin()
+    }
+
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var appDelegate: AppDelegate
 
@@ -14,6 +18,7 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(root: rootHolder.root)
+                .ignoresSafeArea(.all)
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {
                     case .background: LifecycleRegistryExtKt.stop(rootHolder.lifecycle)

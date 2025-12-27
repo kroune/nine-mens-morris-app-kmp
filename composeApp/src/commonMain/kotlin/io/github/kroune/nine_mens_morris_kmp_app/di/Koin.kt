@@ -28,6 +28,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame.OnlineGameRepositoryImpl
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.searchingForGame.SearchingForGameRepositoryImpl
+import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 val koinModule = module {
@@ -62,5 +63,11 @@ val koinModule = module {
     }
         single<AppVersionRepositoryI> {
         AppVersionRepositoryImpl(get())
+    }
+}
+
+fun initKoin() {
+    startKoin {
+        modules(koinModule)
     }
 }
