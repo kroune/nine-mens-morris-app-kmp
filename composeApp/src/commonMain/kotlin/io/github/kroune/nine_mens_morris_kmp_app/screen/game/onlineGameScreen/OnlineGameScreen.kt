@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kroune.nine_mens_morris_kmp_app.component.game.OnlineGameScreenState
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.OnlineGameScreenEvent
-import io.github.kroune.nine_mens_morris_kmp_app.screen.common.LimitSize
 import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderGameBoard
 import io.github.kroune.nine_mens_morris_kmp_app.screen.popUps.GameEndPopUp
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -37,30 +36,27 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun OnlineGameScreen(
     onEvent: (OnlineGameScreenEvent) -> Unit,
-    state: OnlineGameScreenState
+    state: OnlineGameScreenState,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier
                     .heightIn(max = 150.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Box(
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
                     PlayerCard(
                         playerName = state.ownAccountLoginResult,
@@ -70,12 +66,11 @@ fun OnlineGameScreen(
                         pos = state.position,
                         snackbarHostState = snackbarHostState,
                         onEvent = { onEvent(it) },
-                        ownAccount = true
+                        ownAccount = true,
                     )
                 }
                 Box(
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
                     PlayerCard(
                         playerName = state.enemyAccountLoginResult,
@@ -85,49 +80,35 @@ fun OnlineGameScreen(
                         pos = state.position,
                         snackbarHostState = snackbarHostState,
                         onEvent = { onEvent(it) },
-                        ownAccount = false
+                        ownAccount = false,
                     )
                 }
             }
             Text(
                 text = "${stringResource(Res.string.time_left)}: ${state.timeLeft}",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+            )
+            RenderGameBoard(
+                modifier = Modifier,
+                pos = state.position,
+                selectedButton = state.selectedButton,
+                moveHints = state.moveHints,
+                onClick = { onEvent(OnlineGameScreenEvent.Click(it)) }
             )
             var showGameEndDialog by remember { mutableStateOf(true) }
-            LimitSize(
-                0.8f
-            ) {
-                RenderGameBoard(
-                    modifier = Modifier,
-                    pos = state.position,
-                    selectedButton = state.selectedButton,
-                    moveHints = state.moveHints,
-                    onClick = { onEvent(OnlineGameScreenEvent.Click(it)) }
-                )
-            }
             if (!state.gameEnded) {
                 if (state.displayGiveUpConfirmation)
                     GiveUpConfirmation(
-                        onGiveUpDiscarded = {
-                            onEvent(OnlineGameScreenEvent.GiveUpDiscarded)
-                        },
-                        onGiveUp = {
-                            onEvent(OnlineGameScreenEvent.GiveUp)
-                        }
+                        onGiveUpDiscarded = { onEvent(OnlineGameScreenEvent.GiveUpDiscarded) },
+                        onGiveUp = { onEvent(OnlineGameScreenEvent.GiveUp) }
                     )
             } else {
                 if (showGameEndDialog) {
                     GameEndPopUp(
-                        {
-                            showGameEndDialog = false
-                        },
-                        {
-                            showGameEndDialog = false
-                        },
-                        {
-                            onEvent(OnlineGameScreenEvent.NavigateToMainScreen)
-                        }
+                        { showGameEndDialog = false },
+                        { showGameEndDialog = false },
+                        { onEvent(OnlineGameScreenEvent.NavigateToMainScreen) }
                     )
                 }
             }

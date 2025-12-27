@@ -44,18 +44,15 @@ fun ViewAccountScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     with(state) {
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            }
+            modifier = Modifier.fillMaxSize(),
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         ) { padding ->
             Column(
                 modifier = Modifier
                     .padding(padding)
                     .padding(horizontal = padding2)
                     .padding(top = padding2),
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
                 Row(
                     Modifier.fillMaxWidth(),
@@ -94,12 +91,12 @@ fun ViewAccountScreen(
                                 Text(
                                     it,
                                     fontSize = 30.sp,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             },
                             accountName = accountLoginResult,
                             onReload = { onEvent(ViewAccountScreenEvent.ReloadName) },
-                            snackbarHostState = snackbarHostState
+                            snackbarHostState = snackbarHostState,
                         )
                     }
                 }
@@ -135,9 +132,7 @@ fun ViewAccountScreen(
                         )
                     },
                     accountCreationDate = accountCreationDateResult,
-                    onReload = {
-                        onEvent(ViewAccountScreenEvent.ReloadCreationDate)
-                    },
+                    onReload = { onEvent(ViewAccountScreenEvent.ReloadCreationDate) },
                     snackbarHostState = snackbarHostState
                 )
             }

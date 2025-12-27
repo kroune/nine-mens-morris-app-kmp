@@ -4,13 +4,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,6 +39,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.RoundedCorne
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation1
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
+import ninemensmorrisappkmp.composeapp.generated.resources.close
 import ninemensmorrisappkmp.composeapp.generated.resources.have_account_question_mark
 import ninemensmorrisappkmp.composeapp.generated.resources.invalid_login
 import ninemensmorrisappkmp.composeapp.generated.resources.invalid_password
@@ -57,9 +65,34 @@ fun SignUpScreen(
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             },
+            topBar = {
+                IconButton(
+                    {
+                        onEvent(SignUpScreenEvent.NavigateBack)
+                    },
+                    modifier = Modifier
+                        .windowInsetsPadding(
+                            WindowInsets.safeDrawing.only(
+                                WindowInsetsSides.Horizontal + WindowInsetsSides.Top
+                            )
+                        )
+                ) {
+                    Icon(
+                        painterResource(Res.drawable.close),
+                        "close button",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            },
             bottomBar = {
                 Row(
-                    Modifier.fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(
+                            WindowInsets.safeDrawing.only(
+                                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                            )
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -74,7 +107,7 @@ fun SignUpScreen(
                         Text(stringResource(Res.string.sign_in))
                     }
                 }
-            }
+            },
         ) { contentPadding ->
             Column(
                 modifier = Modifier

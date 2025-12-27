@@ -2,6 +2,7 @@ package io.github.kroune.nine_mens_morris_kmp_app.component.other
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.kroune.nine_mens_morris_kmp_app.component.ComponentContextWithBackHandle
+import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.AccountPictureByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.CreationDateByIdApiResponses
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.LoginByIdApiResponses
@@ -10,10 +11,11 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.UploadPictu
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.ViewOwnAccountScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.accountInfo.AccountInfoRepositoryI
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
-import io.github.kroune.nine_mens_morris_kmp_app.component.componentCoroutineScope
 import io.github.kroune.nine_mens_morris_kmp_app.domain.useCases.AccountInfoUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -38,6 +40,10 @@ class ViewOwnAccountScreenComponent(
     )
     val state: StateFlow<ViewOwnAccountScreenState>
         get() = _state
+
+    private val _uploadingNewPictureResult = MutableSharedFlow<UploadPictureApiResponses>()
+    val uploadingNewPictureResult
+        get() = _uploadingNewPictureResult.asSharedFlow()
 
     private val componentScope = componentCoroutineScope()
 
@@ -109,9 +115,11 @@ class ViewOwnAccountScreenComponent(
                     )
                 }
                 componentScope.launch {
+                    _uploadingNewPictureResult.emit(
+                        accountInfoRepository.uploadPicture(event.picture)
+                    )
                     _state.update {
                         it.copy(
-                            uploadingNewPictureResult = accountInfoRepository.uploadPicture(event.picture),
                             isUploadingNewPictureInProgress = false
                         )
                     }

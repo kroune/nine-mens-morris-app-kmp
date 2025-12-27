@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.other.AppStartAnimationScreenEvent
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 import ninemensmorrisappkmp.composeapp.generated.resources.Res
@@ -34,10 +33,15 @@ import kotlin.math.sin
 fun AppStartAnimationScreen(
     onEvent: (AppStartAnimationScreenEvent) -> Unit
 ) {
-    DrawAnimation()
-    StartButton(
-        onClick = { onEvent(AppStartAnimationScreenEvent.ClickButton) }
-    )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        DrawAnimation()
+        StartButton(
+            onClick = { onEvent(AppStartAnimationScreenEvent.ClickButton) }
+        )
+    }
 }
 
 /**
@@ -52,7 +56,8 @@ private fun DrawAnimation() {
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 7500, easing = LinearEasing
-            ), repeatMode = RepeatMode.Reverse
+            ),
+            repeatMode = RepeatMode.Reverse,
         ),
         label = "backgroundAnimation"
     )
@@ -73,7 +78,7 @@ private fun DrawAnimation() {
         lightPath.lineTo(0f, size.height)
         drawPath(
             path = lightPath,
-            color = foregroundColor
+            color = foregroundColor,
         )
     }
 }
@@ -99,23 +104,14 @@ private fun StartButton(
         ),
         label = "buttonAnimation"
     )
-    Box(
+    Text(
+        text = stringResource(Res.string.press_to_start),
         modifier = Modifier
-            .fillMaxSize()
-            .zIndex(2f),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(Res.string.press_to_start),
-            modifier = Modifier
-                .alpha(animatedProgress)
-                .clickable {
-                    onClick()
-                },
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 22.sp
-        )
-    }
+            .alpha(animatedProgress)
+            .clickable { onClick() },
+        color = MaterialTheme.colorScheme.onBackground,
+        fontSize = 22.sp
+    )
 }
 
 /**

@@ -1,25 +1,23 @@
 package io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.onlineGame
 
 import com.kroune.nineMensMorrisLib.move.Movement
-import io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame.GameInfo
 import io.github.kroune.nine_mens_morris_kmp_app.data.remote.onlineGame.OnlineGameRemoteDataSourceI
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.GameEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.jwtToken.JwtTokenRepositoryI
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 
 class OnlineGameRepositoryImpl(
     private val jwtTokenRepository: JwtTokenRepositoryI,
     private val onlineGameRemoteDataSource: OnlineGameRemoteDataSourceI
 ) : OnlineGameRepositoryI {
-    override suspend fun connect(
+    override fun connect(
         gameId: Long,
-        channelToSendMoves: Channel<Movement>,
-        channelToReceiveMoves: Channel<Movement>
-    ): Pair<GameInfo, suspend () -> Unit> {
+        channelToSendMoves: Flow<Movement>,
+    ): Flow<GameEvent> {
         return onlineGameRemoteDataSource.connect(
             gameId,
             jwtTokenRepository.getJwtToken()!!,
-            channelToSendMoves,
-            channelToReceiveMoves
+            channelToSendMoves
         )
     }
 }

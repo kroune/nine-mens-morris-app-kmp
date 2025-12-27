@@ -1,10 +1,56 @@
 import SwiftUI
+import ComposeApp
 
 @main
 struct iOSApp: App {
+    init() {
+        KoinKt.doInitKoin()
+    }
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self)
+    var appDelegate: AppDelegate
+
+    @Environment(\.scenePhase)
+    var scenePhase: ScenePhase
+
+    var rootHolder: RootHolder { appDelegate.rootHolder }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView(root: rootHolder.root)
+                .ignoresSafeArea(.all)
+                .onChange(of: scenePhase) { newPhase in
+                    switch newPhase {
+                    case .background: LifecycleRegistryExtKt.stop(rootHolder.lifecycle)
+                    case .inactive: LifecycleRegistryExtKt.pause(rootHolder.lifecycle)
+                    case .active: LifecycleRegistryExtKt.resume(rootHolder.lifecycle)
+                    @unknown default: break
+                    }
+                }
         }
+    }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    let rootHolder: RootHolder = RootHolder()
+}
+
+class RootHolder : ObservableObject {
+    let lifecycle: LifecycleRegistry
+    let root: RootComponent
+
+    init() {
+        lifecycle = LifecycleRegistryKt.LifecycleRegistry()
+
+        root = RootComponent(
+            componentContext: DefaultComponentContext(lifecycle: lifecycle)
+        )
+
+        LifecycleRegistryExtKt.create(lifecycle)
+    }
+
+    deinit {
+        // Destroy the root component before it is deallocated
+        LifecycleRegistryExtKt.destroy(lifecycle)
     }
 }

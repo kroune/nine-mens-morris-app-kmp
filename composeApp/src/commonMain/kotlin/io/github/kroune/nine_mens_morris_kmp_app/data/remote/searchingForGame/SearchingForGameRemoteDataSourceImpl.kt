@@ -2,91 +2,88 @@ package io.github.kroune.nine_mens_morris_kmp_app.data.remote.searchingForGame
 
 import io.github.kroune.nine_mens_morris_kmp_app.data.decodeServerEvent
 import io.github.kroune.nine_mens_morris_kmp_app.data.network
+import io.github.kroune.nine_mens_morris_kmp_app.data.wsApi
+import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameEvent
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.Severity
 import io.github.kroune.nine_mens_morris_kmp_app.domain.repositories.logging.log
-import io.github.kroune.nine_mens_morris_kmp_app.data.wsApi
-import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.api.SearchingForGameResponse
 import io.github.kroune.nine_mens_morris_kmp_app.onNetworkError
 import io.ktor.client.plugins.websocket.wss
 import io.ktor.client.request.parameter
 import io.ktor.http.appendPathSegments
 import io.ktor.websocket.Frame
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.onClosed
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.onSuccess
-import kotlinx.io.IOException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
 
 class SearchingForGameRemoteDataSourceImpl : SearchingForGameRemoteDataSourceI {
-    override suspend fun connect(
-        channel: Channel<Long>,
-        jwtToken: String
-    ): SearchingForGameResponse {
-        val route = wsApi {
-            appendPathSegments("game", "search-for-game")
-        }.toString()
-        var result: SearchingForGameResponse = SearchingForGameResponse.UnknownError()
-        runCatching {
-            network.wss(
-                route,
-                {
-                    parameter("jwtToken", jwtToken)
-                }
-            ) {
-                while (true) {
-                    incoming.receiveCatching()
-                        .onSuccess {
-                            if (it !is Frame.Binary) {
-                                println("not a binary")
-                                return@onSuccess
-                            }
-                            val (data, metadata) = it.decodeServerEvent<Long, String>()
-                            when (metadata) {
-                                "waiting_time" -> {
-                                    val waitingTime = data
-                                    channel.send(waitingTime)
+    override fun connect(
+        jwtToken: String,
+    ): Flow<SearchingForGameEvent> {
+        return flow {
+            val route = wsApi {
+                appendPathSegments("game", "search-for-game")
+            }.toString()
+            runCatching {
+                network.wss(
+                    route,
+                    {
+                        parameter("jwtToken", jwtToken)
+                    }
+                ) {
+                    while (currentCoroutineContext().isActive) {
+                        incoming.receiveCatching()
+                            .onSuccess {
+                                if (it !is Frame.Binary) {
+                                    log("frame is not a binary", severity = Severity.INFO)
+                                    return@onSuccess
                                 }
+                                val (data, metadata) = it.decodeServerEvent<Long, String>()
+                                when (metadata) {
+                                    "waiting_time" -> {
+                                        emit(
+                                            SearchingForGameEvent.Success.NewExpectedWaitingTime(
+                                                data
+                                            )
+                                        )
+                                    }
 
-                                "game_id" -> {
-                                    result = SearchingForGameResponse.Success(data)
-                                    break
-                                }
+                                    "game_id" -> {
+                                        emit(
+                                            SearchingForGameEvent.Success.GameFound(
+                                                data
+                                            )
+                                        )
+                                        break
+                                    }
 
-                                else -> {
-                                    log(
-                                        "unknown metadata - $metadata, data - $data",
-                                        severity = Severity.INFO
-                                    )
-                                    println("FUCK")
-                                    metadata
+                                    else -> {
+                                        emit(SearchingForGameEvent.Error.NetworkError)
+                                        log(
+                                            "unknown metadata - $metadata, data - $data",
+                                            severity = Severity.INFO
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        .onClosed {
-                            log("websocket closed", it, Severity.INFO)
-                            result = if (it is IOException) {
-                                SearchingForGameResponse.NetworkError()
-                            } else {
-                                SearchingForGameResponse.UnknownError()
+                            .onFailure {
+                                val closeReasonString = closeReason.await().let { closeReason ->
+                                    "reason - ${closeReason?.knownReason}, code - ${closeReason?.code}"
+                                }
+                                val message = "error when using websocket $closeReasonString"
+                                log(message, it, Severity.ERROR)
+                                emit(SearchingForGameEvent.Error.UnknownError)
+                                break
                             }
-                            break
-                        }
-                        .onFailure {
-                            val message = "error when using websocket ${
-                                closeReason.await()
-                                    .let { "reason - ${it?.knownReason}, code - ${it?.code}" }
-                            }"
-                            log(
-                                message, it, Severity.ERROR
-                            )
-                            result = SearchingForGameResponse.UnknownError()
-                            break
-                        }
+                    }
                 }
+            }.onNetworkError {
+                emit(SearchingForGameEvent.Error.NetworkError)
             }
-        }.onNetworkError {
-            return SearchingForGameResponse.NetworkError()
+            currentCoroutineContext().cancel()
         }
-        return result
     }
 }

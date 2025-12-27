@@ -4,12 +4,10 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -23,22 +21,39 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.kroune.nineMensMorrisLib.Position
 import io.github.kroune.nine_mens_morris_kmp_app.screen.UiConstants.shadowElevation2
 import io.github.kroune.nine_mens_morris_kmp_app.screen.theme.ExtendedColorTheme
 
-/**
- * renders piece counters
- */
 @Composable
-fun RenderPieceCount(pos: Position) {
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+fun RenderSmallPieceCountElement(
+    isGreen: Boolean,
+    shouldMove: Boolean,
+    freePieces: UByte,
+    modifier: Modifier = Modifier,
+) {
+    val backgroundColor =
+        if (isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
+    val textColor =
+        if (!isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
+    val borderColor =
+        if (!isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
+    Box(
+        modifier = modifier
+            .padding(horizontal = 10.dp)
+            .size(40.dp * if (shouldMove) 1f else 0.75f)
+            .shadow(
+                shadowElevation2,
+                CircleShape,
+            )
+            .border(1.dp, borderColor, CircleShape)
+            .background(backgroundColor, CircleShape)
+            .alpha(if (freePieces == 0.toUByte()) 0f else 1f),
+        Alignment.Center
     ) {
-        RenderPieceCountElement(true, pos.pieceToMove, pos.freeGreenPieces)
-        RenderPieceCountElement(false, !pos.pieceToMove, pos.freeBluePieces)
+        Text(
+            color = textColor,
+            text = freePieces.toString(),
+        )
     }
 }
 
@@ -46,7 +61,8 @@ fun RenderPieceCount(pos: Position) {
 fun RenderPieceCountElement(
     isGreen: Boolean,
     shouldMove: Boolean,
-    freePieces: UByte
+    freePieces: UByte,
+    modifier: Modifier = Modifier,
 ) {
     val backgroundColor =
         if (isGreen) ExtendedColorTheme.colorScheme.colorPiece1 else ExtendedColorTheme.colorScheme.colorPiece2
@@ -64,11 +80,12 @@ fun RenderPieceCountElement(
     val padding = 10.dp
     val offset = animatedOffset
     Box(
-        modifier = Modifier
-            .width(40.dp + padding * 2)
-            .height(40.dp * freePieces.toInt() - offset * (freePieces.toInt() - 1) + padding * 2)
+        modifier = modifier
+            .padding(horizontal = padding)
+            .width(40.dp)
+            .heightIn(min = 40.dp * freePieces.toInt() - offset * (freePieces.toInt() - 1) + padding * 2)
             .alpha(animatedAlpha),
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = Alignment.TopCenter,
     ) {
         repeat(freePieces.toInt()) {
             Box(
@@ -77,7 +94,7 @@ fun RenderPieceCountElement(
                     .zIndex(freePieces.toInt() - it.toFloat())
                     .shadow(
                         shadowElevation2,
-                        CircleShape
+                        CircleShape,
                     )
                     .border(1.dp, borderColor, CircleShape)
                     .clip(CircleShape)

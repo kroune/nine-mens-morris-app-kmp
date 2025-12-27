@@ -7,9 +7,9 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.webhistory.withWebHistory
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.component.RootComponent
-import io.github.kroune.nine_mens_morris_kmp_app.di.koinModule
+import io.github.kroune.nine_mens_morris_kmp_app.di.initKoin
+import io.github.kroune.nine_mens_morris_kmp_app.navigation.BackHandler
 import io.github.kroune.nine_mens_morris_kmp_app.screen.RootScreen
 import kotlinx.browser.document
 import kotlinx.browser.window
@@ -20,7 +20,6 @@ import ninemensmorrisappkmp.composeapp.generated.resources.Res
 import ninemensmorrisappkmp.composeapp.generated.resources.allStringResources
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
-import org.koin.core.context.GlobalContext.startKoin
 
 @OptIn(
     ExperimentalComposeUiApi::class, ExperimentalDecomposeApi::class, ExperimentalResourceApi::class
@@ -31,9 +30,7 @@ fun main() {
             BackHandler.onCallback()
         }
     }
-    startKoin {
-        modules(koinModule)
-    }
+    initKoin()
     val lifecycle = LifecycleRegistry()
     val root = withWebHistory { stateKeeper, _ ->
         val component = DefaultComponentContext(lifecycle, stateKeeper)

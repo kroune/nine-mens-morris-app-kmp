@@ -70,6 +70,7 @@ class WelcomeScreenComponent(
             }
         }
     }
+
     init {
         startJwtTokenCheckJob()
         doOnStart {

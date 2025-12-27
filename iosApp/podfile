@@ -1,0 +1,8 @@
+use_frameworks! :linkage => :static
+
+target 'iosApp' do
+    platform :ios, '18.5'
+    use_frameworks!
+
+    pod 'composeApp', :path => '../composeApp'
+end

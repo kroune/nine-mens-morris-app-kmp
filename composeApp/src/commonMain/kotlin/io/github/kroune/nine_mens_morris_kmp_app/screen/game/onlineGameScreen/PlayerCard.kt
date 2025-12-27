@@ -26,7 +26,7 @@ import io.github.kroune.nine_mens_morris_kmp_app.domain.entities.event.game.Onli
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawIcon
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawName
 import io.github.kroune.nine_mens_morris_kmp_app.screen.common.DrawRating
-import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderPieceCountElement
+import io.github.kroune.nine_mens_morris_kmp_app.screen.game.gameBoardScreen.RenderSmallPieceCountElement
 
 @Composable
 fun PlayerCard(
@@ -37,11 +37,10 @@ fun PlayerCard(
     pos: Position,
     snackbarHostState: SnackbarHostState,
     onEvent: (OnlineGameScreenEvent) -> Unit,
-    ownAccount: Boolean
+    ownAccount: Boolean,
 ) {
     Card(
-        Modifier
-            .padding(10.dp)
+        Modifier.padding(10.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -55,14 +54,14 @@ fun PlayerCard(
                     .padding(5.dp)
                     .aspectRatio(1f),
                 pictureByteArray = pictureByteArray,
-                onReload = {
-                    onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount))
-                },
+                onReload = { onEvent(OnlineGameScreenEvent.ReloadIcon(ownAccount)) },
                 onClick = {
-                    if (ownAccount)
-                        onEvent(OnlineGameScreenEvent.NavigateToOwnAccountView)
-                    else
-                        onEvent(OnlineGameScreenEvent.NavigateToAccountView)
+                    val event = if (ownAccount) {
+                        OnlineGameScreenEvent.NavigateToOwnAccountView
+                    } else {
+                        OnlineGameScreenEvent.NavigateToAccountView
+                    }
+                    onEvent(event)
                 },
                 snackbarHostState = snackbarHostState
             )
@@ -86,15 +85,15 @@ fun PlayerCard(
                     !isGreen && !pos.pieceToMove -> true
                     else -> false
                 }
-                RenderPieceCountElement(
+                RenderSmallPieceCountElement(
                     isGreen,
                     shouldMove,
-                    if (isGreen) pos.freeGreenPieces else pos.freeBluePieces
+                    if (isGreen) pos.freeGreenPieces else pos.freeBluePieces,
                 )
                 DrawRating(
                     accountRating = rating,
                     onReload = { onEvent(OnlineGameScreenEvent.ReloadRating(ownAccount)) },
-                    snackbarHostState = snackbarHostState
+                    snackbarHostState = snackbarHostState,
                 )
             }
         }

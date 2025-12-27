@@ -96,10 +96,12 @@ class GameWithFriendScreenComponent(
     fun onGameAnalyzeEvent(event: GameWithFriendScreenEvent.GameAnalyzeEvent) {
         when (event) {
             GameWithFriendScreenEvent.GameAnalyzeEvent.DecreaseAnalyzeDepth -> {
+                analyzeJob?.cancel()
                 gameAnalyzeUseCase.decreaseDepth()
             }
 
             GameWithFriendScreenEvent.GameAnalyzeEvent.IncreaseAnalyzeDepth -> {
+                analyzeJob?.cancel()
                 gameAnalyzeUseCase.increaseDepth()
             }
 
@@ -151,14 +153,14 @@ class GameWithFriendScreenComponent(
                 }
             }
 
-            GameWithFriendScreenEvent.Back -> {
+            GameWithFriendScreenEvent.NavigateBack -> {
                 onNavigationBack()
             }
         }
     }
 
     override fun onBackPressed() {
-        onEvent(GameWithFriendScreenEvent.Back)
+        onEvent(GameWithFriendScreenEvent.NavigateBack)
     }
 }
 

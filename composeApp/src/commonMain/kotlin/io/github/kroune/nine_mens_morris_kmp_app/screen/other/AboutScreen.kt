@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,8 @@ import ninemensmorrisappkmp.composeapp.generated.resources.report
 import ninemensmorrisappkmp.composeapp.generated.resources.report_an_issue
 import ninemensmorrisappkmp.composeapp.generated.resources.source_code_link
 import ninemensmorrisappkmp.composeapp.generated.resources.telegram
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -45,6 +48,7 @@ fun AboutScreen(
         topBar = {
             Row(
                 modifier = Modifier
+                    .safeDrawingPadding()
                     .padding(padding2)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -56,101 +60,89 @@ fun AboutScreen(
                     fontSize = 23.sp
                 )
                 IconButton(
-                    {
-                        onEvent(AboutScreenEvent.OnBackPressed)
-                    }
+                    { onEvent(AboutScreenEvent.OnBackPressed) }
                 ) {
                     Icon(
                         painterResource(Res.drawable.close),
                         "close",
-                        Modifier
-                            .size(24.dp)
+                        Modifier.size(24.dp)
                     )
                 }
             }
         }
-    ) {
+    ) { padding ->
         Column(
-            modifier = Modifier
-                .padding(it),
+            modifier = Modifier.padding(padding),
             verticalArrangement = Arrangement.spacedBy(padding2)
         ) {
-            val uriHandler = LocalUriHandler.current
-            Surface(
-                modifier = Modifier
-                    .padding(horizontal = padding2)
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(AboutScreenEvent.OnNavigationToReportAnIssue)
-                        uriHandler.openUri(state.githubIssue.webLink)
-                    },
-                shape = RoundedCornerShape3,
-                shadowElevation = shadowElevation2
+            DrawElement(
+                DrawElementInfo(
+                    Res.drawable.report,
+                    "github",
+                    Res.string.report_an_issue,
+                    state.githubIssue.webLink,
+                ),
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(padding2),
-                    horizontalArrangement = Arrangement.spacedBy(padding2)
-                ) {
-                    Icon(
-                        painterResource(Res.drawable.report),
-                        "github",
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                    Text(stringResource(Res.string.report_an_issue))
-                }
+                onEvent(AboutScreenEvent.OnNavigationToReportAnIssue)
             }
-            Surface(
-                modifier = Modifier
-                    .padding(horizontal = padding2)
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(AboutScreenEvent.OnNavigationToSourceCode)
-                        uriHandler.openUri(state.github.webLink)
-                    },
-                shape = RoundedCornerShape3,
-                shadowElevation = shadowElevation2
+            DrawElement(
+                DrawElementInfo(
+                    Res.drawable.github,
+                    "github",
+                    Res.string.source_code_link,
+                    state.github.webLink,
+                ),
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(padding2),
-                    horizontalArrangement = Arrangement.spacedBy(padding2)
-                ) {
-                    Icon(
-                        painterResource(Res.drawable.github),
-                        "github",
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                    Text(stringResource(Res.string.source_code_link))
-                }
+                onEvent(AboutScreenEvent.OnNavigationToSourceCode)
             }
-            Surface(
-                modifier = Modifier
-                    .padding(horizontal = padding2)
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(AboutScreenEvent.OnNavigationToCreatorTelegram)
-                        uriHandler.openUri(state.telegram.webLink)
-                    },
-                shape = RoundedCornerShape3,
-                shadowElevation = shadowElevation2
+            DrawElement(
+                DrawElementInfo(
+                    Res.drawable.telegram,
+                    "telegram",
+                    Res.string.creator_telegram_link,
+                    state.telegram.webLink,
+                ),
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(padding2),
-                    horizontalArrangement = Arrangement.spacedBy(padding2)
-                ) {
-                    Icon(
-                        painterResource(Res.drawable.telegram),
-                        "telegram",
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                    Text(stringResource(Res.string.creator_telegram_link))
-                }
+                onEvent(AboutScreenEvent.OnNavigationToCreatorTelegram)
             }
+        }
+    }
+}
+
+private data class DrawElementInfo(
+    val painterResource: DrawableResource,
+    val painterResourceDescription: String,
+    val textResource: StringResource,
+    val uri: String
+)
+
+@Composable
+private fun DrawElement(
+    drawElementInfo: DrawElementInfo,
+    onEvent: () -> Unit,
+) {
+    val uriHandler = LocalUriHandler.current
+    Surface(
+        modifier = Modifier
+            .padding(horizontal = padding2)
+            .fillMaxWidth()
+            .clickable {
+                onEvent()
+                uriHandler.openUri(drawElementInfo.uri)
+            },
+        shape = RoundedCornerShape3,
+        shadowElevation = shadowElevation2
+    ) {
+        Row(
+            modifier = Modifier.padding(padding2),
+            horizontalArrangement = Arrangement.spacedBy(padding2)
+        ) {
+            Icon(
+                painter = painterResource(drawElementInfo.painterResource),
+                contentDescription = drawElementInfo.painterResourceDescription,
+                modifier = Modifier.size(24.dp)
+            )
+            Text(stringResource(drawElementInfo.textResource))
         }
     }
 }

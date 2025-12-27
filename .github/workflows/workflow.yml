@@ -74,7 +74,7 @@ jobs:
           # ios
           - target: iosSimulatorArm64Test --rerun -x test -x connectedAndroidTest -x desktopTest -x wasmJsTest
             tag: ios
-            os: macos-13
+            os: macos-latest
 
 #          # web
 #          - target: wasmJsBrowserTest --rerun -x test -x iosSimulatorArm64Test -x connectedAndroidTest -x desktopTest -x wasmJsTest
@@ -107,7 +107,7 @@ jobs:
             baselineprofile/build
           key: ${{ runner.os }}-ui-tests-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-ui-tests-${{ matrix.tag }}--${{ hashFiles('**/libs.versions.toml') }}
+            ${{ runner.os }}-ui-tests-${{ matrix.tag }}-${{ hashFiles('**/libs.versions.toml') }}
 
       - name: enable KVM
         if: runner.os == 'Linux'
@@ -158,15 +158,18 @@ jobs:
             tag: MacosDmg
             after: |
             directory: composeApp/build/compose/binaries/main-release/dmg/
-            os: macos-13
-          # ios
-          - target: iosArm64Binaries
-            after: |
-              mkdir iosOut
-              xcodebuild build -workspace iosApp/iosApp.xcodeproj/project.xcworkspace/ -configuration Release -scheme iosApp -sdk iphoneos -verbose -archivePath iosOut/NineMensMorris.xcarchive archive CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
-            tag: Ios
-            directory: iosOut/
             os: macos-latest
+#          # ios
+#          - target: generateDummyFramework
+#            after: |
+#              cd iosApp
+#              pod install
+#              cd ..
+#              mkdir iosOut
+#              xcodebuild build -workspace iosApp/iosApp.xcodeproj/project.xcworkspace/ -configuration Release -scheme iosApp -sdk iphoneos -verbose -archivePath iosOut/NineMensMorris.xcarchive archive CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+#            tag: Ios
+#            directory: iosOut/
+#            os: macos-latest
           # web
           - target: wasmJsProcessBrowserDistribution
             tag: Web

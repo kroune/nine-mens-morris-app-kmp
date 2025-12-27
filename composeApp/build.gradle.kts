@@ -1,16 +1,28 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import dev.detekt.gradle.Detekt
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JsSourceMapNamesPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-val appVersion: String = "1.0.1"
-val appVersionInt: Int = 101
+object AppInfo {
+    const val APP_VERSION: String = "1.0.1"
+    const val APP_VERSION_INT: Int = 101
+    const val LICENSE_TYPE = "GPL-3.0"
+    const val DESCRIPTION = "Implementation of a table game called <Nine mens morris>"
+    const val HOME_PAGE = "https://github.com/kroune/nine-mens-morris-lib-kmp"
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude { element ->
+        element.file.path.contains("/build/generated/")
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -21,9 +33,19 @@ plugins {
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.baseline.profile)
     alias(libs.plugins.build.konfig)
+    alias(libs.plugins.kotlinCocoapods)
+    alias(libs.plugins.detekt)
 //    alias(libs.plugins.compose.compiler.report.generator)
 //    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
 //    alias(libs.plugins.storytale)
+}
+
+detekt {
+    buildUponDefaultConfig = true // preconfigure defaults
+    allRules = false // activate all available (even unstable) rules.
+    config.setFrom("$projectDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
+    baseline =
+        file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
 }
 
 buildscript {
@@ -38,8 +60,8 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(STRING, "distribution", "")
-        buildConfigField(STRING, "version", appVersion)
-        buildConfigField(INT, "versionInt", appVersionInt.toString())
+        buildConfigField(STRING, "version", AppInfo.APP_VERSION)
+        buildConfigField(INT, "versionInt", AppInfo.APP_VERSION_INT.toString())
     }
     targetConfigs {
         create("android") {
@@ -67,10 +89,33 @@ buildkonfig {
 }
 
 kotlin {
+    cocoapods {
+        version = AppInfo.APP_VERSION
+        license = AppInfo.LICENSE_TYPE
+        summary = AppInfo.DESCRIPTION
+        homepage = AppInfo.HOME_PAGE
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+            export(libs.decompose)
+            export(libs.decompose.lifecycle)
+
+            // Optional, only if you need state preservation on Darwin (Apple) targets
+            export(libs.decompose.state.keeper)
+        }
+        podfile = project.file("../iosApp/podfile")
+        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+    }
     compilerOptions {
         freeCompilerArgs.add("-Xnon-local-break-continue")
         freeCompilerArgs.add("-Xexpect-actual-classes")
         freeCompilerArgs.add("-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi")
+    }
+
+    js {
+        browser()
+        binaries.executable()
     }
 
     @OptIn(ExperimentalWasmDsl::class)
@@ -84,18 +129,6 @@ kotlin {
                 testTask {
                     useKarma {
                         useDebuggableChrome()
-                    }
-                }
-                val rootDirPath = project.rootDir.path
-                val projectDirPath = project.projectDir.path
-                commonWebpackConfig {
-                    outputFileName = "composeApp.js"
-                    devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                        static = (static ?: mutableListOf()).apply {
-                            // Serve sources to debug inside browser
-                            add(rootDirPath)
-                            add(projectDirPath)
-                        }
                     }
                 }
             }
@@ -113,16 +146,9 @@ kotlin {
 
     jvm("desktop")
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         val desktopMain by getting
@@ -133,7 +159,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
 
-            implementation(libs.decompose)
+            api(libs.decompose)
             implementation(libs.decompose.animations)
 
             implementation(libs.kotlinx.serialization.json)
@@ -151,9 +177,10 @@ kotlin {
 //            implementation(compose.components.uiToolingPreview)
         }
         iosMain.dependencies {
-            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.darwin)
         }
         androidMain.dependencies {
+            implementation(libs.androidx.core.splashscreen)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.cio)
 //            implementation(compose.uiTooling)
@@ -163,6 +190,7 @@ kotlin {
             implementation(kotlin("test"))
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
+            implementation(libs.multiplatform.settings.test)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -176,6 +204,10 @@ kotlin {
     }
 }
 
+dependencies {
+    detektPlugins(libs.detekt.formatting)
+}
+
 tasks.register("wasmJsProcessBrowserDistribution") {
     dependsOn("wasmJsBrowserDistribution")
     val dir = "build/dist/wasmJs/productionExecutable"
@@ -185,26 +217,28 @@ tasks.register("wasmJsProcessBrowserDistribution") {
     description = "Rename wasm files"
     doLast {
         val file = File(absolutePath, dir)
-        if (file.exists()) {
-            val fileToParse = File(file, "composeApp.js")
+        val wasmFileExportRegex = Regex("exports=.{1,10}\".{1,20}.wasm\"")
+
+        fun renameFileAccordingToExport(
+            fileNameWithExport: String,
+            newName: String,
+        ) {
+            val fileToParse = File(file, fileNameWithExport)
             val fileText = fileToParse.readText()
-            val regex = Regex("e\\.exports=r\\.p\\+\"[a-zA-Z0-9]*\\.wasm\"")
-            val prefix = "e.exports=r.p+\""
-            val suffix = "\""
-            val matches = regex.findAll(fileText).toList()
-                .map { it.value.removePrefix(prefix).removeSuffix(suffix) }
-            require(matches.size == 2)
-            val app = matches[0]
-            val newAppName = "app.wasm"
-            val skiko = matches[1]
-            val newSkikoName = "skiko.wasm"
-            println("app - $app, skiko - $skiko")
-            assert(File(file, app).renameTo(File(file, newAppName)))
-            assert(File(file, skiko).renameTo(File(file, newSkikoName)))
-            val transformedText = fileText.replace(app, newAppName).replace(skiko, newSkikoName)
+            val app = wasmFileExportRegex.findAll(fileText).single().value
+                .substringAfter('"')
+                .substringBeforeLast('"')
+            val appFile = File(file, app)
+            println("found wasm file - $app, $dir")
+            require(appFile.exists())
+            appFile.renameTo(File(file, newName))
+            val transformedText = fileText.replace(app, newName)
             fileToParse.writeText(transformedText)
-        } else {
-            logger.error("empty")
+        }
+        renameFileAccordingToExport("composeApp.js", "app.wasm")
+        file.listFiles()!!.filter { it.extension == "js" && it.nameWithoutExtension != "composeApp" }.forEach {
+            if (wasmFileExportRegex.findAll(it.readText()).any())
+                renameFileAccordingToExport(it.name, "skiko.wasm")
         }
     }
 }
@@ -222,8 +256,8 @@ android {
         applicationId = "io.github.kroune.nine_mens_morris"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = appVersionInt
-        versionName = appVersion
+        versionCode = AppInfo.APP_VERSION_INT
+        versionName = AppInfo.APP_VERSION
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
@@ -233,23 +267,23 @@ android {
         }
     }
     signingConfigs {
-        create("release") {
-            keyAlias = "release"
-            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
-                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
-            } else {
-                storeFile = file("/home/olowo/secureKeystore.jks")
-                storePassword = file("/home/olowo/secureSignPass").readText().trim()
-                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
-            }
-        }
+//        create("release") {
+//            keyAlias = "release"
+//            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
+//                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
+//                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+//                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+//            } else {
+//                storeFile = file("/home/olowo/secureKeystore.jks")
+//                storePassword = file("/home/olowo/secureSignPass").readText().trim()
+//                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
+//            }
+//        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
+//            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -267,7 +301,7 @@ android {
     }
     baselineProfile {
         baselineProfileOutputDir = "../androidMain/generated/baselineProfiles"
-        automaticGenerationDuringBuild = true
+//        automaticGenerationDuringBuild = true
     }
     @Suppress("UnstableApiUsage")
     testOptions {
@@ -305,7 +339,7 @@ compose.desktop {
             linux {
                 debMaintainer = "kr0ne@tuta.io"
                 appCategory = "Amusements/Games"
-                rpmLicenseType = "GPL-3.0"
+                rpmLicenseType = AppInfo.LICENSE_TYPE
                 modules("jdk.security.auth")
                 iconFile = project.file("icons/icon.png")
             }
@@ -322,7 +356,7 @@ compose.desktop {
                 TargetFormat.Msi, TargetFormat.Exe
             )
             packageName = "NineMensMorris"
-            packageVersion = appVersion
+            packageVersion = AppInfo.APP_VERSION
             description = "Implementation of a table game called <Nine mens morris>"
             vendor = "kroune"
             copyright = "© 2024 Kroune. All rights reserved."
