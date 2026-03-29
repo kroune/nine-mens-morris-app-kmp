@@ -267,23 +267,23 @@ android {
         }
     }
     signingConfigs {
-//        create("release") {
-//            keyAlias = "release"
-//            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
-//                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
-//                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
-//                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
-//            } else {
-//                storeFile = file("/home/olowo/secureKeystore.jks")
-//                storePassword = file("/home/olowo/secureSignPass").readText().trim()
-//                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
-//            }
-//        }
+        create("release") {
+            keyAlias = "release"
+            if (System.getenv("KEYSTORE") != null && System.getenv("KEYSTORE_PASSWORD") != null) {
+                storeFile = File(project.projectDir.absolutePath, "keyStore.jks")
+                storePassword = System.getenv("KEYSTORE_PASSWORD")!!
+                keyPassword = System.getenv("KEYSTORE_PASSWORD")!!
+            } else {
+                storeFile = file("/home/olowo/secureKeystore.jks")
+                storePassword = file("/home/olowo/secureSignPass").readText().trim()
+                keyPassword = file("/home/olowo/secureSignPass").readText().trim()
+            }
+        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-//            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

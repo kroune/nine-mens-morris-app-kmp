@@ -241,7 +241,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Create keystore file
-        if: ${{ matrix.tag }} == 'Android'
+        if: matrix.tag == 'Android'
         run: |
           touch composeApp/keyStore.jks
           echo $KEYSTORE | base64 -d  > composeApp/keyStore.jks
